@@ -21,7 +21,7 @@ If you ARE relying on the service worker( e.g. you are testing that the caching 
 
 This will NOT live-reload changes to your code.
 
-## ranches
+## Branches
 ### Master
 For the good stuff. 
 
