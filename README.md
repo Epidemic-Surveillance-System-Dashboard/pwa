@@ -1,4 +1,4 @@
-#Instructions
+# Instructions
 
 ## Setup
 
@@ -6,7 +6,7 @@
 2. Install required dependencies (`npm install`)
 3. Install Serve locally (`npm install -g serve`)
 
-##Development
+## Development
 
 If you are NOT relying on the service worker 
 
@@ -21,14 +21,14 @@ If you ARE relying on the service worker( e.g. you are testing that the caching 
 
 This will NOT live-reload changes to your code.
 
-##Branches
-###Master
+## ranches
+### Master
 For the good stuff. 
 
-###Integration
+### Integration
 For the work in progress.
 
-#Original ReadMe below
+# Original ReadMe below
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
