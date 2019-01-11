@@ -17,7 +17,7 @@ This will live-reload any changes you make to your code.
 If you ARE relying on the service worker( e.g. you are testing that the caching works):
 
 1. Run `npm run build` (this will take a while)
-2. Run `npm serve build`
+2. Run `serve -s build`
 
 This will NOT live-reload changes to your code.
 
