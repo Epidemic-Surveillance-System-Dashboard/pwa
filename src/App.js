@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import SamplePage from './SamplePage/SamplePage'
 import SampleHome from './SampleHome/SampleHome'
-import logo from './logo.svg';
 import './App.css';
 
 class App extends Component {

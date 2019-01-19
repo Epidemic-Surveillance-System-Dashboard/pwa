@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import '../../node_modules/react-vis/dist/style.css';
-import { XYPlot, VerticalBarSeriesCanvas, XAxis, YAxis, HorizontalGridLines, VerticalGridLines, RadialChart,} from 'react-vis';
+import { XYPlot, VerticalBarSeriesCanvas, XAxis, YAxis, HorizontalGridLines, VerticalGridLines, RadialChart, ChartLabel , LineSeriesCanvas} from 'react-vis';
 
 
 class Visualizer extends Component {
@@ -34,33 +34,50 @@ class Visualizer extends Component {
 
         let series = []
         let name = ""
-        for (let i = 0; i < this.props.data.length; i++){
+        for (let i = 0; i < this.props.data.length; i++) {
             let dataPoint = this.props.data[i]
             if (i == 0) name = dataPoint.metric
-            let date = new Date(dataPoint.dateTime * 1000)            
-            let months = ["Jan", "Feb", "Mar", "Apr", "May","Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+            let date = new Date(dataPoint.dateTime * 1000)
+            let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
             series.push({
                 x: `${months[date.getMonth()]} ${date.getFullYear()}`,
                 y: dataPoint.value
             })
         }
-        return {name: name, series: series}
+        return { name: name, series: series }
     }
 
     BarChart(defaults) {
+
+        let data = this.MetricOverTime()
+
         return (
             <XYPlot xType="ordinal" width={defaults.width} height={defaults.height} xDistance={defaults.xDistance}>
                 <HorizontalGridLines />
                 <XAxis />
                 <YAxis />
-                <VerticalBarSeriesCanvas data={this.MetricOverTime().series}/>
+                <VerticalBarSeriesCanvas data={data.series} />
             </XYPlot>
         )
     }
 
-    PieChart(defaults){
+    PieChart(defaults) {
+        return (
+            <RadialChart data={this.props.data} width={defaults.width} height={defaults.height} showLabels={true} />
+        )
+    }
+
+    Histogram(defaults) {
+
+        let data = this.MetricOverTime()
+
         return(
-            <RadialChart data = {this.props.data} width = {defaults.width} height = {defaults.height} showLabels={true} />
+            <XYPlot xType="ordinal" width={defaults.width} height={defaults.height} xDistance={defaults.xDistance}>
+                <HorizontalGridLines />
+                <XAxis />
+                <YAxis />
+                <VerticalBarSeriesCanvas data={data.series} />
+            </XYPlot>
         )
     }
 
@@ -83,31 +100,34 @@ class Visualizer extends Component {
         }
 
         //Override Defaults where appropriate
-        Object.keys(defaults).forEach((key) =>{
+        Object.keys(defaults).forEach((key) => {
             if (this.props[key] !== undefined) defaults[key] = this.props[key]
         });
-        
+
         let graph = null
 
-        switch(this.props.type){
-            case "barchart": 
+        switch (this.props.type) {
+            case "barchart":
                 graph = this.BarChart(defaults)
-            break;
+                break;
             case "piechart":
                 graph = this.PieChart(defaults)
-            break;
+                break;
+            case "histogram":
+                graph = this.Histogram(defaults)
+                break;
         }
-         
-        if (graph !== null){
+
+        if (graph !== null) {
             return (
                 <div className="Visualizer">
                     {graph}
                 </div>
             )
-        }else{
+        } else {
             return (
-            <div className="Visualizer">
-                Sorry, something went wrong.
+                <div className="Visualizer">
+                    Sorry, something went wrong.
             </div>)
         }
 

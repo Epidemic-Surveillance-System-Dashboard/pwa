@@ -48,6 +48,7 @@ class SamplePage extends Component {
                 </p>
                 <Visualizer data={barData} title = "Sample Bar Graph" type = "barchart"></Visualizer>
                 <Visualizer data={pieData} title = "Sample Pie Graph" type = "piechart"></Visualizer>
+                <Visualizer data={barData} title = "Sample Line Graph" type = "histogram"></Visualizer>
             </div>
         );
     }
