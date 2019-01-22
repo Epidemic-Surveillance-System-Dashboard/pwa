@@ -48,6 +48,17 @@ class Visualizer extends Component {
 
     mockSet = {
         name: "Male Deaths",
+        month: 'JAN',
+        year: 2018,
+        data:[
+            {
+                Value: Math.floor(Math.random() * 10),
+                Metric: "Male Deaths 0-10"
+            },
+            { Value: Math.floor(Math.random() * 10), Metric: "Male Deaths 10-40"},
+            { Value: Math.floor(Math.random() * 10), Metric: "Male Deaths 40-80"},
+            { Value: Math.floor(Math.random() * 10), Metric: "Male Deaths 80+"},
+        ]
     }
 
     mockGroup = {
@@ -115,16 +126,23 @@ class Visualizer extends Component {
         )
     }
 
+    createBarSeries(){
+        let data = this.mockSet.data
+        return data.map(element =>{
+            return {x: element.Metric, y: element.Value}
+        })
+    }
+
     Histogram(defaults) {
 
-        let data = this.MetricOverTime()
+        let data = this.createBarSeries()
 
         return(
-            <FlexibleWidthXYPlot xType="ordinal" height={defaults.height} xDistance={defaults.xDistance}>
+            <FlexibleWidthXYPlot xType="ordinal" height={defaults.height}>
                 <HorizontalGridLines />
                 <XAxis />
                 <YAxis />
-                <VerticalBarSeriesCanvas data={data.series} />
+                <VerticalBarSeriesCanvas data={data} />
             </FlexibleWidthXYPlot>
         )
     }
