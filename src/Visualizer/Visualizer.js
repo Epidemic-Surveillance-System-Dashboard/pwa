@@ -13,7 +13,7 @@ class Visualizer extends Component {
     startDate = null
 
     mockMetric = {
-        name: "Male Deaths Ages 0-19",
+        name: "Male Vaccinations Ages 0-19",
         data: [
             {
                 Month: 'JAN',
@@ -47,36 +47,36 @@ class Visualizer extends Component {
     }
 
     mockSet = {
-        name: "Male Deaths",
+        name: "Male Vaccinations",
         month: 'JAN',
         year: 2018,
         data: [
             {
                 Value: Math.floor(Math.random() * 10),
-                Metric: "Male Deaths 0-10"
+                Metric: "Male Vaccinations 0-10"
             },
-            { Value: Math.floor(Math.random() * 10), Metric: "Male Deaths 10-40" },
-            { Value: Math.floor(Math.random() * 10), Metric: "Male Deaths 40-80" },
-            { Value: Math.floor(Math.random() * 10), Metric: "Male Deaths 80+" },
+            { Value: Math.floor(Math.random() * 10), Metric: "Male Vaccinations 10-40" },
+            { Value: Math.floor(Math.random() * 10), Metric: "Male Vaccinations 40-80" },
+            { Value: Math.floor(Math.random() * 10), Metric: "Male Vaccinations 80+" },
         ]
     }
 
     mockGroup = {
-        name: "Deaths",
+        name: "Vaccinations",
         month: 'Jan',
         year: 2018,
         data: [
             [
-                { Value: Math.floor(Math.random() * 10), Metric: "Male Deaths 0-10" },
-                { Value: Math.floor(Math.random() * 10), Metric: "Male Deaths 10-40" },
-                { Value: Math.floor(Math.random() * 10), Metric: "Male Deaths 40-80" },
-                { Value: Math.floor(Math.random() * 10), Metric: "Male Deaths 80+" },
+                { Value: Math.floor(Math.random() * 10), Metric: "Male Vaccinations 0-10" },
+                { Value: Math.floor(Math.random() * 10), Metric: "Male Vaccinations 10-40" },
+                { Value: Math.floor(Math.random() * 10), Metric: "Male Vaccinations 40-80" },
+                { Value: Math.floor(Math.random() * 10), Metric: "Male Vaccinations 80+" },
             ],
             [
-                { Value: Math.floor(Math.random() * 10), Metric: "Female Deaths 0-10" },
-                { Value: Math.floor(Math.random() * 10), Metric: "Female Deaths 10-40" },
-                { Value: Math.floor(Math.random() * 10), Metric: "Female Deaths 40-80" },
-                { Value: Math.floor(Math.random() * 10), Metric: "Female Deaths 80+" },
+                { Value: Math.floor(Math.random() * 10), Metric: "Female Vaccinations 0-10" },
+                { Value: Math.floor(Math.random() * 10), Metric: "Female Vaccinations 10-40" },
+                { Value: Math.floor(Math.random() * 10), Metric: "Female Vaccinations 40-80" },
+                { Value: Math.floor(Math.random() * 10), Metric: "Female Vaccinations 80+" },
             ]
         ]
     }
