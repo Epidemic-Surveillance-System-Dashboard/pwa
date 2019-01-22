@@ -46,7 +46,11 @@ class SamplePage extends Component {
                     This contains sample graphs. 
                     You can pass width, height, xInterval, type, and -- of course -- data to these Visualizer components.
                 </p>
-                <Visualizer data={barData} title = "Sample Bar Graph" type = "barchart"></Visualizer>
+                <Visualizer data={barData} title = "Sample Metric Graph" type = "line"></Visualizer>
+                <br/>
+                <br/>
+                <br/>
+                <br/>
                 <Visualizer data={pieData} title = "Sample Pie Graph" type = "piechart"></Visualizer>
                 <Visualizer data={barData} title = "Sample Line Graph" type = "histogram"></Visualizer>
             </div>
