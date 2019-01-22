@@ -5,7 +5,7 @@ import { DatePicker } from 'antd';
 
 //react-vis for graphs
 import '../../node_modules/react-vis/dist/style.css';
-import { FlexibleWidthXYPlot, VerticalBarSeriesCanvas, XAxis, YAxis, HorizontalGridLines, LineMarkSeries, DiscreteColorLegend, VerticalGridLines, } from 'react-vis';
+import { FlexibleWidthXYPlot, XAxis, YAxis, HorizontalGridLines, LineMarkSeries, DiscreteColorLegend, VerticalGridLines, VerticalBarSeries} from 'react-vis';
 
 
 class Visualizer extends Component {
@@ -168,7 +168,7 @@ class Visualizer extends Component {
             let formattedData = data[i].map((element, id) => {
                 return { x: commonKeys[id], y: element.Value }
             })
-            result.barSeries.push(<VerticalBarSeriesCanvas key={i} data={formattedData} />)
+            result.barSeries.push(<VerticalBarSeries key={i} data={formattedData} />)
         }
 
         result.legend = <DiscreteColorLegend orientation="horizontal" items={uncommonKeys} />
@@ -213,7 +213,7 @@ class Visualizer extends Component {
                 <HorizontalGridLines />
                 <XAxis />
                 <YAxis />
-                <VerticalBarSeriesCanvas data={data} />
+                <VerticalBarSeries data={data} />
             </FlexibleWidthXYPlot>
         )
     }
