@@ -5,7 +5,7 @@ import { DatePicker } from 'antd';
 
 //react-vis for graphs
 import '../../node_modules/react-vis/dist/style.css';
-import { XYPlot, VerticalBarSeriesCanvas, XAxis, YAxis, HorizontalGridLines, VerticalGridLines, RadialChart, ChartLabel , LineSeriesCanvas, LineMarkSeries, DiscreteColorLegend} from 'react-vis';
+import { XYPlot, FlexibleWidthXYPlot, VerticalBarSeriesCanvas, XAxis, YAxis, HorizontalGridLines, RadialChart, ChartLabel , LineSeriesCanvas, LineMarkSeries, DiscreteColorLegend, VerticalGridLines} from 'react-vis';
 
 
 class Visualizer extends Component {
@@ -47,7 +47,7 @@ class Visualizer extends Component {
     }
 
     mockSet = {
-
+        name: "Male Deaths",
     }
 
     mockGroup = {
@@ -100,18 +100,18 @@ class Visualizer extends Component {
         let data = this.MetricOverTime()
 
         return (
-            <XYPlot xType="ordinal" width={defaults.width} height={defaults.height} xDistance={defaults.xDistance}>
+            <FlexibleWidthXYPlot xType="ordinal" height={defaults.height} xDistance={defaults.xDistance}>
                 <HorizontalGridLines />
                 <XAxis />
                 <YAxis />
                 <VerticalBarSeriesCanvas data={data.series} />
-            </XYPlot>
+            </FlexibleWidthXYPlot>
         )
     }
 
     PieChart(defaults) {
         return (
-            <RadialChart data={this.props.data} width={defaults.width} height={defaults.height} showLabels={true} />
+            <RadialChart data={this.props.data} showLabels={true} />
         )
     }
 
@@ -120,12 +120,12 @@ class Visualizer extends Component {
         let data = this.MetricOverTime()
 
         return(
-            <XYPlot xType="ordinal" width={defaults.width} height={defaults.height} xDistance={defaults.xDistance}>
+            <FlexibleWidthXYPlot xType="ordinal" height={defaults.height} xDistance={defaults.xDistance}>
                 <HorizontalGridLines />
                 <XAxis />
                 <YAxis />
                 <VerticalBarSeriesCanvas data={data.series} />
-            </XYPlot>
+            </FlexibleWidthXYPlot>
         )
     }
 
@@ -150,7 +150,10 @@ class Visualizer extends Component {
             "#B10DC9",
         ]
 
-        let elements = []
+        let elements = {
+            legend:null,
+            series:[]
+        }
         let dataForYear = []
         let currentYear = 0
         let legend = []
@@ -164,15 +167,14 @@ class Visualizer extends Component {
             dataForYear.push(dataPoint)
 
             //With 12 data points OR at end of data set, create a LineMarkSeries
-            if (i == (this.mockMetric.data.length-1) || (i + 1) % 12 == 0 ){
+            if (i === (this.mockMetric.data.length-1) || (i + 1) % 12 === 0 ){
                 let color = strokeColors[currentYear % strokeColors.length]
                 let _d = dataForYear.slice()
-                elements.push(
+                elements.series.push(
                     <LineMarkSeries key ={i} data = {_d} color={color} colorType="literal"  />
                 )
 
-                let title = this.mockMetric.data[yearStartIndex].Month + " " + this.mockMetric.data[yearStartIndex].Year + " to " + 
-                    this.mockMetric.data[i].Month + " " + this.mockMetric.data[i].Year
+                let title = `${this.mockMetric.data[yearStartIndex].Month} ${this.mockMetric.data[yearStartIndex].Year}-${this.mockMetric.data[i].Month} ${this.mockMetric.data[i].Year}`
 
                 legend.push({
                     title: title,
@@ -189,20 +191,27 @@ class Visualizer extends Component {
         //Create legend
 
         let legendElement = <DiscreteColorLegend orientation="horizontal" items={legend} />
-        elements.push(legendElement)
+        elements.legend = legendElement
+
         return elements
 
     }
 
     Line(defaults) {
 
+        let elements = this.createLineSeriesWithLegend()
+
         return(
-            <XYPlot xType="ordinal" width={defaults.width} height={defaults.height} xDistance={defaults.xDistance}>
-                <HorizontalGridLines />
-                <XAxis />
-                <YAxis />
-                {this.createLineSeriesWithLegend()}
-            </XYPlot>
+            <div>
+                <FlexibleWidthXYPlot xType="ordinal" height={defaults.height}>
+                    <HorizontalGridLines />
+                    <VerticalGridLines />
+                    <XAxis />
+                    <YAxis />
+                    {elements.series}
+                </FlexibleWidthXYPlot>
+                {elements.legend}
+            </div>
         )
     }
 
@@ -216,7 +225,11 @@ class Visualizer extends Component {
 
 
     setStartDate = (moment, dateString) =>{
-        this.startDate = moment._d
+        try{
+            this.startDate = moment._d
+        }catch(e){
+            //sometimes moment._d is null for some reason
+        }
 
         //TODO: (async) update data to reflect start date selected
     }
@@ -227,8 +240,8 @@ class Visualizer extends Component {
 
         //Define Defaults
         let defaults = {
-            width: 500,
-            height: 500,
+            width: 350,
+            height: 350,
             xDistance: 100,
             title: "Graph"
         }
@@ -258,6 +271,9 @@ class Visualizer extends Component {
         if (graph !== null) {
             return (
                 <div className="Visualizer">
+                    <span>
+                        <h2>{this.props.title}</h2>
+                    </span>
                     <div>
                         <MonthPicker placeholder="From" onChange={this.setStartDate} />                      
                     </div>

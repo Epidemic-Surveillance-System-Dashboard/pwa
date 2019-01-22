@@ -1,8 +1,11 @@
-import React, { Component } from 'react';
-import '../../node_modules/react-vis/dist/style.css';
+import React, { Component } from 'react'
+
+import {Row, Col} from 'antd'
+
+import '../../node_modules/react-vis/dist/style.css'
 import './SamplePage.css';
+
 import Visualizer from '../Visualizer/Visualizer'
-import {XYPlot, VerticalBarSeriesCanvas, XAxis, YAxis, HorizontalGridLines} from 'react-vis';
 
 let metric = {
     name: "Hello",
@@ -42,17 +45,23 @@ class SamplePage extends Component {
 
         return (
             <div className="sampleApp">
-                <p>
-                    This contains sample graphs. 
-                    You can pass width, height, xInterval, type, and -- of course -- data to these Visualizer components.
-                </p>
-                <Visualizer data={barData} title = "Sample Metric Graph" type = "line"></Visualizer>
-                <br/>
-                <br/>
-                <br/>
-                <br/>
-                <Visualizer data={pieData} title = "Sample Pie Graph" type = "piechart"></Visualizer>
-                <Visualizer data={barData} title = "Sample Line Graph" type = "histogram"></Visualizer>
+                <Row>
+                    <p>
+                        This contains sample graphs. 
+                        This is a work in progress.
+                    </p>
+                </Row>
+                <Row>
+                    <Col xs={24} sm={24} md={12} lg={8} xl={8}>
+                        <Visualizer data={barData} title = "Sample Metric Graph" type = "line"></Visualizer>
+                    </Col>
+                    <Col xs={24} sm={24} md={12} lg={8} xl={8}>
+                        <Visualizer data={barData} title = "Sample Set Graph (WIP)" type = "line"></Visualizer>
+                    </Col>
+                    <Col xs={24} sm={24} md={12} lg={8} xl={8}>
+                        <Visualizer data={barData} title = "Sample Metric Distribution Graph (WIP)" type = "histogram"></Visualizer>
+                    </Col>
+                </Row>         
             </div>
         );
     }
