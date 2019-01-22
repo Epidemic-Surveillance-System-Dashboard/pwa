@@ -56,11 +56,12 @@ class SamplePage extends Component {
                         <Visualizer data={barData} title = "Sample Metric Graph" type = "line"></Visualizer>
                     </Col>
                     <Col xs={24} sm={24} md={12} lg={8} xl={8}>
-                        <Visualizer data={barData} title = "Sample Set Graph (WIP)" type = "line"></Visualizer>
+                        <Visualizer data={barData} title = "Sample Set Graph (Distribution)" type = "histogram"></Visualizer>
                     </Col>
                     <Col xs={24} sm={24} md={12} lg={8} xl={8}>
-                        <Visualizer data={barData} title = "Sample Metric Distribution Graph (WIP)" type = "histogram"></Visualizer>
+                        <Visualizer data={barData} title = "Sample Group (Sets of Sets) Graph" type = "multiplebar"></Visualizer>
                     </Col>
+
                 </Row>         
             </div>
         );

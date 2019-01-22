@@ -5,7 +5,7 @@ import { DatePicker } from 'antd';
 
 //react-vis for graphs
 import '../../node_modules/react-vis/dist/style.css';
-import { XYPlot, FlexibleWidthXYPlot, VerticalBarSeriesCanvas, XAxis, YAxis, HorizontalGridLines, RadialChart, ChartLabel , LineSeriesCanvas, LineMarkSeries, DiscreteColorLegend, VerticalGridLines} from 'react-vis';
+import { FlexibleWidthXYPlot, VerticalBarSeriesCanvas, XAxis, YAxis, HorizontalGridLines, LineMarkSeries, DiscreteColorLegend, VerticalGridLines, } from 'react-vis';
 
 
 class Visualizer extends Component {
@@ -20,29 +20,29 @@ class Visualizer extends Component {
                 Year: 2017,
                 Value: Math.floor(Math.random() * 10)
             },
-            { Month: 'FEB', Year: 2017, Value: Math.floor(Math.random() * 10)},
-            { Month: 'MAR', Year: 2017, Value: Math.floor(Math.random() * 10)},
-            { Month: 'APR', Year: 2017, Value: Math.floor(Math.random() * 10)},
-            { Month: 'MAY', Year: 2017, Value: Math.floor(Math.random() * 10)},
-            { Month: 'JUN', Year: 2017, Value: Math.floor(Math.random() * 10)},
-            { Month: 'JUL', Year: 2017, Value: Math.floor(Math.random() * 10)},
-            { Month: 'AUG', Year: 2017, Value: Math.floor(Math.random() * 10)},
-            { Month: 'SEP', Year: 2017, Value: Math.floor(Math.random() * 10)},
-            { Month: 'OCT', Year: 2017, Value: Math.floor(Math.random() * 10)},
-            { Month: 'NOV', Year: 2017, Value: Math.floor(Math.random() * 10)},
-            { Month: 'DEC', Year: 2017, Value: Math.floor(Math.random() * 10)},
-            { Month: 'JAN', Year: 2018, Value: Math.floor(Math.random() * 10)},
-            { Month: 'FEB', Year: 2018, Value: Math.floor(Math.random() * 10)},
-            { Month: 'MAR', Year: 2018, Value: Math.floor(Math.random() * 10)},
-            { Month: 'APR', Year: 2018, Value: Math.floor(Math.random() * 10)},
-            { Month: 'MAY', Year: 2018, Value: Math.floor(Math.random() * 10)},
-            { Month: 'JUN', Year: 2018, Value: Math.floor(Math.random() * 10)},
-            { Month: 'JUL', Year: 2018, Value: Math.floor(Math.random() * 10)},
-            { Month: 'AUG', Year: 2018, Value: Math.floor(Math.random() * 10)},
-            { Month: 'SEP', Year: 2018, Value: Math.floor(Math.random() * 10)},
-            { Month: 'OCT', Year: 2018, Value: Math.floor(Math.random() * 10)},
-            { Month: 'NOV', Year: 2018, Value: Math.floor(Math.random() * 10)},
-            { Month: 'DEC', Year: 2018, Value: Math.floor(Math.random() * 10)},
+            { Month: 'FEB', Year: 2017, Value: Math.floor(Math.random() * 10) },
+            { Month: 'MAR', Year: 2017, Value: Math.floor(Math.random() * 10) },
+            { Month: 'APR', Year: 2017, Value: Math.floor(Math.random() * 10) },
+            { Month: 'MAY', Year: 2017, Value: Math.floor(Math.random() * 10) },
+            { Month: 'JUN', Year: 2017, Value: Math.floor(Math.random() * 10) },
+            { Month: 'JUL', Year: 2017, Value: Math.floor(Math.random() * 10) },
+            { Month: 'AUG', Year: 2017, Value: Math.floor(Math.random() * 10) },
+            { Month: 'SEP', Year: 2017, Value: Math.floor(Math.random() * 10) },
+            { Month: 'OCT', Year: 2017, Value: Math.floor(Math.random() * 10) },
+            { Month: 'NOV', Year: 2017, Value: Math.floor(Math.random() * 10) },
+            { Month: 'DEC', Year: 2017, Value: Math.floor(Math.random() * 10) },
+            { Month: 'JAN', Year: 2018, Value: Math.floor(Math.random() * 10) },
+            { Month: 'FEB', Year: 2018, Value: Math.floor(Math.random() * 10) },
+            { Month: 'MAR', Year: 2018, Value: Math.floor(Math.random() * 10) },
+            { Month: 'APR', Year: 2018, Value: Math.floor(Math.random() * 10) },
+            { Month: 'MAY', Year: 2018, Value: Math.floor(Math.random() * 10) },
+            { Month: 'JUN', Year: 2018, Value: Math.floor(Math.random() * 10) },
+            { Month: 'JUL', Year: 2018, Value: Math.floor(Math.random() * 10) },
+            { Month: 'AUG', Year: 2018, Value: Math.floor(Math.random() * 10) },
+            { Month: 'SEP', Year: 2018, Value: Math.floor(Math.random() * 10) },
+            { Month: 'OCT', Year: 2018, Value: Math.floor(Math.random() * 10) },
+            { Month: 'NOV', Year: 2018, Value: Math.floor(Math.random() * 10) },
+            { Month: 'DEC', Year: 2018, Value: Math.floor(Math.random() * 10) },
         ]
     }
 
@@ -50,19 +50,35 @@ class Visualizer extends Component {
         name: "Male Deaths",
         month: 'JAN',
         year: 2018,
-        data:[
+        data: [
             {
                 Value: Math.floor(Math.random() * 10),
                 Metric: "Male Deaths 0-10"
             },
-            { Value: Math.floor(Math.random() * 10), Metric: "Male Deaths 10-40"},
-            { Value: Math.floor(Math.random() * 10), Metric: "Male Deaths 40-80"},
-            { Value: Math.floor(Math.random() * 10), Metric: "Male Deaths 80+"},
+            { Value: Math.floor(Math.random() * 10), Metric: "Male Deaths 10-40" },
+            { Value: Math.floor(Math.random() * 10), Metric: "Male Deaths 40-80" },
+            { Value: Math.floor(Math.random() * 10), Metric: "Male Deaths 80+" },
         ]
     }
 
     mockGroup = {
-
+        name: "Deaths",
+        month: 'Jan',
+        year: 2018,
+        data: [
+            [
+                { Value: Math.floor(Math.random() * 10), Metric: "Male Deaths 0-10" },
+                { Value: Math.floor(Math.random() * 10), Metric: "Male Deaths 10-40" },
+                { Value: Math.floor(Math.random() * 10), Metric: "Male Deaths 40-80" },
+                { Value: Math.floor(Math.random() * 10), Metric: "Male Deaths 80+" },
+            ],
+            [
+                { Value: Math.floor(Math.random() * 10), Metric: "Female Deaths 0-10" },
+                { Value: Math.floor(Math.random() * 10), Metric: "Female Deaths 10-40" },
+                { Value: Math.floor(Math.random() * 10), Metric: "Female Deaths 40-80" },
+                { Value: Math.floor(Math.random() * 10), Metric: "Female Deaths 80+" },
+            ]
+        ]
     }
 
     /**
@@ -106,38 +122,93 @@ class Visualizer extends Component {
         return { name: name, series: series }
     }
 
-    BarChart(defaults) {
+    /**
+     * Return the generated series of BarSeries for a doubleBarSeries
+     */
+    createMultipleBarSeries() {
+        let data = this.mockGroup.data
+        let result = {
+            barSeries: [],
+            legend: null
+        }
 
-        let data = this.MetricOverTime()
+        //Create Common and Uncommon keys
+        let commonKeys = []
+        let uncommonKeys = []
+
+        for (let i = 0; i < data[0].length; i++) {
+            //Assumes all strings have been trimmed
+            //Assumes data.length >=2
+            let set1 = data[0][i].Metric.split(" ")
+            let set2 = data[1][i].Metric.split(" ")
+
+            let wordBounds = Math.min(set1.length, set2.length)
+            let matchingWords = 0
+
+            let commonKey = []
+            while ((matchingWords < wordBounds) && (set1[set1.length - matchingWords] === set2[set2.length - matchingWords])) {
+                commonKey.unshift(set1[set1.length - matchingWords])
+                matchingWords++
+            }
+
+            commonKey = commonKey.join(" ").trim()
+            commonKeys.push(commonKey)
+
+            if (i == 0) {
+                for (let j = 0; j < data.length; j++) {
+                    let word = data[j][i].Metric
+                    uncommonKeys.push({title: word.replace(commonKey, "")})
+                }
+            }
+
+        }
+
+        //Generate Bar Series using Common Keys
+        for (let i = 0; i < data.length; i++) {
+            let formattedData = data[i].map((element, id) => {
+                return { x: commonKeys[id], y: element.Value }
+            })
+            result.barSeries.push(<VerticalBarSeriesCanvas key={i} data={formattedData} />)
+        }
+
+        result.legend = <DiscreteColorLegend orientation="horizontal" items={uncommonKeys} />
+
+        return result
+    }
+
+    MultipleBar(defaults) {
+
+        let data = this.createMultipleBarSeries()
 
         return (
-            <FlexibleWidthXYPlot xType="ordinal" height={defaults.height} xDistance={defaults.xDistance}>
-                <HorizontalGridLines />
-                <XAxis />
-                <YAxis />
-                <VerticalBarSeriesCanvas data={data.series} />
-            </FlexibleWidthXYPlot>
+            <div>
+                <FlexibleWidthXYPlot xType="ordinal" height={defaults.height}>
+                    <HorizontalGridLines />
+                    <XAxis />
+                    <YAxis />
+                    {data.barSeries}
+                </FlexibleWidthXYPlot>
+                {data.legend}
+            </div>
+
         )
     }
 
-    PieChart(defaults) {
-        return (
-            <RadialChart data={this.props.data} showLabels={true} />
-        )
-    }
-
-    createBarSeries(){
+    /**
+     * Return an array of elements {x: "bar name", y: bar value}
+     */
+    createBarSeriesData() {
         let data = this.mockSet.data
-        return data.map(element =>{
-            return {x: element.Metric, y: element.Value}
+        return data.map(element => {
+            return { x: element.Metric, y: element.Value }
         })
     }
 
     Histogram(defaults) {
 
-        let data = this.createBarSeries()
+        let data = this.createBarSeriesData()
 
-        return(
+        return (
             <FlexibleWidthXYPlot xType="ordinal" height={defaults.height}>
                 <HorizontalGridLines />
                 <XAxis />
@@ -147,14 +218,11 @@ class Visualizer extends Component {
         )
     }
 
-    createLineSeriesWithLegend(){
-        //Transform data into multiple series, as required
-        //Proof of concept; data may look different as it arrives from the DB
-
-        // let numSeries = Math.ceil(this.mockMetric.data.length / 12)
-        // console.log(numSeries)
-        // let LineMarkSeriesSet = []
-
+    /**
+     * Return an object containing an array of LineSeries (max 12 months)
+     * and one legend 
+     */
+    createLineSeriesWithLegend() {
         let strokeColors = [
             "#001f3f",
             "#39CCCC",
@@ -169,14 +237,16 @@ class Visualizer extends Component {
         ]
 
         let elements = {
-            legend:null,
-            series:[]
+            legend: null,
+            series: []
         }
+
         let dataForYear = []
         let currentYear = 0
         let legend = []
         let yearStartIndex = 0
-        for (let i = 0; i < this.mockMetric.data.length; i++){
+
+        for (let i = 0; i < this.mockMetric.data.length; i++) {
             //Create data for the year
             let dataPoint = {
                 x: this.mockMetric.data[i].Month,
@@ -185,11 +255,11 @@ class Visualizer extends Component {
             dataForYear.push(dataPoint)
 
             //With 12 data points OR at end of data set, create a LineMarkSeries
-            if (i === (this.mockMetric.data.length-1) || (i + 1) % 12 === 0 ){
+            if (i === (this.mockMetric.data.length - 1) || (i + 1) % 12 === 0) {
                 let color = strokeColors[currentYear % strokeColors.length]
                 let _d = dataForYear.slice()
                 elements.series.push(
-                    <LineMarkSeries key ={i} data = {_d} color={color} colorType="literal"  />
+                    <LineMarkSeries key={i} data={_d} color={color} colorType="literal" />
                 )
 
                 let title = `${this.mockMetric.data[yearStartIndex].Month} ${this.mockMetric.data[yearStartIndex].Year}-${this.mockMetric.data[i].Month} ${this.mockMetric.data[i].Year}`
@@ -202,7 +272,7 @@ class Visualizer extends Component {
                 //Reset
                 dataForYear = []
                 currentYear++
-                yearStartIndex = (i+1)
+                yearStartIndex = (i + 1)
             }
         }
 
@@ -219,7 +289,7 @@ class Visualizer extends Component {
 
         let elements = this.createLineSeriesWithLegend()
 
-        return(
+        return (
             <div>
                 <FlexibleWidthXYPlot xType="ordinal" height={defaults.height}>
                     <HorizontalGridLines />
@@ -233,19 +303,10 @@ class Visualizer extends Component {
         )
     }
 
-    /**
-     * Types:
-     *      LineChart([Metric Over Time])
-     *      BarChart(Set of Metrics @ 1 time)
-     *      PieChart(Set of Metrics @ 1 time)
-     *      DoubleBarChart(Set of Sets)
-     */
-
-
-    setStartDate = (moment, dateString) =>{
-        try{
+    setStartDate = (moment, dateString) => {
+        try {
             this.startDate = moment._d
-        }catch(e){
+        } catch (e) {
             //sometimes moment._d is null for some reason
         }
 
@@ -272,18 +333,15 @@ class Visualizer extends Component {
         let graph = null
 
         switch (this.props.type) {
-            case "barchart":
-                graph = this.BarChart(defaults)
-                break;
-            case "piechart":
-                graph = this.PieChart(defaults)
-                break;
+            case "multiplebar":
+                graph = this.MultipleBar(defaults)
+                break
             case "histogram":
                 graph = this.Histogram(defaults)
-                break;
+                break
             case "line":
                 graph = this.Line(defaults)
-                break;
+                break
         }
 
         if (graph !== null) {
@@ -293,7 +351,7 @@ class Visualizer extends Component {
                         <h2>{this.props.title}</h2>
                     </span>
                     <div>
-                        <MonthPicker placeholder="From" onChange={this.setStartDate} />                      
+                        <MonthPicker placeholder="From" onChange={this.setStartDate} />
                     </div>
                     {graph}
                 </div>
