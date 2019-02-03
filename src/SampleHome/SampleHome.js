@@ -11,7 +11,6 @@ class App extends Component {
                     <p>
                         This is the Home Page
                     </p>
-                    <Link to="/samplePage">Sample Graphs</Link>
                 </header>
             </div>
         );

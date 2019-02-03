@@ -2,15 +2,7 @@
     color: white;
 }
 
-.ghost-button{
-    margin-left: "1em";
-    background-color: transparent;
-    border: transparent;
-    color: white;
-}
-
-.ghost-button:focus{
-    margin-left: "1em";
+.ghost-button, .ghost-button:focus, .ghost-button:hover{
     background-color: transparent;
     border: transparent;
     color: white;

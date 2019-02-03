@@ -21,8 +21,8 @@ const {
 } = Layout;
 
 const pathNamesAndTitles = {
-	"/" : "Home",
-	"/samplePage" : "Sample Page"
+	"/" 			: "Home",
+	"/dashboard" 	: "Dashboard"
 }
 
 class App extends Component {
@@ -70,12 +70,19 @@ class App extends Component {
 						trigger={null} 
 						width = {250} 
 						collapsedWidth={0}
-						theme = "light"
-						styles = {{zIndex:1000}}>
+						theme = "light">
 						<Menu
 							onClick = {this.closeSider}>
-							<Menu.Item key="1"><Link to="/">Home</Link></Menu.Item>
-							<Menu.Item key="2"><Link to="/samplePage">Sample Graphs</Link></Menu.Item>
+							<Menu.Item key="1">
+								<Link to="/">
+									<Icon type="home"/>Home
+								</Link>
+							</Menu.Item>
+							<Menu.Item key="2">
+								<Link to="/dashboard">
+									<Icon type="area-chart"/>Dashboard
+								</Link>
+							</Menu.Item>
 						</Menu>
 					</Sider>
 					<Layout>
@@ -88,7 +95,7 @@ class App extends Component {
 						</Header>
 						<Content>
 							<Route exact path="/" component={SampleHome} />
-							<Route path="/samplePage" component={SamplePage} />
+							<Route path="/dashboard" component={SamplePage} />
 						</Content>
 						<Footer>Footer goes here. Open source project. Credits. </Footer>
 					</Layout>
