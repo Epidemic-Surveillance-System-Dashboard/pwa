@@ -23,3 +23,8 @@
 .hidden{
     display:none;
 }
+
+.noWrap{
+    white-space: nowrap;
+    overflow-x: hidden;
+}

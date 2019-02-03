@@ -43,7 +43,7 @@ class App extends Component {
                     </Button>
                 </Col>
                 <Col span = {16} className = {this.props.siderCollapsed ? "" : "hidden"}>
-                    <h2>
+                    <h2 className = "noWrap">
                         {this.props.title}
                     </h2>
                 </Col>

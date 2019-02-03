@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 
 //Routing
-import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Route, Link } from "react-router-dom"
+import {withRouter } from "react-router-dom"
 
 //antd for ui components
-import { Button, Icon, Layout, Menu } from 'antd';
+import { Button, Icon, Layout, Menu } from 'antd'
 
 //Nav Bar
 import NavigationMenu from './NavigationMenu/NavigationMenu'
@@ -19,7 +20,18 @@ const {
 	Header, Footer, Sider, Content,
 } = Layout;
 
+const pathNamesAndTitles = {
+	"/" : "Home",
+	"/samplePage" : "Sample Page"
+}
+
 class App extends Component {
+
+	getTitle = () =>{
+		let pathName = window.location.pathname
+		if (pathName in pathNamesAndTitles) return pathNamesAndTitles[pathName]
+		return "Hmm...this page has no title"
+	}
 
 	state = {
 		siderCollapsed: true
@@ -71,7 +83,7 @@ class App extends Component {
 							<NavigationMenu 
 								siderCollapsed = {this.state.siderCollapsed}
 								toggleSider_f = {this.toggleSider}
-								title = "Main">
+								title = {this.getTitle()}>
 							</NavigationMenu>
 						</Header>
 						<Content>
