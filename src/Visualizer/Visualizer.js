@@ -111,7 +111,7 @@ class Visualizer extends Component {
         let name = ""
         for (let i = 0; i < this.props.data.length; i++) {
             let dataPoint = this.props.data[i]
-            if (i == 0) name = dataPoint.metric
+            if (i === 0) name = dataPoint.metric
             let date = new Date(dataPoint.dateTime * 1000)
             let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
             series.push({
@@ -154,7 +154,7 @@ class Visualizer extends Component {
             commonKey = commonKey.join(" ").trim()
             commonKeys.push(commonKey)
 
-            if (i == 0) {
+            if (i === 0) {
                 for (let j = 0; j < data.length; j++) {
                     let word = data[j][i].Metric
                     uncommonKeys.push({title: word.replace(commonKey, "")})
