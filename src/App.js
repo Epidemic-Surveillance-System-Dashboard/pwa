@@ -39,7 +39,19 @@ class App extends Component {
 
 	siderCallback = () =>{
 		//React-vis needs to be explicitly told to update its width after the sidebar is closed
-		if (this.state.siderCollapsed === true) window.dispatchEvent(new Event('resize'));
+		if (this.state.siderCollapsed === true) {
+			//Quickly resize the window so React-Vis updates the graph dimensions
+			window.setTimeout(() =>{
+				window.dispatchEvent(new Event('resize'))
+			}, 50)
+			//Animation may take up to ~.3s to settle
+			window.setTimeout(() =>{
+				window.dispatchEvent(new Event('resize'))
+			}, 200)
+			window.setTimeout(() =>{
+				window.dispatchEvent(new Event('resize'))
+			}, 300)
+		}
 	}
 
 	toggleSider = () => {
