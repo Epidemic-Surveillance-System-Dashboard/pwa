@@ -11,7 +11,7 @@ import { Button, Icon, Layout, Menu } from 'antd'
 import NavigationMenu from './NavigationMenu/NavigationMenu'
 
 //pages
-import SamplePage from './SamplePage/SamplePage'
+import Dashboard from './Dashboard/Dashboard'
 import SampleHome from './SampleHome/SampleHome'
 
 import './App.css';
@@ -38,20 +38,18 @@ class App extends Component {
 	}
 
 	siderCallback = () =>{
-		//React-vis needs to be explicitly told to update its width after the sidebar is closed
-		if (this.state.siderCollapsed === true) {
-			//Quickly resize the window so React-Vis updates the graph dimensions
-			window.setTimeout(() =>{
-				window.dispatchEvent(new Event('resize'))
-			}, 50)
-			//Animation may take up to ~.3s to settle
-			window.setTimeout(() =>{
-				window.dispatchEvent(new Event('resize'))
-			}, 200)
-			window.setTimeout(() =>{
-				window.dispatchEvent(new Event('resize'))
-			}, 300)
-		}
+		//Quickly resize the window so React-Vis updates the graph dimensions
+		window.setTimeout(() =>{
+			window.dispatchEvent(new Event('resize'))
+		}, 50)
+		//Animation may take up to ~.3s to settle
+		window.setTimeout(() =>{
+			window.dispatchEvent(new Event('resize'))
+		}, 200)
+		window.setTimeout(() =>{
+			window.dispatchEvent(new Event('resize'))
+		}, 300)
+	
 	}
 
 	toggleSider = () => {
@@ -107,7 +105,7 @@ class App extends Component {
 						</Header>
 						<Content>
 							<Route exact path="/" component={SampleHome} />
-							<Route path="/dashboard" component={SamplePage} />
+							<Route path="/dashboard" component={Dashboard} />
 						</Content>
 						<Footer>Footer goes here. Open source project. Credits. </Footer>
 					</Layout>

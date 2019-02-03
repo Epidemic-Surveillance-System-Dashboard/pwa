@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 
 //antd for ui components
-import { DatePicker } from 'antd';
+import {DatePicker , Card, Avatar} from 'antd';
 
+import './Visualizer.css';
 //react-vis for graphs
 import '../../node_modules/react-vis/dist/style.css';
-import { FlexibleWidthXYPlot, XAxis, YAxis, HorizontalGridLines, LineMarkSeries, DiscreteColorLegend, VerticalGridLines, VerticalBarSeries} from 'react-vis';
+import { FlexibleWidthXYPlot, XAxis, YAxis, HorizontalGridLines, LineMarkSeries, DiscreteColorLegend, VerticalGridLines, VerticalBarSeries, XYPlot} from 'react-vis';
 
 
 class Visualizer extends Component {
@@ -259,7 +260,7 @@ class Visualizer extends Component {
                 let color = strokeColors[currentYear % strokeColors.length]
                 let _d = dataForYear.slice()
                 elements.series.push(
-                    <LineMarkSeries key={i} data={_d} color={color} colorType="literal" />
+                    <LineMarkSeries key={i} data={_d} color={color} colorType="literal"/>
                 )
 
                 let title = `${this.mockMetric.data[yearStartIndex].Month} ${this.mockMetric.data[yearStartIndex].Year}-${this.mockMetric.data[i].Month} ${this.mockMetric.data[i].Year}`
@@ -291,7 +292,7 @@ class Visualizer extends Component {
 
         return (
             <div>
-                <FlexibleWidthXYPlot xType="ordinal" height={defaults.height}>
+                <FlexibleWidthXYPlot xType="ordinal" height={defaults.height} >
                     <HorizontalGridLines />
                     <VerticalGridLines />
                     <XAxis />
@@ -313,25 +314,8 @@ class Visualizer extends Component {
         //TODO: (async) update data to reflect start date selected
     }
 
-    render() {
-
-        const { MonthPicker, RangePicker, WeekPicker } = DatePicker;
-
-        //Define Defaults
-        let defaults = {
-            width: 350,
-            height: 350,
-            xDistance: 100,
-            title: "Graph"
-        }
-
-        //Override Defaults where appropriate
-        Object.keys(defaults).forEach((key) => {
-            if (this.props[key] !== undefined) defaults[key] = this.props[key]
-        });
-
+    renderGraph = (defaults) =>{
         let graph = null
-
         switch (this.props.type) {
             case "multiplebar":
                 graph = this.MultipleBar(defaults)
@@ -346,17 +330,31 @@ class Visualizer extends Component {
                 graph = null
                 break
         }
+        return graph
+    }
+
+    renderFullSize = (defaults) =>{
+        const { MonthPicker, RangePicker, WeekPicker } = DatePicker;
+
+        //Override Defaults where appropriate
+        Object.keys(defaults).forEach((key) => {
+            if (this.props[key] !== undefined) defaults[key] = this.props[key]
+        });
+
+        let graph = this.renderGraph(defaults)
 
         if (graph !== null) {
             return (
                 <div className="Visualizer">
-                    <span>
-                        <h2>{this.props.title}</h2>
-                    </span>
-                    <div>
-                        <MonthPicker placeholder="From" onChange={this.setStartDate} />
-                    </div>
-                    {graph}
+                    <Card title={this.props.title} 
+                        size="small" 
+                        bodyStyle={{paddingLeft: 0, paddingRight:0}}
+                        actions = {["View Related", "Edit"]}>
+                        {/* <div>
+                            <MonthPicker placeholder="From" onChange={this.setStartDate} />
+                        </div> */}
+                        {graph}
+                    </Card>
                 </div>
             )
         } else {
@@ -366,6 +364,38 @@ class Visualizer extends Component {
                 </div>
             )
         }
+    }
+
+    renderListView = () =>{
+
+        return(
+            <div className="Visualizer">
+                <Card size = "small"
+                    bodyStyle= {{textAlign:"left"}}
+                    actions={["View Full Size", "Edit"]}> 
+                    <Card.Meta
+                        title = {this.props.title}
+                        description ="Example Location">
+                    </Card.Meta>
+                </Card>
+            </div>
+        )
+    }
+
+    render() {
+
+        //Define Defaults for full size
+        let defaults = {
+            width: 350,
+            height: 350,
+            xDistance: 100,
+            showLabels:true
+        }
+
+        if (this.props.fullSize == false)
+            return this.renderListView()
+        
+        return this.renderFullSize(defaults)       
 
     }
 }
