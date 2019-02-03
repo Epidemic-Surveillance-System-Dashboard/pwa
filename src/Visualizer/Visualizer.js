@@ -342,6 +342,9 @@ class Visualizer extends Component {
             case "line":
                 graph = this.Line(defaults)
                 break
+            default:
+                graph = null
+                break
         }
 
         if (graph !== null) {
@@ -360,7 +363,8 @@ class Visualizer extends Component {
             return (
                 <div className="Visualizer">
                     Sorry, something went wrong.
-            </div>)
+                </div>
+            )
         }
 
     }

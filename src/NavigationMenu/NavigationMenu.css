@@ -1,0 +1,25 @@
+.navMenu * {
+    color: white;
+}
+
+.ghost-button{
+    margin-left: "1em";
+    background-color: transparent;
+    border: transparent;
+    color: white;
+}
+
+.ghost-button:focus{
+    margin-left: "1em";
+    background-color: transparent;
+    border: transparent;
+    color: white;
+}
+
+.trigger:hover{
+    cursor: pointer;
+}
+
+.hidden{
+    display:none;
+}

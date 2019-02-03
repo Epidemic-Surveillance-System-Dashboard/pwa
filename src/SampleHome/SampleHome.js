@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+//Routing
+import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import './SampleHome.css';
 
 class App extends Component {
@@ -9,6 +11,7 @@ class App extends Component {
                     <p>
                         This is the Home Page
                     </p>
+                    <Link to="/samplePage">Sample Graphs</Link>
                 </header>
             </div>
         );
