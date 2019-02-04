@@ -35,3 +35,7 @@
 .rowVMarginSm > div{
 	margin-bottom: 15px;
 }
+
+.rowVMarginTopSm {
+  margin-top: 15px;
+}

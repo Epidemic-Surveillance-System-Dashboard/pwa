@@ -285,23 +285,6 @@ class Visualizer extends Component {
         return graph
     }
 
-    // renderListView = () =>{
-
-    //     return(
-    //         <div className="Visualizer">
-    //             <Card size = "small"
-    //                 bodyStyle= {{textAlign:"left"}}
-    //                 actions={["View Full Size", "Edit"]}> 
-    //                 <Card.Meta
-    //                     title = {this.props.title}
-    //                     description ="Example Location">
-    //                 </Card.Meta>
-    //             </Card>
-    //         </div>
-    //     )
-    // }
-
-
     defaults = {
         width: 350,
         height: 350,

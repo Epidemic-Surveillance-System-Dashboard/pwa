@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 
-import {Card, Row, Col, Radio} from 'antd'
+import {List, Card, Row, Col, Radio} from 'antd'
 
 import '../../node_modules/react-vis/dist/style.css'
 import './Dashboard.css'
@@ -10,14 +10,17 @@ import Visualizer from '../Visualizer/Visualizer'
 const graphExamples = [
     {
         title: "Metric Ex | Malaria Vaccinations",
+        location: "Ward 1",
         type: "metric"
     },
     {
         title: "Set Ex | Malaria Vaccinations - Male",
+        location: "Ward 2",
         type: "set"
     },
     {
         title: "Group Ex | Malaria Vaccinations - Male and Female",
+        location: "Ward 3",
         type: "group"
     },
 
@@ -31,42 +34,53 @@ class Dashboard extends Component {
 
     fullSizeOrListChanged = (e) =>{
         this.setState({fullSize: e.target.value === "0" ? false: true})
-        console.log(e.target.value === "0" ? false: true)
     }
 
-    visualizationEx = () =>{
+    renderGraphs = () =>{
 
         //Switch here for graphs vs list view
+        if (this.state.fullSize){
+            let components = []
+            for (let i = 0; i < graphExamples.length; i++){
+                components.push(
+                    <Col xs={24} sm={24} md={12} lg={8} xl={8}>
+                        <div className="Visualizer">
+                            <Card title={graphExamples[i].title} 
+                                size="small" 
+                                bodyStyle={{paddingLeft: 0, paddingRight:0}}
+                                actions = {["View Related", "Edit"]}>
+                                <Visualizer type = {graphExamples[i].type}></Visualizer>
+                            </Card>
+                        </div>
+                        
+                    </Col>
+                )
+            }
+            return components
+        }else{
+            return (
+                <Card className = "left" size ="small">
+                    <List
+                        itemLayout="horizontal"
+                        dataSource = {graphExamples}
+                        renderItem = {item =>(
+                            <List.Item actions = {["View"]}>
+                                <List.Item.Meta
+                                title = {item.title}
+                                description = {item.location}/>
 
-        let components = []
-        for (let i = 0; i < graphExamples.length; i++){
-            components.push(
-                <Col xs={24} sm={24} md={12} lg={8} xl={8}>
-                    <div className="Visualizer">
-                        <Card title={graphExamples[i].title} 
-                            size="small" 
-                            bodyStyle={{paddingLeft: 0, paddingRight:0}}
-                            actions = {["View Related", "Edit"]}>
-                            <Visualizer type = {graphExamples[i].type}></Visualizer>
-                        </Card>
-                    </div>
-                    
-                </Col>
+                            </List.Item>
+                        )}>
+                    </List>
+                </Card>
             )
         }
-        return components
     }
 
     render() {
         return (
-            <div className="sampleApp">
-                <Row className="rowVMarginSm">
-                    <p>
-                        This contains sample graphs. 
-                        This is a work in progress.
-                    </p>
-                </Row>
-                <Row className="rowVMarginSm">
+            <div className="center">
+                <Row className={`rowVMarginSm rowVMarginTopSm`}>
                     <Col xs={{ span: 24, offset: 0 }} md={{ span: 12, offset: 6 }} lg = {{span: 8, offset: 8}}>
                     <Radio.Group defaultValue="1" buttonStyle="solid" onChange = {this.fullSizeOrListChanged}>
                         <Radio.Button value="1">View Full Size</Radio.Button>
@@ -75,7 +89,7 @@ class Dashboard extends Component {
                     </Col>
                 </Row>
                 <Row className="rowVMarginSm">
-                    {this.visualizationEx()}
+                    {this.renderGraphs()}
                 </Row>         
             </div>
         );
