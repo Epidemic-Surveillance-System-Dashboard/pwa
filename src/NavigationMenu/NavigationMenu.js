@@ -33,7 +33,7 @@ class App extends Component {
         return (
             <div className="navMenu">
             <Row>
-                {/* This button opens and closes the sider */}
+                {/* This button opens and closes the drawer */}
                 <Col span= {4}>
                     <Button type="default" onClick={this.props.openDrawer_f} className="ghost-button">
                         <Icon
@@ -43,7 +43,7 @@ class App extends Component {
                     </Button>
                 </Col>
                 <Col span = {16}>
-                    <h2 className = "noWrap">
+                    <h2 className = "nowrap center">
                         {this.props.title}
                     </h2>
                 </Col>
