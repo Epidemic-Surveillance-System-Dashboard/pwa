@@ -37,13 +37,13 @@ class Dashboard extends Component {
                 </Row>
                 <Row className="rowVMarginSm">
                     <Col xs={24} sm={24} md={12} lg={8} xl={8}>
-                        <Visualizer title = "Sample Metric Graph" type = "line" fullSize = {this.state.fullSize}></Visualizer>
+                        <Visualizer title = "Sample Metric Graph" type = "line"></Visualizer>
                     </Col>
                     <Col xs={24} sm={24} md={12} lg={8} xl={8}>
-                        <Visualizer title = "Sample Set Graph (Distribution)" type = "histogram" fullSize = {this.state.fullSize}></Visualizer>
+                        <Visualizer title = "Sample Set Graph (Distribution)" type = "histogram"></Visualizer>
                     </Col>
                     <Col xs={24} sm={24} md={12} lg={8} xl={8}>
-                        <Visualizer title = "Sample Group (Sets of Sets) Graph" type = "multiplebar" fullSize = {this.state.fullSize}></Visualizer>
+                        <Visualizer title = "Sample Group (Sets of Sets) Graph" type = "multiplebar"></Visualizer>
                     </Col>
 
                 </Row>         

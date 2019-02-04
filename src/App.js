@@ -2,10 +2,9 @@ import React, { Component } from 'react';
 
 //Routing
 import { BrowserRouter as Router, Route, Link } from "react-router-dom"
-import {withRouter } from "react-router-dom"
 
 //antd for ui components
-import { Button, Icon, Layout, Menu } from 'antd'
+import {Icon, Layout, Menu } from 'antd'
 
 //Nav Bar
 import NavigationMenu from './NavigationMenu/NavigationMenu'
@@ -13,6 +12,7 @@ import NavigationMenu from './NavigationMenu/NavigationMenu'
 //pages
 import Dashboard from './Dashboard/Dashboard'
 import SampleHome from './SampleHome/SampleHome'
+import Account from './Account/Account'
 
 import './App.css';
 
@@ -22,7 +22,8 @@ const {
 
 const pathNamesAndTitles = {
 	"/" 			: "Home",
-	"/dashboard" 	: "Dashboard"
+	"/account"		: "Account",
+	"/dashboard" 	: "Dashboard",
 }
 
 class App extends Component {
@@ -93,6 +94,11 @@ class App extends Component {
 									<Icon type="area-chart"/>Dashboard
 								</Link>
 							</Menu.Item>
+							<Menu.Item key="3">
+								<Link to="/account">
+									<Icon type="user"/>Account
+								</Link>
+							</Menu.Item>
 						</Menu>
 					</Sider>
 					<Layout>
@@ -106,6 +112,7 @@ class App extends Component {
 						<Content>
 							<Route exact path="/" component={SampleHome} />
 							<Route path="/dashboard" component={Dashboard} />
+							<Route path="/account" component={Account} />
 						</Content>
 						<Footer>Footer goes here. Open source project. Credits. </Footer>
 					</Layout>

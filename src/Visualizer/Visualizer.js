@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 //antd for ui components
-import {DatePicker , Card, Avatar} from 'antd';
+import {DatePicker , Card} from 'antd';
 
 import './Visualizer.css';
 //react-vis for graphs
@@ -392,7 +392,7 @@ class Visualizer extends Component {
             showLabels:true
         }
 
-        if (this.props.fullSize == false)
+        if (this.props.fullSize === false)
             return this.renderListView()
         
         return this.renderFullSize(defaults)       
