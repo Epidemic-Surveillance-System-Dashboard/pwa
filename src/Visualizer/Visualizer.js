@@ -3,12 +3,30 @@ import React, { Component } from 'react';
 import './Visualizer.css';
 //react-vis for graphs
 import '../../node_modules/react-vis/dist/style.css';
-import { FlexibleWidthXYPlot, XAxis, YAxis, HorizontalGridLines, LineMarkSeries, DiscreteColorLegend, VerticalGridLines, VerticalBarSeries} from 'react-vis';
+import { FlexibleWidthXYPlot, XAxis, YAxis, HorizontalGridLines, LineSeries, LineMarkSeries, DiscreteColorLegend, VerticalGridLines, VerticalBarSeries} from 'react-vis';
 
+const strokeColors = [
+    "#001f3f",
+    "#39CCCC",
+    "#2ECC40",
+    "#FF851B",
+    "#85144b",
+    "#111111",
+    "#0074D9",
+    "#3D9970",
+    "#FFDC00",
+    "#B10DC9",
+]
+
+let colorCounter = 0
 
 class Visualizer extends Component {
 
-
+    getNextColor = () =>{
+        let color = strokeColors[colorCounter]
+        colorCounter = (colorCounter + 1) % strokeColors.length
+        return color
+    }
 
     startDate = null
 
@@ -207,18 +225,6 @@ class Visualizer extends Component {
      * and one legend 
      */
     createLineSeriesWithLegend() {
-        let strokeColors = [
-            "#001f3f",
-            "#39CCCC",
-            "#2ECC40",
-            "#FF851B",
-            "#85144b",
-            "#111111",
-            "#0074D9",
-            "#3D9970",
-            "#FFDC00",
-            "#B10DC9",
-        ]
 
         let elements = {
             legend: null,
@@ -226,9 +232,10 @@ class Visualizer extends Component {
         }
 
         let dataForYear = []
-        let currentYear = 0
         let legend = []
         let yearStartIndex = 0
+        let sum = 0
+        let count = 0
 
         for (let i = 0; i < this.mockMetric.data.length; i++) {
             //Create data for the year
@@ -238,9 +245,13 @@ class Visualizer extends Component {
             }
             dataForYear.push(dataPoint)
 
+            //Add to Average Calculation
+            sum += this.mockMetric.data[i].Value
+            count++
+
             //With 12 data points OR at end of data set, create a LineMarkSeries
             if (i === (this.mockMetric.data.length - 1) || (i + 1) % 12 === 0) {
-                let color = strokeColors[currentYear % strokeColors.length]
+                let color = this.getNextColor()
                 let _d = dataForYear.slice()
                 elements.series.push(
                     <LineMarkSeries key={i} data={_d} color={color} colorType="literal"/>
@@ -255,14 +266,33 @@ class Visualizer extends Component {
 
                 //Reset
                 dataForYear = []
-                currentYear++
                 yearStartIndex = (i + 1)
             }
         }
+        
+        //Add Average line
+        let avgColor = this.getNextColor()
+        let numMonths = Math.min(this.mockMetric.data.length,12)
+        let marks = []
+        let average = sum / count
+        for (let i = 0; i < numMonths; i++){
+            marks.push({
+                x:this.mockMetric.data[i].Month,
+                y: average
+            })
+        }
+        
+        //Add Average to Legend
+        legend.push({
+            title: "Average",
+            color: avgColor
+        })
+
+        elements.series.push(<LineSeries key = {elements.length} data = {marks} strokeDasharray={[7,5]} color = {avgColor} colorType = "literal"/>)
 
         //Create legend
 
-        let legendElement = <DiscreteColorLegend orientation="horizontal" items={legend} />
+        let legendElement = <DiscreteColorLegend orientation="horizontal" items={legend}/>
         elements.legend = legendElement
 
         return elements
