@@ -30,3 +30,8 @@
     transform: rotate(360deg);
   }
 }
+
+/* Add margin-bottom to columns in this row*/
+.rowVMarginSm > div{
+	margin-bottom: 15px;
+}

@@ -7,7 +7,7 @@ import './Dashboard.css'
 
 import Visualizer from '../Visualizer/Visualizer'
 
-class SamplePage extends Component {
+class Dashboard extends Component {
 
     state = {
         fullSize: true
@@ -21,13 +21,13 @@ class SamplePage extends Component {
     render() {
         return (
             <div className="sampleApp">
-                <Row>
+                <Row className="rowVMarginSm">
                     <p>
                         This contains sample graphs. 
                         This is a work in progress.
                     </p>
                 </Row>
-                <Row>
+                <Row className="rowVMarginSm">
                     <Col xs={{ span: 24, offset: 0 }} md={{ span: 12, offset: 6 }} lg = {{span: 8, offset: 8}}>
                     <Radio.Group defaultValue="1" buttonStyle="solid" onChange = {this.fullSizeOrListChanged}>
                         <Radio.Button value="1">View Full Size</Radio.Button>
@@ -35,7 +35,7 @@ class SamplePage extends Component {
                     </Radio.Group>
                     </Col>
                 </Row>
-                <Row>
+                <Row className="rowVMarginSm">
                     <Col xs={24} sm={24} md={12} lg={8} xl={8}>
                         <Visualizer title = "Sample Metric Graph" type = "line" fullSize = {this.state.fullSize}></Visualizer>
                     </Col>
@@ -52,4 +52,4 @@ class SamplePage extends Component {
     }
 }
 
-export default SamplePage;
+export default Dashboard;
