@@ -14,6 +14,12 @@ class Visualizer extends Component {
 
     mockMetric = {
         name: "Male Vaccinations Ages 0-19",
+        location: {
+            state:"Ex",
+            lga:"Ex",
+            ward:"Ex",
+            facility:"Ex",
+        },
         data: [
             {
                 Month: 'JAN',
@@ -48,8 +54,14 @@ class Visualizer extends Component {
 
     mockSet = {
         name: "Male Vaccinations",
-        month: 'JAN',
-        year: 2018,
+        startDate: "",
+        endDate: "",
+        location: {
+            state:"Ex",
+            lga:"Ex",
+            ward:"Ex",
+            facility:"Ex",
+        },
         data: [
             {
                 Value: Math.floor(Math.random() * 10),
@@ -63,8 +75,14 @@ class Visualizer extends Component {
 
     mockGroup = {
         name: "Vaccinations",
-        month: 'Jan',
-        year: 2018,
+        startDate: "",
+        endDate: "",
+        location: {
+            state:"Ex",
+            lga:"Ex",
+            ward:"Ex",
+            facility:"Ex",
+        },
         data: [
             [
                 { Value: Math.floor(Math.random() * 10), Metric: "Male Vaccinations 0-10" },
@@ -172,12 +190,15 @@ class Visualizer extends Component {
         let data = this.createBarSeriesData()
 
         return (
-            <FlexibleWidthXYPlot xType="ordinal" height={this.defaults.height}>
-                <HorizontalGridLines />
-                <XAxis />
-                <YAxis />
-                <VerticalBarSeries data={data} />
-            </FlexibleWidthXYPlot>
+            <div>
+                <FlexibleWidthXYPlot xType="ordinal" height={this.defaults.height}>
+                    <HorizontalGridLines />
+                    <XAxis />
+                    <YAxis />
+                    <VerticalBarSeries data={data} />
+                </FlexibleWidthXYPlot>
+                <DiscreteColorLegend orientation="horizontal" items = {[{title: this.mockSet.name}]}/>
+            </div>
         )
     }
 
