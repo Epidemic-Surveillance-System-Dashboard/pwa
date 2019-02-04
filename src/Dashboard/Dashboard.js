@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 
-import {List, Card, Row, Col, Radio} from 'antd'
+import {Button,List, Card, Row, Col, Radio} from 'antd'
 
 import '../../node_modules/react-vis/dist/style.css'
 import './Dashboard.css'
@@ -36,10 +36,13 @@ class Dashboard extends Component {
         this.setState({fullSize: e.target.value === "0" ? false: true})
     }
 
-    renderGraphs = () =>{
+    showSingleGraph = (key) =>{
 
-        //Switch here for graphs vs list view
+    }
+
+    renderGraphs = () =>{
         if (this.state.fullSize){
+
             let components = []
             for (let i = 0; i < graphExamples.length; i++){
                 components.push(
@@ -57,6 +60,7 @@ class Dashboard extends Component {
                 )
             }
             return components
+
         }else{
             return (
                 <Card className = "left" size ="small">
@@ -64,7 +68,7 @@ class Dashboard extends Component {
                         itemLayout="horizontal"
                         dataSource = {graphExamples}
                         renderItem = {item =>(
-                            <List.Item actions = {["View"]}>
+                            <List.Item actions = {[<Button>View</Button>]}>
                                 <List.Item.Meta
                                 title = {item.title}
                                 description = {item.location}/>

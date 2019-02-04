@@ -35,19 +35,19 @@ class App extends Component {
             <Row>
                 {/* This button opens and closes the sider */}
                 <Col span= {4}>
-                    <Button type="default" onClick={this.props.toggleSider_f} className="ghost-button">
+                    <Button type="default" onClick={this.props.openDrawer_f} className="ghost-button">
                         <Icon
                             className="trigger"
-                            type={this.props.siderCollapsed ? 'menu-unfold' : 'menu-fold'}
+                            type='menu-unfold'
                             />
                     </Button>
                 </Col>
-                <Col span = {16} className = {this.props.siderCollapsed ? "" : "hidden"}>
+                <Col span = {16}>
                     <h2 className = "noWrap">
                         {this.props.title}
                     </h2>
                 </Col>
-                <Col span= {4} className = {this.props.siderCollapsed ? "" : "hidden"}>
+                <Col span= {4}>
                     {this.rightButtonRenderer()}
                 </Col>
 
