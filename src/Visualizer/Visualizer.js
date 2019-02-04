@@ -1,8 +1,5 @@
 import React, { Component } from 'react';
 
-//antd for ui components
-import {DatePicker , Card} from 'antd';
-
 import './Visualizer.css';
 //react-vis for graphs
 import '../../node_modules/react-vis/dist/style.css';
@@ -10,6 +7,8 @@ import { FlexibleWidthXYPlot, XAxis, YAxis, HorizontalGridLines, LineMarkSeries,
 
 
 class Visualizer extends Component {
+
+
 
     startDate = null
 
@@ -83,47 +82,6 @@ class Visualizer extends Component {
     }
 
     /**
-     * Data Transform Utilities. Transforms DB JSON output into a usable format for the relevant graph type.
-     * Because we haven't integrated the tool to extract JSON from the DB yet, we are making some assumptions
-     * here about what the JSON will look like. As a result, these utiltiies are subject to change, though
-     * the graphs are unlikely to.
-     */
-
-    MetricOverTime() {
-        /**
-         * Input Format:
-         *      sortedData = {[
-         *              {metric:"metricName", dateTime: "unix timestamp", value: numberValue}
-         *              ]}
-         * 
-         * 
-         * Example:
-         * 
-         * 
-         *         let barData = [
-            {metric: "Vaccines Given Per Month", dateTime: new Date(2018,0,1).getTime()/1000, value: Math.random() * 1000},
-            {metric: "Vaccines Given Per Month", dateTime: new Date(2018,1,1).getTime()/1000, value: Math.random() * 1000},
-            {metric: "Vaccines Given Per Month", dateTime: new Date(2018,2,1).getTime()/1000, value: Math.random() * 1000}
-        ]
-
-         */
-
-        let series = []
-        let name = ""
-        for (let i = 0; i < this.props.data.length; i++) {
-            let dataPoint = this.props.data[i]
-            if (i === 0) name = dataPoint.metric
-            let date = new Date(dataPoint.dateTime * 1000)
-            let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-            series.push({
-                x: `${months[date.getMonth()]} ${date.getFullYear()}`,
-                y: dataPoint.value
-            })
-        }
-        return { name: name, series: series }
-    }
-
-    /**
      * Return the generated series of BarSeries for a doubleBarSeries
      */
     createMultipleBarSeries() {
@@ -134,6 +92,10 @@ class Visualizer extends Component {
         }
 
         //Create Common and Uncommon keys
+        /**
+         * Basically we are trying to identify "Male" and "Female" as the different keys
+         * in this mock data
+         */
         let commonKeys = []
         let uncommonKeys = []
 
@@ -177,13 +139,13 @@ class Visualizer extends Component {
         return result
     }
 
-    MultipleBar(defaults) {
+    MultipleBar() {
 
         let data = this.createMultipleBarSeries()
 
         return (
             <div>
-                <FlexibleWidthXYPlot xType="ordinal" height={defaults.height}>
+                <FlexibleWidthXYPlot xType="ordinal" height={this.defaults.height}>
                     <HorizontalGridLines />
                     <XAxis />
                     <YAxis />
@@ -205,12 +167,12 @@ class Visualizer extends Component {
         })
     }
 
-    Histogram(defaults) {
+    Histogram() {
 
         let data = this.createBarSeriesData()
 
         return (
-            <FlexibleWidthXYPlot xType="ordinal" height={defaults.height}>
+            <FlexibleWidthXYPlot xType="ordinal" height={this.defaults.height}>
                 <HorizontalGridLines />
                 <XAxis />
                 <YAxis />
@@ -286,13 +248,13 @@ class Visualizer extends Component {
 
     }
 
-    Line(defaults) {
+    Line() {
 
         let elements = this.createLineSeriesWithLegend()
 
         return (
             <div>
-                <FlexibleWidthXYPlot xType="ordinal" height={defaults.height} >
+                <FlexibleWidthXYPlot xType="ordinal" height={this.defaults.height} >
                     <HorizontalGridLines />
                     <VerticalGridLines />
                     <XAxis />
@@ -304,27 +266,17 @@ class Visualizer extends Component {
         )
     }
 
-    setStartDate = (moment, dateString) => {
-        try {
-            this.startDate = moment._d
-        } catch (e) {
-            //sometimes moment._d is null for some reason
-        }
-
-        //TODO: (async) update data to reflect start date selected
-    }
-
-    renderGraph = (defaults) =>{
+    renderGraph = () =>{
         let graph = null
         switch (this.props.type) {
-            case "multiplebar":
-                graph = this.MultipleBar(defaults)
+            case "group":
+                graph = this.MultipleBar()
                 break
-            case "histogram":
-                graph = this.Histogram(defaults)
+            case "set":
+                graph = this.Histogram()
                 break
-            case "line":
-                graph = this.Line(defaults)
+            case "metric":
+                graph = this.Line()
                 break
             default:
                 graph = null
@@ -333,69 +285,48 @@ class Visualizer extends Component {
         return graph
     }
 
-    renderFullSize = (defaults) =>{
-        const { MonthPicker, RangePicker, WeekPicker } = DatePicker;
+    // renderListView = () =>{
 
-        //Override Defaults where appropriate
-        Object.keys(defaults).forEach((key) => {
-            if (this.props[key] !== undefined) defaults[key] = this.props[key]
-        });
+    //     return(
+    //         <div className="Visualizer">
+    //             <Card size = "small"
+    //                 bodyStyle= {{textAlign:"left"}}
+    //                 actions={["View Full Size", "Edit"]}> 
+    //                 <Card.Meta
+    //                     title = {this.props.title}
+    //                     description ="Example Location">
+    //                 </Card.Meta>
+    //             </Card>
+    //         </div>
+    //     )
+    // }
 
-        let graph = this.renderGraph(defaults)
 
-        if (graph !== null) {
-            return (
-                <div className="Visualizer">
-                    <Card title={this.props.title} 
-                        size="small" 
-                        bodyStyle={{paddingLeft: 0, paddingRight:0}}
-                        actions = {["View Related", "Edit"]}>
-                        {/* <div>
-                            <MonthPicker placeholder="From" onChange={this.setStartDate} />
-                        </div> */}
-                        {graph}
-                    </Card>
-                </div>
-            )
-        } else {
-            return (
-                <div className="Visualizer">
-                    Sorry, something went wrong.
-                </div>
-            )
-        }
-    }
-
-    renderListView = () =>{
-
-        return(
-            <div className="Visualizer">
-                <Card size = "small"
-                    bodyStyle= {{textAlign:"left"}}
-                    actions={["View Full Size", "Edit"]}> 
-                    <Card.Meta
-                        title = {this.props.title}
-                        description ="Example Location">
-                    </Card.Meta>
-                </Card>
-            </div>
-        )
+    defaults = {
+        width: 350,
+        height: 350,
+        xDistance: 100,
     }
 
     render() {
 
-        //Define Defaults for full size
-        let defaults = {
-            width: 350,
-            height: 350,
-            xDistance: 100,
-            showLabels:true
-        }
+        //Override Defaults where appropriate
+        Object.keys(this.defaults).forEach((key) => {
+            if (this.props[key] !== undefined) this.defaults[key] = this.props[key]
+        });
 
-        if (this.props.fullSize === false)
-            return this.renderListView()
-        
-        return this.renderFullSize(defaults)       
+        let graph = this.renderGraph()
+
+        if (graph !== null) {
+            return graph
+
+        } else {
+            return (
+                <div>
+                    Sorry, something went wrong.
+                </div>
+            )
+        }
 
     }
 }

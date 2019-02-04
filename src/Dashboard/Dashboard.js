@@ -1,11 +1,27 @@
 import React, { Component } from 'react'
 
-import {Row, Col, Radio} from 'antd'
+import {Card, Row, Col, Radio} from 'antd'
 
 import '../../node_modules/react-vis/dist/style.css'
 import './Dashboard.css'
 
 import Visualizer from '../Visualizer/Visualizer'
+
+const graphExamples = [
+    {
+        title: "Metric Ex | Malaria Vaccinations",
+        type: "metric"
+    },
+    {
+        title: "Set Ex | Malaria Vaccinations - Male",
+        type: "set"
+    },
+    {
+        title: "Group Ex | Malaria Vaccinations - Male and Female",
+        type: "group"
+    },
+
+]
 
 class Dashboard extends Component {
 
@@ -16,6 +32,29 @@ class Dashboard extends Component {
     fullSizeOrListChanged = (e) =>{
         this.setState({fullSize: e.target.value === "0" ? false: true})
         console.log(e.target.value === "0" ? false: true)
+    }
+
+    visualizationEx = () =>{
+
+        //Switch here for graphs vs list view
+
+        let components = []
+        for (let i = 0; i < graphExamples.length; i++){
+            components.push(
+                <Col xs={24} sm={24} md={12} lg={8} xl={8}>
+                    <div className="Visualizer">
+                        <Card title={graphExamples[i].title} 
+                            size="small" 
+                            bodyStyle={{paddingLeft: 0, paddingRight:0}}
+                            actions = {["View Related", "Edit"]}>
+                            <Visualizer type = {graphExamples[i].type}></Visualizer>
+                        </Card>
+                    </div>
+                    
+                </Col>
+            )
+        }
+        return components
     }
 
     render() {
@@ -36,16 +75,7 @@ class Dashboard extends Component {
                     </Col>
                 </Row>
                 <Row className="rowVMarginSm">
-                    <Col xs={24} sm={24} md={12} lg={8} xl={8}>
-                        <Visualizer title = "Sample Metric Graph" type = "line"></Visualizer>
-                    </Col>
-                    <Col xs={24} sm={24} md={12} lg={8} xl={8}>
-                        <Visualizer title = "Sample Set Graph (Distribution)" type = "histogram"></Visualizer>
-                    </Col>
-                    <Col xs={24} sm={24} md={12} lg={8} xl={8}>
-                        <Visualizer title = "Sample Group (Sets of Sets) Graph" type = "multiplebar"></Visualizer>
-                    </Col>
-
+                    {this.visualizationEx()}
                 </Row>         
             </div>
         );
