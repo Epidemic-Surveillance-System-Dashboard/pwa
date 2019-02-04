@@ -91,7 +91,7 @@ class App extends Component {
 						<Route path="/dashboard" component={Dashboard} />
 						<Route path="/account" component={Account} />
 					</Content>
-					<Footer>Footer goes here. Open source project. Credits. </Footer>
+					<Footer>Footer goes here. Open source project. Credits. React. Ant Design. Capstone.</Footer>
 				</Layout>
 			</Router>
 		);
