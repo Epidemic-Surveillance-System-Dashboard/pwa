@@ -398,6 +398,9 @@ class Visualizer extends Component {
     }
 
     render() {
+
+        if (this.props.show === false) return null
+
         colorCounter = 0
         //Override Defaults where appropriate
         Object.keys(this.defaults).forEach((key) => {

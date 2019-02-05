@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 
-import {Button,List, Card, Row, Col, Radio} from 'antd'
+import {Table, Button,List, Card, Row, Col, Radio} from 'antd'
 
 import '../../node_modules/react-vis/dist/style.css'
 import './Dashboard.css'
@@ -26,14 +26,62 @@ const graphExamples = [
 
 ]
 
+const metricTableColumns = [
+    {
+        title: "Metric Tracked",
+        key: "metricTracked",
+        dataIndex:"metric",
+        defaultSortOrder: 'descend',
+        sorter: (a,b)=>{
+            return b.metric.localeCompare(a.metric, "en")
+        },
+    },
+    {
+        title: "Change",
+        key: "change",
+        dataIndex:"change",
+        defaultSortOrder: 'descend',
+        sorter: (a, b) => {
+            return a.change - b.change
+        },
+        render: decimal => {
+            return `${Math.round(decimal * 100)}%`
+        }
+    },
+
+]
+
+const metricData = [
+    {
+        key: '1',
+        metric: "Malaria Vaccinations",
+        change: 0.15
+    },
+    {
+        key: '2',
+        metric: "Tetanus Vaccinations",
+        change: -.13
+    },
+    {
+        key: '3',
+        metric: "Measles Outbreaks",
+        change: 0
+    },
+]
+
 class Dashboard extends Component {
 
     state = {
-        fullSize: true
+        fullSize: true,
+        reportCard: true
     }
 
     fullSizeOrListChanged = (e) =>{
         this.setState({fullSize: e.target.value === "0" ? false: true})
+    }
+
+    reportCardOrGraphsChanged = (e) =>{
+        this.setState({reportCard: e.target.value === "0" ? false: true})
     }
 
     showSingleGraph = (key) =>{
@@ -42,7 +90,6 @@ class Dashboard extends Component {
 
     renderGraphs = () =>{
         if (this.state.fullSize){
-
             let components = []
             for (let i = 0; i < graphExamples.length; i++){
                 components.push(
@@ -52,15 +99,13 @@ class Dashboard extends Component {
                                 size="small" 
                                 bodyStyle={{paddingLeft: 0, paddingRight:0}}
                                 actions = {["View Related", "Edit"]}>
-                                <Visualizer type = {graphExamples[i].type}></Visualizer>
+                                <Visualizer type = {graphExamples[i].type} show = {!this.state.reportCard}></Visualizer>
                             </Card>
                         </div>
-                        
                     </Col>
                 )
             }
             return components
-
         }else{
             return (
                 <Card className = "left" size ="small">
@@ -86,15 +131,40 @@ class Dashboard extends Component {
             <div className="center">
                 <Row className={`rowVMarginSm rowVMarginTopSm`}>
                     <Col xs={{ span: 24, offset: 0 }} md={{ span: 12, offset: 6 }} lg = {{span: 8, offset: 8}}>
-                    <Radio.Group defaultValue="1" buttonStyle="solid" onChange = {this.fullSizeOrListChanged}>
-                        <Radio.Button value="1">View Full Size</Radio.Button>
-                        <Radio.Button value="0">View List</Radio.Button>
-                    </Radio.Group>
+                        <Radio.Group defaultValue="1" buttonStyle="solid" onChange = {this.reportCardOrGraphsChanged}>
+                            <Radio.Button value="1">Report Card</Radio.Button>
+                            <Radio.Button value="0">Detailed Graphs</Radio.Button>
+                        </Radio.Group>
                     </Col>
                 </Row>
-                <Row className="rowVMarginSm">
-                    {this.renderGraphs()}
-                </Row>         
+                <div className = "gutterOverflowMask">
+                    <div className={`${!this.state.reportCard? "displayNone" : ""}`}>
+                        <Row className={`rowVMarginSm`}>
+                            <h3>Last Month's Performance</h3>
+                        </Row>   
+                        <Row className={`rowVMarginSm`}>
+                            <Col xs={{ span: 24, offset: 0 }} md={{ span: 18, offset: 3 }} lg = {{span: 12, offset: 6}}>
+                                <Table
+                                    columns = {metricTableColumns}
+                                    dataSource = {metricData}
+                                    pagination = {false}/>
+                            </Col>
+                        </Row>    
+                    </div>    
+                    <div className={`${this.state.reportCard? "displayNone" : ""}`}>
+                        <Row className={`rowVMarginSm`}>
+                            <Col xs={{ span: 24, offset: 0 }} md={{ span: 12, offset: 6 }} lg = {{span: 8, offset: 8}}>
+                                <Radio.Group defaultValue="1" buttonStyle="solid" onChange = {this.fullSizeOrListChanged}>
+                                    <Radio.Button value="1">View Full Size</Radio.Button>
+                                    <Radio.Button value="0">View List</Radio.Button>
+                                </Radio.Group>
+                            </Col>
+                        </Row>
+                        <Row className={`rowVMarginSm`} gutter= {16}>
+                            {this.renderGraphs()}
+                        </Row>     
+                    </div>    
+                </div>
             </div>
         );
     }
