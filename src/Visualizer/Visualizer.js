@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import './Visualizer.css';
 //react-vis for graphs
 import '../../node_modules/react-vis/dist/style.css';
-import { FlexibleWidthXYPlot, XAxis, YAxis, HorizontalGridLines, LineSeries, LineMarkSeries, DiscreteColorLegend, VerticalGridLines, VerticalBarSeries, HorizontalBarSeries} from 'react-vis';
+import { FlexibleWidthXYPlot, XAxis, YAxis, HorizontalGridLines, LineSeries, LineMarkSeries, DiscreteColorLegend, VerticalGridLines, HorizontalBarSeries} from 'react-vis';
 
 const strokeColors = [
     "#001f3f",
@@ -27,6 +27,10 @@ class Visualizer extends Component {
         let color = strokeColors[colorCounter]
         colorCounter = (colorCounter + 1) % strokeColors.length
         return color
+    }
+
+    resetColor = () => {
+        colorCounter = 0
     }
 
     startDate = null
@@ -125,13 +129,14 @@ class Visualizer extends Component {
         let data = this.mockGroup.data
         let result = {
             barSeries: [],
-            legend: null
+            legend: null,
+            lineData: null
         }
 
         //Create Common and Uncommon keys
         /**
-         * Basically we are trying to identify "Male" and "Female" as the different keys
-         * in this mock data
+         * Basically we are trying to identify "Male" and "Female" as the uncommon keys
+         * from "Male Vaccinations ..." and "Female Vaccinations ..."
          */
         let commonKeys = []
         let uncommonKeys = []
@@ -157,20 +162,42 @@ class Visualizer extends Component {
             if (i === 0) {
                 for (let j = 0; j < data.length; j++) {
                     let word = data[j][i].Metric
-                    uncommonKeys.push({title: word.replace(commonKey, "")})
+                    //Create Legend based on extracted "uncommon" words
+                    uncommonKeys.push({title: word.replace(commonKey, ""),color: this.getNextColor()})
                 }
             }
-
         }
 
         //Generate Bar Series using Common Keys
+        this.resetColor()
+
+        let sum = 0
+        let count = 0
+        
         for (let i = 0; i < data.length; i++) {
-            let formattedData = data[i].map((element, id) => {
-                return { x: commonKeys[id], y: element.Value }
-            })
-            result.barSeries.push(<VerticalBarSeries key={i} data={formattedData} />)
+            let formattedData = []
+            for (let j = 0; j < data[i].length; j++){
+                formattedData.push({y: commonKeys[j],x: data[i][j].Value})
+                sum += data[i][j].Value
+                count++
+            }
+            result.barSeries.push(<HorizontalBarSeries key={i} data={formattedData} color = {this.getNextColor()} />)
         }
 
+        //Create Average Line 
+        let average = count > 0 ? sum / count : 0
+        let averageLineData = []
+        for (let i = 0; i < commonKeys.length; i++){
+            averageLineData.push({
+                y: commonKeys[i],
+                x: average
+            })
+        }
+
+        //Add Average to legend
+        uncommonKeys.push({title: "Average", color: averageColor})
+
+        result.averageLine = <LineSeries data = {averageLineData} strokeDasharray = {[7,5]} color = {averageColor}/>
         result.legend = <DiscreteColorLegend orientation="horizontal" items={uncommonKeys} />
 
         return result
@@ -182,11 +209,12 @@ class Visualizer extends Component {
 
         return (
             <div>
-                <FlexibleWidthXYPlot xType="ordinal" height={this.defaults.height} colorRange={['#ffffff', '#000000']}>
+                <FlexibleWidthXYPlot yType="ordinal" height={this.defaults.height} margin={{left:this.defaults.barChartLeftMargin}}>
                     <HorizontalGridLines />
                     <XAxis />
                     <YAxis />
                     {data.barSeries}
+                    {data.averageLine}
                 </FlexibleWidthXYPlot>
                 {data.legend}
             </div>
@@ -370,7 +398,7 @@ class Visualizer extends Component {
         width: 350,
         height: 350,
         xDistance: 100,
-        barChartLeftMargin: 150
+        barChartLeftMargin: 175
     }
 
     render() {
