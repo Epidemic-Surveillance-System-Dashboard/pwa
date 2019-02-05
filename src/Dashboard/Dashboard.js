@@ -46,7 +46,7 @@ class Dashboard extends Component {
             let components = []
             for (let i = 0; i < graphExamples.length; i++){
                 components.push(
-                    <Col xs={24} sm={24} md={12} lg={8} xl={8}>
+                    <Col xs={24} sm={24} md={12} lg={8} xl={8} key = {components.length}>
                         <div className="Visualizer">
                             <Card title={graphExamples[i].title} 
                                 size="small" 
