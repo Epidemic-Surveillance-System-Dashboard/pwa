@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import './Visualizer.css';
 //react-vis for graphs
 import '../../node_modules/react-vis/dist/style.css';
-import { FlexibleWidthXYPlot, XAxis, YAxis, HorizontalGridLines, LineSeries, LineMarkSeries, DiscreteColorLegend, VerticalGridLines, VerticalBarSeries} from 'react-vis';
+import { FlexibleWidthXYPlot, XAxis, YAxis, HorizontalGridLines, LineSeries, LineMarkSeries, DiscreteColorLegend, VerticalGridLines, VerticalBarSeries, XYPlot} from 'react-vis';
 
 const strokeColors = [
     "#001f3f",
@@ -14,9 +14,10 @@ const strokeColors = [
     "#111111",
     "#0074D9",
     "#3D9970",
-    "#FFDC00",
     "#B10DC9",
 ]
+
+const averageColor = "#FFDC00"
 
 let colorCounter = 0
 
@@ -181,7 +182,7 @@ class Visualizer extends Component {
 
         return (
             <div>
-                <FlexibleWidthXYPlot xType="ordinal" height={this.defaults.height}>
+                <FlexibleWidthXYPlot xType="ordinal" height={this.defaults.height} colorRange={['#ffffff', '#000000']}>
                     <HorizontalGridLines />
                     <XAxis />
                     <YAxis />
@@ -193,19 +194,49 @@ class Visualizer extends Component {
         )
     }
 
-    /**
-     * Return an array of elements {x: "bar name", y: bar value}
-     */
-    createBarSeriesData() {
-        let data = this.mockSet.data
-        return data.map(element => {
+    createHistogramData(){
+        let rawData = this.mockSet
+        let barSeriesData = this.createBarSeriesData(rawData)
+        return {
+            barSeries: barSeriesData.barSeries,
+            legend: barSeriesData.legend,
+            averageLine: this.createBarSeriesAverage(rawData)
+        }
+    }
+
+    createBarSeriesData = (rawData) =>{
+        let color = this.getNextColor()
+
+        let map = rawData.data.map(element => {
             return { x: element.Metric, y: element.Value }
         })
+
+        return ({
+            barSeries:<VerticalBarSeries data = {map} color = {color}/>,
+            legend: <DiscreteColorLegend orientation="horizontal" items={[{title: rawData.name, color: color}, {title: "Average", color: averageColor}]} />
+        })
+    }
+
+    createBarSeriesAverage = (rawData) => {
+        let sum = 0
+        let count = 0
+        for (let i = 0; i < rawData.data.length; i++){
+            sum+=rawData.data[i].Value
+            count++
+        }
+        let average = count > 0 ? sum/count : 0
+        let lineData = rawData.data.map(element =>{
+            return {x: element.Metric, y: average}
+        })
+        return (<LineSeries data = {lineData} strokeDasharray = {[7,5]} color = {averageColor}/>)
+        
     }
 
     Histogram() {
 
-        let data = this.createBarSeriesData()
+        // let data = this.createBarSeriesData(this.mockSet.data)
+
+        let data = this.createHistogramData()
 
         return (
             <div>
@@ -213,9 +244,10 @@ class Visualizer extends Component {
                     <HorizontalGridLines />
                     <XAxis />
                     <YAxis />
-                    <VerticalBarSeries data={data} />
+                    {data.barSeries}
+                    {data.averageLine}
                 </FlexibleWidthXYPlot>
-                <DiscreteColorLegend orientation="horizontal" items = {[{title: this.mockSet.name}]}/>
+                {data.legend}
             </div>
         )
     }
@@ -271,10 +303,9 @@ class Visualizer extends Component {
         }
         
         //Add Average line
-        let avgColor = this.getNextColor()
         let numMonths = Math.min(this.mockMetric.data.length,12)
         let marks = []
-        let average = sum / count
+        let average = count > 0 ? sum / count : 0
         for (let i = 0; i < numMonths; i++){
             marks.push({
                 x:this.mockMetric.data[i].Month,
@@ -285,10 +316,10 @@ class Visualizer extends Component {
         //Add Average to Legend
         legend.push({
             title: "Average",
-            color: avgColor
+            color: averageColor
         })
 
-        elements.series.push(<LineSeries key = {elements.length} data = {marks} strokeDasharray={[7,5]} color = {avgColor} colorType = "literal"/>)
+        elements.series.push(<LineSeries key = {elements.length} data = {marks} strokeDasharray={[7,5]} color = {averageColor} colorType = "literal"/>)
 
         //Create legend
 
@@ -343,7 +374,7 @@ class Visualizer extends Component {
     }
 
     render() {
-
+        colorCounter = 0
         //Override Defaults where appropriate
         Object.keys(this.defaults).forEach((key) => {
             if (this.props[key] !== undefined) this.defaults[key] = this.props[key]
