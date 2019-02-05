@@ -3,11 +3,10 @@ import React, { Component } from 'react';
 import './Visualizer.css';
 //react-vis for graphs
 import '../../node_modules/react-vis/dist/style.css';
-import { FlexibleWidthXYPlot, XAxis, YAxis, HorizontalGridLines, LineSeries, LineMarkSeries, DiscreteColorLegend, VerticalGridLines, VerticalBarSeries, XYPlot} from 'react-vis';
+import { FlexibleWidthXYPlot, XAxis, YAxis, HorizontalGridLines, LineSeries, LineMarkSeries, DiscreteColorLegend, VerticalGridLines, VerticalBarSeries, HorizontalBarSeries} from 'react-vis';
 
 const strokeColors = [
     "#001f3f",
-    "#39CCCC",
     "#2ECC40",
     "#FF851B",
     "#85144b",
@@ -15,6 +14,7 @@ const strokeColors = [
     "#0074D9",
     "#3D9970",
     "#B10DC9",
+    "#39CCCC",
 ]
 
 const averageColor = "#FFDC00"
@@ -206,13 +206,12 @@ class Visualizer extends Component {
 
     createBarSeriesData = (rawData) =>{
         let color = this.getNextColor()
-
         let map = rawData.data.map(element => {
-            return { x: element.Metric, y: element.Value }
+            return { y: element.Metric, x: element.Value }
         })
 
         return ({
-            barSeries:<VerticalBarSeries data = {map} color = {color}/>,
+            barSeries:<HorizontalBarSeries data = {map} color = {color}/>,
             legend: <DiscreteColorLegend orientation="horizontal" items={[{title: rawData.name, color: color}, {title: "Average", color: averageColor}]} />
         })
     }
@@ -226,10 +225,9 @@ class Visualizer extends Component {
         }
         let average = count > 0 ? sum/count : 0
         let lineData = rawData.data.map(element =>{
-            return {x: element.Metric, y: average}
+            return {y: element.Metric, x: average}
         })
         return (<LineSeries data = {lineData} strokeDasharray = {[7,5]} color = {averageColor}/>)
-        
     }
 
     Histogram() {
@@ -240,8 +238,9 @@ class Visualizer extends Component {
 
         return (
             <div>
-                <FlexibleWidthXYPlot xType="ordinal" height={this.defaults.height}>
+                <FlexibleWidthXYPlot yType="ordinal" height={this.defaults.height} margin = {{left: this.defaults.barChartLeftMargin}}>
                     <HorizontalGridLines />
+                    <VerticalGridLines/>
                     <XAxis />
                     <YAxis />
                     {data.barSeries}
@@ -319,7 +318,7 @@ class Visualizer extends Component {
             color: averageColor
         })
 
-        elements.series.push(<LineSeries key = {elements.length} data = {marks} strokeDasharray={[7,5]} color = {averageColor} colorType = "literal"/>)
+        elements.series.push(<LineSeries key = {elements.length+1} data = {marks} strokeDasharray={[7,5]} color = {averageColor} colorType = "literal"/>)
 
         //Create legend
 
@@ -371,6 +370,7 @@ class Visualizer extends Component {
         width: 350,
         height: 350,
         xDistance: 100,
+        barChartLeftMargin: 150
     }
 
     render() {
