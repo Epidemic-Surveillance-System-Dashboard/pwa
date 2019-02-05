@@ -1,23 +1,19 @@
 import React, { Component } from 'react';
 
 import './Visualizer.css';
+
 //react-vis for graphs
 import '../../node_modules/react-vis/dist/style.css';
 import { FlexibleWidthXYPlot, XAxis, YAxis, HorizontalGridLines, LineSeries, LineMarkSeries, DiscreteColorLegend, VerticalGridLines, HorizontalBarSeries} from 'react-vis';
 
 const strokeColors = [
-    "#001f3f",
-    "#2ECC40",
-    "#FF851B",
-    "#85144b",
-    "#111111",
-    "#0074D9",
-    "#3D9970",
-    "#B10DC9",
-    "#39CCCC",
+    "#2980b9",
+    "#27ae60",
+    "#34495e",
+    "#7f8c8d"
 ]
 
-const averageColor = "#FFDC00"
+const averageColor = "#e74c3c"
 
 let colorCounter = 0
 
