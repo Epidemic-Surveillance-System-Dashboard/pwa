@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 
-import {Collapse, Icon, Table, Button,List, Card, Row, Col, Radio} from 'antd'
+import {Input, Icon, Table, Button,List, Card, Row, Col, Radio} from 'antd'
 
 import '../../node_modules/react-vis/dist/style.css'
 import './Dashboard.css'
@@ -83,12 +83,12 @@ class Dashboard extends Component {
     componentWillMount(){
 
         //Create a record of all open/close states for the graphs
-        let openCloseState = {}
+        let visiblity = {}
         for (let i = 0; i < graphExamples.length; i++){
-            openCloseState[i] = {open: true}
+            visiblity[i] = {open: true, showInFilter: true}
         }
-        openCloseState["collapseOrExpandText"] = {text: "Collapse All"}
-        this.setState({graphOpenCloseState: openCloseState})
+        visiblity["collapseOrExpandText"] = {text: "Collapse All"}
+        this.setState({graphOpenCloseState: visiblity})
     }
 
     fullSizeOrListChanged = (e) =>{
@@ -148,10 +148,11 @@ class Dashboard extends Component {
                     itemLayout="vertical"
                     dataSource = {graphExamples}
                     renderItem = {(item, key) =>(
-                        <List.Item actions = {this.createCollapseExpandButton(key)}>
+                        <List.Item >
                             <List.Item.Meta
                             title = {item.title}
                             description = {item.location}/>
+                            {this.createCollapseExpandButton(key)}
                             <Visualizer type = {item.type} show = {this.state.graphOpenCloseState[key].open}></Visualizer>
                         </List.Item>
                     )}>
