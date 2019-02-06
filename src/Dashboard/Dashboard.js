@@ -138,7 +138,7 @@ class Dashboard extends Component {
 
     createCollapseExpandButton= (key) => {
         return(
-            [<Button onClick = {() =>{ this.toggleGraph(key)}}>{this.state.graphOpenCloseState[key].open ? "Collapse" : "Expand"}</Button>]
+            [<Button key = {0} onClick = {() =>{ this.toggleGraph(key)}}>{this.state.graphOpenCloseState[key].open ? "Collapse" : "Expand"}</Button>]
         )
     }
 
