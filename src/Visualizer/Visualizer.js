@@ -204,7 +204,7 @@ class Visualizer extends Component {
         let data = this.createMultipleBarSeries()
 
         return (
-            <div>
+            <div className="center">
                 <FlexibleWidthXYPlot yType="ordinal" height={this.defaults.height} margin={{left:this.defaults.barChartLeftMargin}}>
                     <HorizontalGridLines />
                     <XAxis />
@@ -261,7 +261,7 @@ class Visualizer extends Component {
         let data = this.createHistogramData()
 
         return (
-            <div>
+            <div className="center">
                 <FlexibleWidthXYPlot yType="ordinal" height={this.defaults.height} margin = {{left: this.defaults.barChartLeftMargin}}>
                     <HorizontalGridLines />
                     <VerticalGridLines/>
@@ -358,7 +358,7 @@ class Visualizer extends Component {
         let elements = this.createLineSeriesWithLegend()
 
         return (
-            <div>
+            <div className="center">
                 <FlexibleWidthXYPlot xType="ordinal" height={this.defaults.height} >
                     <HorizontalGridLines />
                     <VerticalGridLines />

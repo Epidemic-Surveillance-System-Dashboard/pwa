@@ -1,27 +1,30 @@
 import React, { Component } from 'react'
 
-import {Table, Button,List, Card, Row, Col, Radio} from 'antd'
+import {Collapse, Icon, Table, Button,List, Card, Row, Col, Radio} from 'antd'
 
 import '../../node_modules/react-vis/dist/style.css'
 import './Dashboard.css'
 
 import Visualizer from '../Visualizer/Visualizer'
 
-const graphExamples = [
+let graphExamples = [
     {
         title: "Metric Ex | Malaria Vaccinations",
         location: "Ward 1",
-        type: "metric"
+        type: "metric",
+        id: 0
     },
     {
         title: "Set Ex | Malaria Vaccinations - Male",
         location: "Ward 2",
-        type: "set"
+        type: "set",
+        id:1
     },
     {
         title: "Group Ex | Malaria Vaccinations - Male and Female",
         location: "Ward 3",
-        type: "group"
+        type: "group",
+        id:2
     },
 
 ]
@@ -73,7 +76,19 @@ class Dashboard extends Component {
 
     state = {
         fullSize: true,
-        reportCard: true
+        reportCard: false,
+        graphOpenCloseState: null
+    }
+
+    componentWillMount(){
+
+        //Create a record of all open/close states for the graphs
+        let openCloseState = {}
+        for (let i = 0; i < graphExamples.length; i++){
+            openCloseState[i] = {open: true}
+        }
+        openCloseState["collapseOrExpandText"] = {text: "Collapse All"}
+        this.setState({graphOpenCloseState: openCloseState})
     }
 
     fullSizeOrListChanged = (e) =>{
@@ -81,49 +96,68 @@ class Dashboard extends Component {
     }
 
     reportCardOrGraphsChanged = (e) =>{
-        this.setState({reportCard: e.target.value === "0" ? false: true})
+        this.setState({reportCard: e.target.value === "0" ? false: true}, () =>{
+            window.dispatchEvent(new Event ('resize'));
+        })
     }
 
-    showSingleGraph = (key) =>{
+    toggleGraph = (key) =>{
+        //Update the open/close state for this graph
+        let copy = this.state.graphOpenCloseState
+        let newVal = !copy[key].open
+        copy[key] = {open: newVal}
+        let anyOpen = false
+        //Check if all graphs open
+        for (let i = 0; i<Object.keys(copy).length-1; i++){
+            if (i === key) continue
+            if (copy[i].open === true) {
+                anyOpen = true
+                break
+            }
+        }
+        if (anyOpen){
+            copy["collapseOrExpandText"] = {text: "Collapse All"}
+        }else{
+            copy["collapseOrExpandText"] = {text: "Expand All"}
+        }
 
+        this.setState({graphOpenCloseState: copy})
+    }
+
+    toggleAllGraphs = () =>{
+        //Set future state depending on what the button says
+        //Probably not best practice but it works 
+        let openState = this.state.graphOpenCloseState["collapseOrExpandText"].text === "Collapse All" ? false : true
+        let copy = this.state.graphOpenCloseState
+        for (let i = 0; i < Object.keys(copy).length-1; i++){
+            copy[i].open = openState
+        }
+        copy["collapseOrExpandText"].text = openState ? "Collapse All" : "Expand All"
+        this.setState({graphOpenCloseState: copy})
+    }
+
+    createCollapseExpandButton= (key) => {
+        return(
+            [<Button onClick = {() =>{ this.toggleGraph(key)}}>{this.state.graphOpenCloseState[key].open ? "Collapse" : "Expand"}</Button>]
+        )
     }
 
     renderGraphs = () =>{
-        if (this.state.fullSize){
-            let components = []
-            for (let i = 0; i < graphExamples.length; i++){
-                components.push(
-                    <Col xs={24} sm={24} md={12} lg={8} xl={8} key = {components.length}>
-                        <div className="Visualizer">
-                            <Card title={graphExamples[i].title} 
-                                size="small" 
-                                bodyStyle={{paddingLeft: 0, paddingRight:0}}
-                                actions = {["View Related", "Edit"]}>
-                                <Visualizer type = {graphExamples[i].type} show = {!this.state.reportCard}></Visualizer>
-                            </Card>
-                        </div>
-                    </Col>
-                )
-            }
-            return components
-        }else{
-            return (
-                <Card className = "left" size ="small">
-                    <List
-                        itemLayout="horizontal"
-                        dataSource = {graphExamples}
-                        renderItem = {item =>(
-                            <List.Item actions = {[<Button>View</Button>]}>
-                                <List.Item.Meta
-                                title = {item.title}
-                                description = {item.location}/>
+        return (
+                <List
+                    itemLayout="vertical"
+                    dataSource = {graphExamples}
+                    renderItem = {(item, key) =>(
+                        <List.Item actions = {this.createCollapseExpandButton(key)}>
+                            <List.Item.Meta
+                            title = {item.title}
+                            description = {item.location}/>
+                            <Visualizer type = {item.type} show = {this.state.graphOpenCloseState[key].open}></Visualizer>
+                        </List.Item>
+                    )}>
+                </List>
+        )
 
-                            </List.Item>
-                        )}>
-                    </List>
-                </Card>
-            )
-        }
     }
 
     render() {
@@ -131,9 +165,9 @@ class Dashboard extends Component {
             <div className="center">
                 <Row className={`rowVMarginSm rowVMarginTopSm`}>
                     <Col xs={{ span: 24, offset: 0 }} md={{ span: 12, offset: 6 }} lg = {{span: 8, offset: 8}}>
-                        <Radio.Group defaultValue="1" buttonStyle="solid" onChange = {this.reportCardOrGraphsChanged}>
-                            <Radio.Button value="1">Report Card</Radio.Button>
+                        <Radio.Group defaultValue="0" buttonStyle="solid" onChange = {this.reportCardOrGraphsChanged}>
                             <Radio.Button value="0">Detailed Graphs</Radio.Button>
+                            <Radio.Button value="1">Report Card</Radio.Button>
                         </Radio.Group>
                     </Col>
                 </Row>
@@ -153,15 +187,16 @@ class Dashboard extends Component {
                     </div>    
                     <div className={`${this.state.reportCard? "displayNone" : ""}`}>
                         <Row className={`rowVMarginSm`}>
-                            <Col xs={{ span: 24, offset: 0 }} md={{ span: 12, offset: 6 }} lg = {{span: 8, offset: 8}}>
-                                <Radio.Group defaultValue="1" buttonStyle="solid" onChange = {this.fullSizeOrListChanged}>
-                                    <Radio.Button value="1">View Full Size</Radio.Button>
-                                    <Radio.Button value="0">View List</Radio.Button>
-                                </Radio.Group>
+                            <Col className = "left" xs={{ span: 24, offset: 0 }} sm = {{span: 22, offset:1}} md={{ span: 18, offset: 3 }} lg = {{span: 16, offset: 4}}>
+                                <Button onClick = {this.toggleAllGraphs}>{this.state.graphOpenCloseState["collapseOrExpandText"].text}</Button>
                             </Col>
                         </Row>
                         <Row className={`rowVMarginSm`} gutter= {16}>
-                            {this.renderGraphs()}
+                            <Col xs={{ span: 24, offset: 0 }} sm = {{span: 22, offset:1}} md={{ span: 18, offset: 3 }} lg = {{span: 16, offset: 4}}>
+                                <Card className = "left" size ="small">
+                                    {this.renderGraphs()}
+                                </Card>
+                            </Col>
                         </Row>     
                     </div>    
                 </div>
