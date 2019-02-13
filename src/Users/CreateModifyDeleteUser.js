@@ -3,6 +3,14 @@ import {Button, Form, Input, Select, Row, Col} from 'antd'
 
 class CreateModifyDeleteUser extends Component {
 
+    componentDidUpdate(oldProps) {
+        const newProps = this.props
+        if(oldProps.user !== newProps.user) {
+          this.setState({userInformation: this.computedState(newProps.user)})
+        }
+    }
+
+
     labelStyle = {
         xs:{
             span: 6
@@ -16,7 +24,35 @@ class CreateModifyDeleteUser extends Component {
     }
     
     state = {
-        mode: this.props.mode ? this.props.mode : "view", //View (default unless overridden), create, or edit
+        mode: this.props.mode ? this.props.mode : "view", //View (default unless overridden), create, or edit,
+        userInformation: this.computedState(this.props.user),
+        user: this.props.user
+    }
+
+    computedState(user){
+        let userState = {}
+
+        let fields = [
+            "firstName",
+            "lastName",
+            "email",
+            "scope",
+        ]
+
+        if (user == null){
+            for (let i = 0; i < fields.length; i++){
+                userState[fields[i]] = null
+            }
+        }else{
+            for (let i = 0; i < fields.length; i++){
+                if (fields[i] in this.props.user){
+                    userState[fields[i]] = this.props.user[fields[i]]
+                }else{
+                    userState[fields[i]] = null
+                }
+            }
+        }
+        return userState
     }
 
     fieldsEnabled = () =>{
@@ -42,16 +78,17 @@ class CreateModifyDeleteUser extends Component {
     }
 
     passwordFeatures = () =>{
-        return(
+        if (this.props.user != null) return(
             <div>
                 <Col {...this.labelStyle}>
                     User Type:
                 </Col>
                 <Col {...this.inputStyle}>
-                    <Input value = {this.props.user.email}/>
+                    <Input value = {this.state.userInformation.userType}/>
                 </Col>
             </div>
         )
+        return null
     }   
 
     upperCaseFirstLetter = (string) =>{
@@ -59,6 +96,7 @@ class CreateModifyDeleteUser extends Component {
     }
 
     adminFeatures = () =>{
+
         //If not admin return null
 
         //Disable select options that the admin doesn't have access to.
@@ -88,7 +126,7 @@ class CreateModifyDeleteUser extends Component {
                     Scope:
                 </Col>
                 <Col {...this.inputStyle}>
-                    <Select defaultValue={this.props.user.scope}>
+                    <Select defaultValue={this.state.scope}>
                         {selectOptions}
                     </Select>
                 </Col>
@@ -103,34 +141,35 @@ class CreateModifyDeleteUser extends Component {
     }
 
     basicFeatures = () => {
-        return (
+        if (this.props.user != null) return (
             <div>
                 <Col {...this.labelStyle}>
                     First Name:
                 </Col>
                 <Col {...this.inputStyle}>
-                    <Input value = {this.props.user.firstName}/>
+                    <Input value = {this.state.userInformation.firstName}/>
                 </Col>
                 <Col {...this.labelStyle}>
                     Last Name:
                 </Col>
                 <Col {...this.inputStyle}>
-                    <Input value = {this.props.user.lastName}/>
+                    <Input value = {this.state.userInformation.lastName}/>
                 </Col>
                 <Col {...this.labelStyle}>
                     Email:
                 </Col>
                 <Col {...this.inputStyle}>
-                    <Input value = {this.props.user.email}/>
+                    <Input value = {this.state.userInformation.email}/>
                 </Col>
                 <Col {...this.labelStyle}>
                     Phone:
                 </Col>
                 <Col {...this.inputStyle}>
-                    <Input value = {this.props.user.email}/>
+                    <Input value = {this.state.userInformation.phone}/>
                 </Col>
             </div>
-        )
+        );
+        return null
     }
 
 /**

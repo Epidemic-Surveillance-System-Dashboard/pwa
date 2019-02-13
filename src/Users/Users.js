@@ -6,15 +6,17 @@ import { Button } from 'antd/lib/radio';
 import CreateModifyDeleteUser from './CreateModifyDeleteUser'
 
 const dataSource = [{
-    key: '1',
+    key: '0',
     name: 'Mike LastName',
     permissionLevel: 'Ward', //locationType
-    location: "Example Ward"
+    location: "Example Ward",
+    email:"mike!"
 }, {
-    key: '2',
+    key: '1',
     name: 'John Something',
     permissionLevel: 'National',
-    location: "Nigeria"
+    location: "Nigeria",
+    email:"John!"
 }];
 
 class User extends Component {
@@ -63,18 +65,14 @@ class User extends Component {
     }];
 
     editUser = (id) =>{
-        console.log("start editing user" + id)
-        this.setState({showTable: false, selectedUser: id})
+        this.setState({showTable: false, selectedUser: dataSource[id]})
     }
 
     showHideTableClass = () =>{
-        console.log(this.state.showTable)
         return this.state.showTable === true ? "" : "displayNone"
     }
 
     showHideDetailViewClass = () =>{
-        console.log(this.state.showTable)
-        console.log(this.state.showTable === true ? "displayNone" : "")
         return this.state.showTable === true ? "displayNone" : ""
     }
 
@@ -87,7 +85,7 @@ class User extends Component {
             <div>
                 <Table dataSource={dataSource} columns={this.columns} className = {this.showHideTableClass()}/>
                 <div className = {this.showHideDetailViewClass()}>
-                    <CreateModifyDeleteUser showTable_f = {this.showTable} user = {{firstName:"jack", lastName: "smith",scope:"ward"}} mode = "create"></CreateModifyDeleteUser>
+                    <CreateModifyDeleteUser showTable_f = {this.showTable} user = {this.state.selectedUser} mode = "create"></CreateModifyDeleteUser>
                 </div>
               
             </div>
