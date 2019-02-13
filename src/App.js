@@ -13,6 +13,7 @@ import NavigationMenu from './NavigationMenu/NavigationMenu'
 import Dashboard from './Dashboard/Dashboard'
 import SampleHome from './SampleHome/SampleHome'
 import Account from './Account/Account'
+import User from './Users/Users'
 
 import './App.css';
 
@@ -24,6 +25,7 @@ const pathNamesAndTitles = {
 	"/": "Home",
 	"/account": "Account",
 	"/dashboard": "Dashboard",
+	"/users"	: "Users",
 }
 
 class App extends Component {
@@ -77,6 +79,11 @@ class App extends Component {
 									<Icon type="user" />Account
 								</Link>
 							</Menu.Item>
+							<Menu.Item key="4">
+								<Link to="/users">
+									<Icon type="team" />Users
+								</Link>
+							</Menu.Item>
 						</Menu>
 					</Drawer>
 					<Header style={{ padding: 0 }}>
@@ -90,6 +97,7 @@ class App extends Component {
 						<Route exact path="/" component={SampleHome} />
 						<Route path="/dashboard" component={Dashboard} />
 						<Route path="/account" component={Account} />
+						<Route path="/users" component={User} />
 					</Content>
 					<Footer>Footer goes here. Open source project. Credits. React. Ant Design. Capstone.</Footer>
 				</Layout>
