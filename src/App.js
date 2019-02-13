@@ -14,6 +14,7 @@ import Dashboard from './Dashboard/Dashboard'
 import SampleHome from './SampleHome/SampleHome'
 import Account from './Account/Account'
 import User from './Users/Users'
+import Sync from './Sync/Sync'
 
 import './App.css';
 
@@ -26,6 +27,7 @@ const pathNamesAndTitles = {
 	"/account": "Account",
 	"/dashboard": "Dashboard",
 	"/users"	: "Users",
+	"/sync"		: "Synchronize Data"
 }
 
 class App extends Component {
@@ -84,6 +86,11 @@ class App extends Component {
 									<Icon type="team" />Users
 								</Link>
 							</Menu.Item>
+							<Menu.Item key="5">
+								<Link to="/sync">
+									<Icon type="sync" />Synchronize Data
+								</Link>
+							</Menu.Item>
 						</Menu>
 					</Drawer>
 					<Header style={{ padding: 0 }}>
@@ -98,6 +105,7 @@ class App extends Component {
 						<Route path="/dashboard" component={Dashboard} />
 						<Route path="/account" component={Account} />
 						<Route path="/users" component={User} />
+						<Route path="/sync" component={Sync} />
 					</Content>
 					<Footer>Footer goes here. Open source project. Credits. React. Ant Design. Capstone.</Footer>
 				</Layout>

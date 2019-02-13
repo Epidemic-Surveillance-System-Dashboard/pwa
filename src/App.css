@@ -56,3 +56,10 @@
   width:100%;
   overflow-x: hidden;
 }
+
+.spacing{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height:60vh;
+}

@@ -1,29 +1,34 @@
 import React, { Component } from 'react'
 
-import { Table } from 'antd'
+import { Table, Spin } from 'antd'
 import { Button } from 'antd/lib/radio';
 
 import CreateModifyDeleteUser from './CreateModifyDeleteUser'
 
-const dataSource = [{
-    key: '0',
-    name: 'Mike LastName',
-    permissionLevel: 'Ward', //locationType
-    location: "Example Ward",
-    email:"mike!"
-}, {
-    key: '1',
-    name: 'John Something',
-    permissionLevel: 'National',
-    location: "Nigeria",
-    email:"John!"
-}];
+import db from '../Database/database'
+
+let dataSource = []
 
 class User extends Component {
 
+    componentWillMount = () =>{
+        db.User.toArray((array) =>{
+            array.forEach((element) =>{
+                element.key = element.Id
+                element.name = `${element.FirstName} ${element.LastName}`
+                element.permissionLevel = "National"
+                element.email = element.name + "@gmail.com"
+            })
+            dataSource = array
+            this.setState({dataLoaded:true})
+
+        })
+    }
+
     state = {
         showTable: true,
-        selectedUser: null
+        selectedUser: null,
+        dataLoaded:false
     }
 
     columns = [{
@@ -80,13 +85,23 @@ class User extends Component {
         this.setState({showTable: true})
     }
 
+    
+
     render() {
         return (
             <div>
-                <Table dataSource={dataSource} columns={this.columns} className = {this.showHideTableClass()}/>
-                <div className = {this.showHideDetailViewClass()}>
-                    <CreateModifyDeleteUser showTable_f = {this.showTable} user = {this.state.selectedUser} mode = "create"></CreateModifyDeleteUser>
+                <div className = "spacing" hidden = {this.state.dataLoaded}>
+                    <Spin size="large" hidden = {this.state.dataLoaded} />
                 </div>
+                <div hidden = {!this.state.dataLoaded}>
+                    <Table dataSource={dataSource} columns={this.columns} className = {this.showHideTableClass()}/>
+                    <div className = {this.showHideDetailViewClass()}>
+                        <CreateModifyDeleteUser showTable_f = {this.showTable} user = {this.state.selectedUser} mode = "create"></CreateModifyDeleteUser>
+                    </div>
+                </div>
+
+      
+
               
             </div>
         )
