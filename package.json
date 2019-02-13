@@ -6,6 +6,7 @@
     "antd": "^3.12.4",
     "babel-plugin-import": "^1.11.0",
     "customize-cra": "^0.2.11",
+    "dexie": "^2.0.4",
     "react": "^16.7.0",
     "react-app-rewired": "^2.0.3",
     "react-dom": "^16.7.0",
