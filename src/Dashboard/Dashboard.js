@@ -72,6 +72,20 @@ const metricData = [
     },
 ]
 
+
+const dashboardGraphs = [
+    {
+        dataType:"Metric",
+        dataID: 1,
+        dataName: "Malaria Vaccinations",     //Cache to reduce # of db queries
+        locationID:1,
+        locationType:"Ward",
+        locationName:"Example Ward",            //Cache
+        startDate:new Date(),
+        endDate: new Date(),
+    }
+]
+
 class Dashboard extends Component {
 
     state = {
