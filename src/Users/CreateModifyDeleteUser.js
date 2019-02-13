@@ -30,13 +30,17 @@ class CreateModifyDeleteUser extends Component {
     }
 
     computedState(user){
+
+        console.log(user)
+
         let userState = {}
 
         let fields = [
-            "firstName",
-            "lastName",
-            "email",
-            "scope",
+            "FirstName",
+            "LastName",
+            "Email",
+            "Scope",
+            "Phone"
         ]
 
         if (user == null){
@@ -147,25 +151,25 @@ class CreateModifyDeleteUser extends Component {
                     First Name:
                 </Col>
                 <Col {...this.inputStyle}>
-                    <Input value = {this.state.userInformation.firstName}/>
+                    <Input value = {this.state.userInformation.FirstName}/>
                 </Col>
                 <Col {...this.labelStyle}>
                     Last Name:
                 </Col>
                 <Col {...this.inputStyle}>
-                    <Input value = {this.state.userInformation.lastName}/>
+                    <Input value = {this.state.userInformation.LastName}/>
                 </Col>
                 <Col {...this.labelStyle}>
                     Email:
                 </Col>
                 <Col {...this.inputStyle}>
-                    <Input value = {this.state.userInformation.email}/>
+                    <Input value = {this.state.userInformation.Email}/>
                 </Col>
                 <Col {...this.labelStyle}>
                     Phone:
                 </Col>
                 <Col {...this.inputStyle}>
-                    <Input value = {this.state.userInformation.phone}/>
+                    <Input value = {this.state.userInformation.Phone}/>
                 </Col>
             </div>
         );
@@ -185,7 +189,6 @@ class CreateModifyDeleteUser extends Component {
                 <Row>
                     <Form>
                     {this.basicFeatures()}
-                    {this.passwordFeatures()}
                     {this.adminFeatures()}
                     </Form>
                 </Row>

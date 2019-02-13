@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 
-import { Table, Spin } from 'antd'
+import { Row, Col, Table, Spin } from 'antd'
 import { Button } from 'antd/lib/radio';
 
 import CreateModifyDeleteUser from './CreateModifyDeleteUser'
@@ -11,13 +11,14 @@ let dataSource = []
 
 class User extends Component {
 
-    componentWillMount = () =>{
+    componentWillMount = () =>{ 
+        //Get Users from Database
         db.User.toArray((array) =>{
             array.forEach((element) =>{
+                //Create additional properties as required
                 element.key = element.Id
                 element.name = `${element.FirstName} ${element.LastName}`
                 element.permissionLevel = "National"
-                element.email = element.name + "@gmail.com"
             })
             dataSource = array
             this.setState({dataLoaded:true})
@@ -70,7 +71,12 @@ class User extends Component {
     }];
 
     editUser = (id) =>{
-        this.setState({showTable: false, selectedUser: dataSource[id]})
+        this.setState({
+            showTable: false, 
+            selectedUser: dataSource.find(object =>{
+                return object.Id === id
+            })
+        })
     }
 
     showHideTableClass = () =>{
@@ -89,7 +95,8 @@ class User extends Component {
 
     render() {
         return (
-            <div>
+            <Row>
+                <Col xs={{ span: 24, offset: 0 }} sm = {{span: 22, offset:1}} md={{ span: 18, offset: 3 }} lg = {{span: 16, offset: 4}}>
                 <div className = "spacing" hidden = {this.state.dataLoaded}>
                     <Spin size="large" hidden = {this.state.dataLoaded} />
                 </div>
@@ -98,12 +105,9 @@ class User extends Component {
                     <div className = {this.showHideDetailViewClass()}>
                         <CreateModifyDeleteUser showTable_f = {this.showTable} user = {this.state.selectedUser} mode = "create"></CreateModifyDeleteUser>
                     </div>
-                </div>
-
-      
-
-              
-            </div>
+                </div>        
+                </Col>      
+            </Row>
         )
     }
 }
