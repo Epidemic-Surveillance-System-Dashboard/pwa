@@ -4,7 +4,9 @@ import './Visualizer.css';
 
 //react-vis for graphs
 import '../../node_modules/react-vis/dist/style.css';
-import { FlexibleWidthXYPlot, XAxis, YAxis, HorizontalGridLines, LineSeries, LineMarkSeries, DiscreteColorLegend, VerticalGridLines, HorizontalBarSeries} from 'react-vis';
+
+import { FlexibleWidthXYPlot, XAxis, YAxis, HorizontalGridLines, LineSeries, LineMarkSeries, DiscreteColorLegend, VerticalGridLines, HorizontalBarSeries } from 'react-vis';
+import { Card } from 'antd'
 
 const strokeColors = [
     "#2980b9",
@@ -19,7 +21,7 @@ let colorCounter = 0
 
 class Visualizer extends Component {
 
-    getNextColor = () =>{
+    getNextColor = () => {
         let color = strokeColors[colorCounter]
         colorCounter = (colorCounter + 1) % strokeColors.length
         return color
@@ -34,10 +36,10 @@ class Visualizer extends Component {
     mockMetric = {
         name: "Male Vaccinations Ages 0-19",
         location: {
-            state:"Ex",
-            lga:"Ex",
-            ward:"Ex",
-            facility:"Ex",
+            state: "Ex",
+            lga: "Ex",
+            ward: "Ex",
+            facility: "Ex",
         },
         data: [
             {
@@ -76,10 +78,10 @@ class Visualizer extends Component {
         startDate: "",
         endDate: "",
         location: {
-            state:"Ex",
-            lga:"Ex",
-            ward:"Ex",
-            facility:"Ex",
+            state: "Ex",
+            lga: "Ex",
+            ward: "Ex",
+            facility: "Ex",
         },
         data: [
             {
@@ -97,10 +99,10 @@ class Visualizer extends Component {
         startDate: "",
         endDate: "",
         location: {
-            state:"Ex",
-            lga:"Ex",
-            ward:"Ex",
-            facility:"Ex",
+            state: "Ex",
+            lga: "Ex",
+            ward: "Ex",
+            facility: "Ex",
         },
         data: [
             [
@@ -159,7 +161,7 @@ class Visualizer extends Component {
                 for (let j = 0; j < data.length; j++) {
                     let word = data[j][i].Metric
                     //Create Legend based on extracted "uncommon" words
-                    uncommonKeys.push({title: word.replace(commonKey, ""),color: this.getNextColor()})
+                    uncommonKeys.push({ title: word.replace(commonKey, ""), color: this.getNextColor() })
                 }
             }
         }
@@ -169,21 +171,21 @@ class Visualizer extends Component {
 
         let sum = 0
         let count = 0
-        
+
         for (let i = 0; i < data.length; i++) {
             let formattedData = []
-            for (let j = 0; j < data[i].length; j++){
-                formattedData.push({y: commonKeys[j],x: data[i][j].Value})
+            for (let j = 0; j < data[i].length; j++) {
+                formattedData.push({ y: commonKeys[j], x: data[i][j].Value })
                 sum += data[i][j].Value
                 count++
             }
-            result.barSeries.push(<HorizontalBarSeries key={i} data={formattedData} color = {this.getNextColor()} />)
+            result.barSeries.push(<HorizontalBarSeries key={i} data={formattedData} color={this.getNextColor()} />)
         }
 
         //Create Average Line 
         let average = count > 0 ? sum / count : 0
         let averageLineData = []
-        for (let i = 0; i < commonKeys.length; i++){
+        for (let i = 0; i < commonKeys.length; i++) {
             averageLineData.push({
                 y: commonKeys[i],
                 x: average
@@ -191,9 +193,9 @@ class Visualizer extends Component {
         }
 
         //Add Average to legend
-        uncommonKeys.push({title: "Average", color: averageColor})
+        uncommonKeys.push({ title: "Average", color: averageColor })
 
-        result.averageLine = <LineSeries data = {averageLineData} strokeDasharray = {[7,5]} color = {averageColor}/>
+        result.averageLine = <LineSeries data={averageLineData} strokeDasharray={[7, 5]} color={averageColor} />
         result.legend = <DiscreteColorLegend orientation="horizontal" items={uncommonKeys} />
 
         return result
@@ -205,7 +207,7 @@ class Visualizer extends Component {
 
         return (
             <div className="center">
-                <FlexibleWidthXYPlot yType="ordinal" height={this.defaults.height} margin={{left:this.defaults.barChartLeftMargin}}>
+                <FlexibleWidthXYPlot yType="ordinal" height={this.defaults.height} margin={{ left: this.defaults.barChartLeftMargin }}>
                     <HorizontalGridLines />
                     <XAxis />
                     <YAxis />
@@ -218,7 +220,7 @@ class Visualizer extends Component {
         )
     }
 
-    createHistogramData(){
+    createHistogramData() {
         let rawData = this.mockSet
         let barSeriesData = this.createBarSeriesData(rawData)
         return {
@@ -228,30 +230,30 @@ class Visualizer extends Component {
         }
     }
 
-    createBarSeriesData = (rawData) =>{
+    createBarSeriesData = (rawData) => {
         let color = this.getNextColor()
         let map = rawData.data.map(element => {
             return { y: element.Metric, x: element.Value }
         })
 
         return ({
-            barSeries:<HorizontalBarSeries data = {map} color = {color}/>,
-            legend: <DiscreteColorLegend orientation="horizontal" items={[{title: rawData.name, color: color}, {title: "Average", color: averageColor}]} />
+            barSeries: <HorizontalBarSeries data={map} color={color} />,
+            legend: <DiscreteColorLegend orientation="horizontal" items={[{ title: rawData.name, color: color }, { title: "Average", color: averageColor }]} />
         })
     }
 
     createBarSeriesAverage = (rawData) => {
         let sum = 0
         let count = 0
-        for (let i = 0; i < rawData.data.length; i++){
-            sum+=rawData.data[i].Value
+        for (let i = 0; i < rawData.data.length; i++) {
+            sum += rawData.data[i].Value
             count++
         }
-        let average = count > 0 ? sum/count : 0
-        let lineData = rawData.data.map(element =>{
-            return {y: element.Metric, x: average}
+        let average = count > 0 ? sum / count : 0
+        let lineData = rawData.data.map(element => {
+            return { y: element.Metric, x: average }
         })
-        return (<LineSeries data = {lineData} strokeDasharray = {[7,5]} color = {averageColor}/>)
+        return (<LineSeries data={lineData} strokeDasharray={[7, 5]} color={averageColor} />)
     }
 
     Histogram() {
@@ -262,9 +264,9 @@ class Visualizer extends Component {
 
         return (
             <div className="center">
-                <FlexibleWidthXYPlot yType="ordinal" height={this.defaults.height} margin = {{left: this.defaults.barChartLeftMargin}}>
+                <FlexibleWidthXYPlot yType="ordinal" height={this.defaults.height} margin={{ left: this.defaults.barChartLeftMargin }}>
                     <HorizontalGridLines />
-                    <VerticalGridLines/>
+                    <VerticalGridLines />
                     <XAxis />
                     <YAxis />
                     {data.barSeries}
@@ -309,7 +311,7 @@ class Visualizer extends Component {
                 let color = this.getNextColor()
                 let _d = dataForYear.slice()
                 elements.series.push(
-                    <LineMarkSeries key={i} data={_d} color={color} colorType="literal"/>
+                    <LineMarkSeries key={i} data={_d} color={color} colorType="literal" />
                 )
 
                 let title = `${this.mockMetric.data[yearStartIndex].Month} ${this.mockMetric.data[yearStartIndex].Year}-${this.mockMetric.data[i].Month} ${this.mockMetric.data[i].Year}`
@@ -324,29 +326,29 @@ class Visualizer extends Component {
                 yearStartIndex = (i + 1)
             }
         }
-        
+
         //Add Average line
-        let numMonths = Math.min(this.mockMetric.data.length,12)
+        let numMonths = Math.min(this.mockMetric.data.length, 12)
         let marks = []
         let average = count > 0 ? sum / count : 0
-        for (let i = 0; i < numMonths; i++){
+        for (let i = 0; i < numMonths; i++) {
             marks.push({
-                x:this.mockMetric.data[i].Month,
+                x: this.mockMetric.data[i].Month,
                 y: average
             })
         }
-        
+
         //Add Average to Legend
         legend.push({
             title: "Average",
             color: averageColor
         })
 
-        elements.series.push(<LineSeries key = {elements.length+1} data = {marks} strokeDasharray={[7,5]} color = {averageColor} colorType = "literal"/>)
+        elements.series.push(<LineSeries key={elements.length + 1} data={marks} strokeDasharray={[7, 5]} color={averageColor} colorType="literal" />)
 
         //Create legend
 
-        let legendElement = <DiscreteColorLegend orientation="horizontal" items={legend}/>
+        let legendElement = <DiscreteColorLegend orientation="horizontal" items={legend} />
         elements.legend = legendElement
 
         return elements
@@ -371,7 +373,7 @@ class Visualizer extends Component {
         )
     }
 
-    renderGraph = () =>{
+    renderGraph = () => {
         let graph = null
         switch (this.props.type) {
             case "group":
@@ -388,6 +390,17 @@ class Visualizer extends Component {
                 break
         }
         return graph
+    }
+    relatedGraphs = () => {
+        let otherGraphA = this.Histogram()
+        let otherGraphB = this.Line()
+
+        return (
+            <Card title="Related Graphs">
+                <Card.Grid className="related-graphs">{otherGraphA}</Card.Grid>
+                <Card.Grid className="related-graphs">{otherGraphB}</Card.Grid>
+            </Card>
+        )
     }
 
     defaults = {
@@ -408,9 +421,9 @@ class Visualizer extends Component {
         });
 
         let graph = this.renderGraph()
-
+        let related = this.relatedGraphs()
         if (graph !== null) {
-            return graph
+            return <div>{graph} <span></span>{related}</div>
 
         } else {
             return (
