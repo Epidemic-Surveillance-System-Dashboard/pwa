@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import {Button, Form, Input, Select, Row, Col} from 'antd'
+import {Button, Form, Input, Select, Row, Col, Divider} from 'antd'
 
 class CreateModifyDeleteUser extends Component {
 
@@ -26,12 +26,11 @@ class CreateModifyDeleteUser extends Component {
     state = {
         mode: this.props.mode ? this.props.mode : "view", //View (default unless overridden), create, or edit,
         userInformation: this.computedState(this.props.user),
-        user: this.props.user
+        user: this.props.user,
+        disabled: true
     }
 
     computedState(user){
-
-        console.log(user)
 
         let userState = {}
 
@@ -39,7 +38,6 @@ class CreateModifyDeleteUser extends Component {
             "FirstName",
             "LastName",
             "Email",
-            "Scope",
             "Phone"
         ]
 
@@ -84,12 +82,10 @@ class CreateModifyDeleteUser extends Component {
     passwordFeatures = () =>{
         if (this.props.user != null) return(
             <div>
-                <Col {...this.labelStyle}>
-                    User Type:
+                <Col className="center">
+                    <Button type ="danger">Delete User</Button>
                 </Col>
-                <Col {...this.inputStyle}>
-                    <Input value = {this.state.userInformation.userType}/>
-                </Col>
+
             </div>
         )
         return null
@@ -99,51 +95,6 @@ class CreateModifyDeleteUser extends Component {
         return string.charAt(0).toUpperCase() + string.slice(1);
     }
 
-    adminFeatures = () =>{
-
-        //If not admin return null
-
-        //Disable select options that the admin doesn't have access to.
-        let adminScope = "state"
-        let selectOptions = []
-        let scopes = ["facility", "ward", "lga", "state", "national"]
-        let scopeLevel = scopes.indexOf(adminScope)
-        if (scopeLevel >= 0){
-            for (let i = 0; i < scopes.length; i++){
-                if (i > scopeLevel){
-                    selectOptions.push(
-                        <Select.Option disabled value={scopes[i]} key = {i}>{this.upperCaseFirstLetter(scopes[i])}</Select.Option>
-                    )
-                } else{
-                    selectOptions.push(
-                        <Select.Option value={scopes[i]} key = {i}>{this.upperCaseFirstLetter(scopes[i])}</Select.Option>
-                    )
-                }
-            }
-        }
-        
-        else return null
-
-        return(
-            <div>
-                <Col {...this.labelStyle}>
-                    Scope:
-                </Col>
-                <Col {...this.inputStyle}>
-                    <Select defaultValue={this.state.scope}>
-                        {selectOptions}
-                    </Select>
-                </Col>
-                <Col {...this.labelStyle}>
-                    Location:
-                </Col>
-                <Col {...this.inputStyle}>
-                    This will be a tree scoped to the above location
-                </Col>
-            </div>
-        )
-    }
-
     basicFeatures = () => {
         if (this.props.user != null) return (
             <div>
@@ -151,25 +102,25 @@ class CreateModifyDeleteUser extends Component {
                     First Name:
                 </Col>
                 <Col {...this.inputStyle}>
-                    <Input value = {this.state.userInformation.FirstName}/>
+                    <Input  disabled={this.state.disabled} value = {this.state.userInformation.FirstName}/>
                 </Col>
                 <Col {...this.labelStyle}>
                     Last Name:
                 </Col>
                 <Col {...this.inputStyle}>
-                    <Input value = {this.state.userInformation.LastName}/>
+                    <Input  disabled={this.state.disabled} value = {this.state.userInformation.LastName}/>
                 </Col>
                 <Col {...this.labelStyle}>
                     Email:
                 </Col>
                 <Col {...this.inputStyle}>
-                    <Input value = {this.state.userInformation.Email}/>
+                    <Input disabled={this.state.disabled} value = {this.state.userInformation.Email}/>
                 </Col>
                 <Col {...this.labelStyle}>
                     Phone:
                 </Col>
                 <Col {...this.inputStyle}>
-                    <Input value = {this.state.userInformation.Phone}/>
+                    <Input disabled={this.state.disabled} value = {this.state.userInformation.Phone}/>
                 </Col>
             </div>
         );
@@ -185,12 +136,14 @@ class CreateModifyDeleteUser extends Component {
     render(){
         return(
             <div>
-                <Button onClick = {this.props.showTable_f}>Back</Button>
+                <Button onClick = {this.props.showTable_f} icon="caret-left">Back</Button>
+
                 <Row>
-                    <Form>
+                    
                     {this.basicFeatures()}
-                    {this.adminFeatures()}
-                    </Form>
+                    <Divider/>
+                    {this.passwordFeatures()}
+                    
                 </Row>
                 
             </div>
