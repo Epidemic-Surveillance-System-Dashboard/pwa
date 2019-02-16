@@ -22,6 +22,14 @@ class CreateModifyDeleteUser extends Component {
             span: 18
         }
     }
+
+    inputLabelTab = (text) =>{
+        return(
+            <div style={{minWidth: "90px", textAlign:"right"}}>
+                {text}
+            </div>
+        )
+    }
     
     state = {
         mode: this.props.mode ? this.props.mode : "view", //View (default unless overridden), create, or edit,
@@ -38,7 +46,8 @@ class CreateModifyDeleteUser extends Component {
             "FirstName",
             "LastName",
             "Email",
-            "Phone"
+            "Phone",
+            "Id"
         ]
 
         if (user == null){
@@ -54,6 +63,7 @@ class CreateModifyDeleteUser extends Component {
                 }
             }
         }
+        console.log(userState)
         return userState
     }
 
@@ -98,29 +108,24 @@ class CreateModifyDeleteUser extends Component {
     basicFeatures = () => {
         if (this.props.user != null) return (
             <div>
-                <Col {...this.labelStyle}>
-                    First Name:
-                </Col>
-                <Col {...this.inputStyle}>
-                    <Input  disabled={this.state.disabled} value = {this.state.userInformation.FirstName}/>
-                </Col>
-                <Col {...this.labelStyle}>
-                    Last Name:
-                </Col>
-                <Col {...this.inputStyle}>
-                    <Input  disabled={this.state.disabled} value = {this.state.userInformation.LastName}/>
-                </Col>
-                <Col {...this.labelStyle}>
-                    Email:
-                </Col>
-                <Col {...this.inputStyle}>
-                    <Input disabled={this.state.disabled} value = {this.state.userInformation.Email}/>
-                </Col>
-                <Col {...this.labelStyle}>
-                    Phone:
-                </Col>
-                <Col {...this.inputStyle}>
-                    <Input disabled={this.state.disabled} value = {this.state.userInformation.Phone}/>
+
+                <Col>
+                    <Input addonBefore = {this.inputLabelTab("First Name")}
+                        value = {this.state.userInformation.FirstName}
+                        disabled={this.state.disabled}/>
+
+                    <Input addonBefore = {this.inputLabelTab("Last Name")}
+                        value = {this.state.userInformation.LastName}   
+                        disabled={this.state.disabled}/>
+
+                    <Input addonBefore = {this.inputLabelTab("Email")}          
+                        value = {this.state.userInformation.Email}  
+                            disabled={this.state.disabled}/>
+
+                    <Input addonBefore = {this.inputLabelTab("Phone")}          
+                        value = {this.state.userInformation.Phone}
+                        disabled={this.state.disabled}/>
+
                 </Col>
             </div>
         );
@@ -139,7 +144,6 @@ class CreateModifyDeleteUser extends Component {
                 <Button onClick = {this.props.showTable_f} icon="caret-left">Back</Button>
 
                 <Row>
-                    
                     {this.basicFeatures()}
                     <Divider/>
                     {this.passwordFeatures()}
