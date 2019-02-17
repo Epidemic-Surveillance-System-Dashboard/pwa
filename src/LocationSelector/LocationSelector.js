@@ -39,6 +39,7 @@ class LocationSelector extends Component {
         for(let i = 1; i < levels.length; i++){
             this.updateList(levels[i])
         }
+        this.notifyParent(this.parseLocation(this.state.selectedLocation))
     }
 
     handleChange = (level, value) =>{
@@ -108,7 +109,9 @@ class LocationSelector extends Component {
     }
 
     parseLocation (value) {
-        //Precondition: value not null
+        if (value === undefined) return {
+            Id:"",Name:"",Level:""
+        }
         let valueArr = value.split("|")
         return{
             Id:     valueArr[0],
