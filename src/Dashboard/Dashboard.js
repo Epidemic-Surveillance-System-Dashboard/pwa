@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 
-import {Input, Icon, Table, Button,List, Card, Row, Col, Radio} from 'antd'
+import {Table, Button,List, Card, Row, Col, Radio} from 'antd'
 
 import '../../node_modules/react-vis/dist/style.css'
 import './Dashboard.css'

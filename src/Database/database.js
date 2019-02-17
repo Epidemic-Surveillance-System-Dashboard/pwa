@@ -4,9 +4,9 @@ const db = new Dexie('ESSD_DB')
 
 db.version(1).stores({
     //Locations
-    Facility:"Id",
-    Ward:"Id",
-    LGA:"Id",
+    Facility:"Id,parentId",
+    Ward:"Id,parentId",
+    LGA:"Id,parentId",
     State:"Id",
 
     //Data

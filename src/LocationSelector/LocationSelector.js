@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 
 import {Select} from 'antd'
 
+import db from '../Database/database'
+
 const levels = [
     "National",
     "State",
@@ -16,20 +18,69 @@ const style = {
     width: "100%"
 }
 
-//Sample data loaded from backend
-const locationData = {"State":[{"Name":"testUpload","Id":"188"}],"LGA":[{"Name":"za Talata Mafara Local Government Area","Id":"134","parentId":"188"}],"Ward":[{"Name":"za Morai Ward","Id":"130","parentId":"134"},{"Name":"za Morkidi Ruwan Bore Ward","Id":"131","parentId":"134"}],"Facility":[{"Name":"za Sakarawa Disp","Id":"133","parentId":"130"},{"Name":"za Mirkidi Dispensary","Id":"134","parentId":"131"}]}
-
-
 /**
  * Selects a loction in Nigeria
  * @param {parentHandler} - function that takes a Location Object {id,name,level} and updates the parent
  * @param {showLocation} - boolean that show/hides LocationSelector's builtin location text 
- * @param {maxScope} - {Id: "188", Level: "State"}
+ * @param {maxScope}: optional - {Id: "188", Level: "State"}
  */
 class LocationSelector extends Component {
 
+    findAllLocations = (type) => {
+        return new Promise((resolve) =>{
+            //Cannot access type via db[type], so we have to do it manually
+            let callback = (data) => {
+                resolve (data) 
+            }
+
+            switch(type){
+                case "Facility":
+                    db.Facility.toArray(callback)
+                break
+                case "Ward":
+                    db.Ward.toArray(callback)
+                break
+                case "LGA":
+                    db.LGA.toArray(callback)
+                break
+                case "State":
+                    db.State.toArray(callback)
+                break
+                default:
+                    //
+                break;
+            }
+        })
+    }
+
+    findLocationByQuery(type, queryParams){
+        return new Promise((resolve) =>{
+            //Cannot access type via db[type], so we have to do it manually
+            let callback = (data) => {
+                resolve (data) 
+            }
+
+            switch(type){
+                case "Facility":
+                    db.Facility.where(queryParams).toArray(callback)
+                break
+                case "Ward":
+                    db.Ward.where(queryParams).toArray(callback)
+                break
+                case "LGA":
+                    db.LGA.where(queryParams).toArray(callback)
+                break
+                case "State":
+                    db.State.where(queryParams).toArray(callback)
+                break
+                default:
+                    //
+                break;
+            }
+        })
+    }
+
     state = {
-        // maxLevel: this.props.maxLevel, //Todo
         National: "1|Nigeria|National" ,
         State:undefined,
         LGA:undefined,
@@ -41,22 +92,27 @@ class LocationSelector extends Component {
         FacilityList:undefined,
         enabledDisabledLists:{
             "National"  : false,
-            "State"     : true,
-            "LGA"       : true,
-            "Ward"      : true,
-            "Facility"  : true
+            "State"     : false,
+            "LGA"       : false,
+            "Ward"      : false,
+            "Facility"  : false
         },
         selectedLocation: "1|Nigeria|National" //E.g. {Id: 123, Name: "ABC"}
     }
 
-    componentDidMount(){
-        
+    componentDidMount = async () => {
         //Set selectedLocation to maxScope (default = national)
-        if (this.props.maxScope && this.props.maxScope.Level !== "National"){
-            let locationObj = locationData[this.props.maxScope.Level].find((el) =>{return el.Id === this.props.maxScope.Id})
-            let levelIndex = levels.findIndex((el)=>{return el === this.props.maxScope.Level})
-            this.setInitialLocation(levelIndex,this.props.maxScope.Id, () =>{
-                this.setState({selectedLocation:`${locationObj.Id}|${locationObj.Name}|${this.props.maxScope.Level}`}, () =>{
+        let maxScope = {
+            Level:  this.props.maxScope ? this.props.maxScope.Level : "National",
+            Id:     this.props.maxScope ? this.props.maxScope.Id : "1",
+        }
+
+        let levelIndex = levels.findIndex((el)=>{return el === maxScope.Level})
+
+        if (maxScope.Level !== "National"){
+            let locationObj = (await this.findLocationByQuery(maxScope.Level, {Id:maxScope.Id}))[0]
+            this.setInitialLocation(levelIndex,maxScope.Id, () =>{
+                this.setState({selectedLocation:`${locationObj.Id}|${locationObj.Name}|${maxScope.Level}`}, () =>{
                     //Update first list that is not disabled
                     if (levelIndex+1 < levels.length) this.updateList(levels[levelIndex+1], levelIndex+1)
 
@@ -67,6 +123,7 @@ class LocationSelector extends Component {
 
         }else{
             this.notifyParent(this.parseLocation(this.state.selectedLocation))    
+            if (levelIndex+1 < levels.length) this.updateList(levels[levelIndex+1], levelIndex+1)
         }
 
         //Cache the enabled/disabledLists
@@ -77,14 +134,14 @@ class LocationSelector extends Component {
             enabledDisabledLists[levels[i]] = disabled
 
             //Enable all levels after maxScope.Level
-            if (levels[i] === this.props.maxScope.Level) disabled = false
+            if (levels[i] === maxScope.Level) disabled = false
         }
-        
         this.setState({enabledDisabledLists: enabledDisabledLists})
+        
 
     }
 
-    setInitialLocation(levelIndex, Id, callback){
+    setInitialLocation = async (levelIndex, Id, callback) => {
         if (levelIndex === 0){
             callback()
             return
@@ -92,7 +149,7 @@ class LocationSelector extends Component {
             //Set State / LGA / etc
         
             //Find object
-            const location = locationData[levels[levelIndex]].find((el) => { return el.Id === Id})
+            const location = (await this.findLocationByQuery(levels[levelIndex], {Id:Id}))[0]
             let locationText = `${location.Id}|${location.Name}|${levels[levelIndex]}`
 
             //Cretae option list (of 1 option for selected location value
@@ -137,14 +194,15 @@ class LocationSelector extends Component {
         }
     }
 
-    updateList = (level, levelIndex) => {
+    updateList = async (level, levelIndex) => {
         let list = []
         let listName = `${level}List`   //E.g. We will be updating this.state.FacilityList
         let queryProperty = levels[levelIndex] //eg level = lga but we need 'LGA' for data.LGA
 
         //States are special because they don't require a nation lookup
         if (level === "State"){
-            list = locationData.State
+            list = await this.findAllLocations(level)
+            console.log(list)
         }else{
             levelIndex = levels.findIndex((el) => {return el === level})
 
@@ -156,9 +214,7 @@ class LocationSelector extends Component {
                 return
             }else{
                 let aboveLevelId = this.parseLocation(this.state[aboveLevel]).Id
-                list = locationData[queryProperty].filter((el) => {
-                    return el.parentId === aboveLevelId
-                })
+                list = await this.findLocationByQuery(queryProperty,{parentId: aboveLevelId})
             }
         }
 

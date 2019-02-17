@@ -8,8 +8,6 @@ import db from '../Database/database'
 
 class Sync extends Component {
 
-
-
     state = {
         showProgress : false,
         DataDownloads: []
