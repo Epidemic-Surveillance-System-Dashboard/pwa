@@ -1,12 +1,27 @@
 import React, { Component } from 'react'
 import {Button, Form, Input, Select, Row, Col, Divider} from 'antd'
 
+
+const userFields = [
+    "FirstName",
+    "LastName",
+    "Email",
+    "Phone",
+    "Id"
+]
+
 class CreateModifyDeleteUser extends Component {
+
+    componentWillMount(){
+        this.setState({userInfo: this.computedState(this.props.user)})
+        this.setState({passedUser: this.props.user})
+    }
 
     componentDidUpdate(oldProps) {
         const newProps = this.props
         if(oldProps.user !== newProps.user) {
-          this.setState({userInformation: this.computedState(newProps.user)})
+            this.setState({passedUser: this.props.user})
+            this.setState({userInfo: this.computedState(newProps.user)})
         }
     }
 
@@ -33,54 +48,31 @@ class CreateModifyDeleteUser extends Component {
     
     state = {
         mode: this.props.mode ? this.props.mode : "view", //View (default unless overridden), create, or edit,
-        userInformation: this.computedState(this.props.user),
-        user: this.props.user,
+        userChanged: false,
         disabled: true
+
+        //userInfo holds current computed properties (including modifications)
+        //passedUser holds the original user information
     }
 
     computedState(user){
 
         let userState = {}
 
-        let fields = [
-            "FirstName",
-            "LastName",
-            "Email",
-            "Phone",
-            "Id"
-        ]
-
         if (user == null){
-            for (let i = 0; i < fields.length; i++){
-                userState[fields[i]] = null
+            for (let i = 0; i < userFields.length; i++){
+                userState[userFields[i]] = null
             }
         }else{
-            for (let i = 0; i < fields.length; i++){
-                if (fields[i] in this.props.user){
-                    userState[fields[i]] = this.props.user[fields[i]]
+            for (let i = 0; i < userFields.length; i++){
+                if (userFields[i] in this.props.user){
+                    userState[userFields[i]] = this.props.user[userFields[i]]
                 }else{
-                    userState[fields[i]] = null
+                    userState[userFields[i]] = null
                 }
             }
         }
-        console.log(userState)
         return userState
-    }
-
-    fieldsEnabled = () =>{
-        if (!this.canAccess()) return false
-        
-        if (this.state.mode === "create" || this.state.mode === "edit") return true
-        
-        return false
-    }
-
-    //Required Auth Functions -- implement later
-    canAccess = () =>{
-        //If the user is an admin and this user is in their jurisidiction
-        //OR if the user is a superadmin
-        //OR if the current user is the user in question
-        return true
     }
 
     //If this is the user, then they can change the password.
@@ -101,37 +93,83 @@ class CreateModifyDeleteUser extends Component {
         return null
     }   
 
-    upperCaseFirstLetter = (string) =>{
-        return string.charAt(0).toUpperCase() + string.slice(1);
+    ///Todo: generate function to update state
+
+    inputChanged = (stateName,e) =>{
+        let user = this.state.userInfo
+        user[stateName] = e.target.value
+        this.setState({userInfo: user})
+        this.userInformationChanged()
     }
 
     basicFeatures = () => {
+
+        let basicFeatures = [
+            "First Name",
+            "Last Name",
+            "Email",
+            "Phone"
+        ]
+
+        let array = []
+
+        for (let i = 0; i < basicFeatures.length; i++){
+            let featureName = basicFeatures[i]
+            let featureNameKey = featureName.replace(" ","")   //e.g. "First Name" -> user.FirstName
+            array.push(
+                <Input addonBefore = {this.inputLabelTab(featureName)}
+                    value = {this.state.userInfo[featureNameKey]}
+                    disabled={this.state.disabled}
+                    key = {i}
+                    onChange = {(e) =>{this.inputChanged(featureNameKey,e)}}/>
+            )
+        }  
+
         if (this.props.user != null) return (
-            <div>
+            <Col>
+                {array}
+            </Col>
+        )
 
-                <Col>
-                    <Input addonBefore = {this.inputLabelTab("First Name")}
-                        value = {this.state.userInformation.FirstName}
-                        disabled={this.state.disabled}/>
-
-                    <Input addonBefore = {this.inputLabelTab("Last Name")}
-                        value = {this.state.userInformation.LastName}   
-                        disabled={this.state.disabled}/>
-
-                    <Input addonBefore = {this.inputLabelTab("Email")}          
-                        value = {this.state.userInformation.Email}  
-                            disabled={this.state.disabled}/>
-
-                    <Input addonBefore = {this.inputLabelTab("Phone")}          
-                        value = {this.state.userInformation.Phone}
-                        disabled={this.state.disabled}/>
-
-                </Col>
-            </div>
-        );
         return null
     }
 
+    modifyControls = () => {
+        if (this.state.disabled) return (
+            <div>
+                <Button onClick = {this.enableEditing}>Edit</Button>
+            </div>
+        );
+        else return (
+            <div>
+                <Button onClick = {this.cancelEditing}>Cancel</Button>
+                <Button disabled = {!this.state.userChanged}>Save</Button>
+            </div>
+        )
+    }
+
+    cancelEditing = () =>{
+        let user = this.computedState(this.state.passedUser)
+        this.setState({userInfo: user})
+        this.setState({disabled:true})
+        this.userInformationChanged()
+    }
+
+    enableEditing = () => {
+        this.setState({disabled:false})
+        this.userInformationChanged()
+    }
+
+    userInformationChanged = () =>{
+        let changed = false
+        for (let i = 0; i < userFields.length; i++){
+            if (this.state.userInfo[userFields[i]] !== this.state.passedUser[userFields[i]]){
+                changed = true
+                break
+            }
+        }
+        this.setState({userChanged: changed})
+    }
 /**
  * Always render basic elements (first name, last name, etc)
  * If current user == user viewed => allow changing password
@@ -141,9 +179,16 @@ class CreateModifyDeleteUser extends Component {
     render(){
         return(
             <div>
-                <Button onClick = {this.props.showTable_f} icon="caret-left">Back</Button>
-
-                <Row>
+                <Row className="rowVMarginSm rowVMarginTopSm">
+                    <Col>
+                        <Button onClick = {this.props.showTable_f} icon="caret-left">Back</Button>
+                    </Col>
+                </Row>
+                <Row className="rowVMarginSm">
+                    <h2>
+                        User Details
+                    </h2>
+                    {this.modifyControls()}
                     {this.basicFeatures()}
                     <Divider/>
                     {this.passwordFeatures()}
