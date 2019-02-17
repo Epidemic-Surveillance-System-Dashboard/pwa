@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 //Routing
 import './SampleHome.css';
+import LocationSelector from "../LocationSelector/LocationSelector"
 
 class App extends Component {
     render() {
@@ -10,6 +11,7 @@ class App extends Component {
                     <p>
                         This is the Home Page
                     </p>
+                    <LocationSelector></LocationSelector>
                 </header>
             </div>
         );
