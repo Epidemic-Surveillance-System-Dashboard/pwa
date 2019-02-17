@@ -10,16 +10,18 @@ const levels = [
     "Facility"
 ]
 
-
 const Option = Select.Option;
 
+const style = {
+    width: "100%"
+}
+
 //Sample data loaded from backend
-const sampleData = {"State":[{"Name":"testUpload","Id":"188"}],"LGA":[{"Name":"za Talata Mafara Local Government Area","LgaId":"134","State":"testUpload"}],"Ward":[{"Name":"za Morai Ward","WardId":"130","LGA":"za Talata Mafara Local Government Area"},{"Name":"za Morkidi Ruwan Bore Ward","WardId":"131","LGA":"za Talata Mafara Local Government Area"}],"Facility":[{"Name":"za Sakarawa Disp","FacilityId":"133","Ward":"za Morai Ward"},{"Name":"za Mirkidi Dispensary","FacilityId":"134","Ward":"za Morkidi Ruwan Bore Ward"}]}
+const locationData = {"State":[{"Name":"testUpload","Id":"188"}],"LGA":[{"Name":"za Talata Mafara Local Government Area","Id":"134","parentId":"188"}],"Ward":[{"Name":"za Morai Ward","Id":"130","parentId":"134"},{"Name":"za Morkidi Ruwan Bore Ward","Id":"131","parentId":"134"}],"Facility":[{"Name":"za Sakarawa Disp","Id":"133","parentId":"130"},{"Name":"za Mirkidi Dispensary","Id":"134","parentId":"131"}]}
 
 class LocationSelector extends Component {
 
     state = {
-        level: "National",
         maxLevel: this.props.maxLevel, //Todo
         State:undefined,
         LGA:undefined,
@@ -29,20 +31,17 @@ class LocationSelector extends Component {
         LGAList: undefined,
         WardList:undefined,
         FacilityList:undefined,
-        list1:[<Option>asdf</Option>],
-        selectedLocation: undefined
+        selectedLocation: "1|Nigeria|National" //E.g. {Id: 123, Name: "ABC"}
     }
 
     componentDidMount(){
+        //Generate Initial Lists
         for(let i = 1; i < levels.length; i++){
             this.updateList(levels[i])
         }
     }
 
     handleChange = (level, value) =>{
-        //Update Select
-        this.setState({[level]: value, selectedLocation:value})
-
         //Find Current Level
         let currentLevelIndex = levels.findIndex((el) => {return el === level}) //Todo: error checking
         let currentLevel = level
@@ -50,64 +49,77 @@ class LocationSelector extends Component {
         //If value is undefined, then Select was cleared so the current Level is one above this level
         if (value === undefined){
             currentLevel = levels[currentLevelIndex - 1]  
-            this.setState({level: currentLevel, selectedLocation:this.state[currentLevel]})
+            this.setState({[level]: undefined, selectedLocation:this.state[currentLevel]}, () =>{
+                this.notifyParent(this.parseLocation(this.state[currentLevel]))
+            })
+        }else{
+            //Update Select
+            this.setState({[level]: value, selectedLocation:value},  () =>{
+                this.notifyParent(this.parseLocation(this.state[currentLevel]))
+            })
         }
         
-
         //Whenever the value has changed, all the subordinate options have been invalidated 
-        //but we only need to update the one directly below because the others will be null
         for (let i = currentLevelIndex + 1; i < levels.length; i++){
             let statePropertyName = levels[i]
+            const x = i
             this.setState({[statePropertyName]: undefined}, () =>{
-                this.updateList(statePropertyName)
+                this.updateList(statePropertyName, x)
             })
         }
     }
 
-    updateList = (level) => {
+    updateList = (level, levelIndex) => {
         let list = []
-        let listName = `${level}List`
-        let levelIndex = levels.findIndex((el) => {return el === level})
-        let queryProperty = levels[levelIndex] //eg level = lga, queryProperty = LGA
+        let listName = `${level}List`   //E.g. We will be updating this.state.FacilityList
+        let queryProperty = levels[levelIndex] //eg level = lga but we need 'LGA' for data.LGA
+
         //States are special because they don't require a nation lookup
         if (level === "State"){
-            console.log("state!")
-            list = sampleData.State
-            console.log(list)
+            list = locationData.State
         }else{
-            
             levelIndex = levels.findIndex((el) => {return el === level})
 
             queryProperty = levels[levelIndex] //eg level = lga, dataProperty = LGA
             let aboveLevel = levels[levelIndex-1]
             if (this.state[aboveLevel] === undefined){
-                console.log("terminate cuz undefined")
+                //Short circuit if the above level is undefined
                 this.setState({[listName]: []})
                 return
             }else{
-                console.log(aboveLevel)
-                console.log('filtering for ' + this.state[aboveLevel])
-                list = sampleData[queryProperty].filter((el) => {
-                    return el[aboveLevel] === this.state[aboveLevel]
+                let aboveLevelId = this.parseLocation(this.state[aboveLevel]).Id
+                list = locationData[queryProperty].filter((el) => {
+                    return el.parentId === aboveLevelId
                 })
-                console.log(list)
             }
         }
 
         let optionsList = []
-        let keyPropertyName = `${queryProperty}Id` //e.g. FacilityId
-        console.log(keyPropertyName)
 
         list.forEach((el)=>{
             optionsList.push(
-                <Option key = {el[keyPropertyName]} value = {el.Name}>{el.Name}</Option>
+                <Option key = {el.Id} value = {`${el.Id}|${el.Name}|${level}`}>{el.Name}</Option>
             )
         })
 
         if (optionsList.length > 0){
-            this.setState({[listName]: optionsList}, () =>{
-                console.log(this.state.StateList)
-            })
+            this.setState({[listName]: optionsList})
+        }
+    }
+
+    parseLocation (value) {
+        //Precondition: value not null
+        let valueArr = value.split("|")
+        return{
+            Id:     valueArr[0],
+            Name:   valueArr[1],
+            Level:  valueArr[2]
+        }
+    }
+
+    notifyParent = (locationObject) =>{
+        if (this.props.parentHandler !== undefined && this.props.parentHandler !== null){
+            this.props.parentHandler(locationObject)
         }
     }
 
@@ -115,12 +127,11 @@ class LocationSelector extends Component {
         return (
            <div>
                <Select
-                    showSearch
-                    style={{ width: 200 }}
+                    style={style}
                     placeholder="Country"
                     optionFilterProp="children"
-                    defaultValue = "nigeria"
-                    filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                    defaultValue = "Nigeria"
+                    disabled
                 >
                     <Option value="Nigeria">Nigeria</Option>
                 </Select>
@@ -128,7 +139,7 @@ class LocationSelector extends Component {
                 <Select
                     showSearch
                     allowClear
-                    style={{ width: 200 }}
+                    style={style}
                     placeholder="State"
                     optionFilterProp="children"
                     value = {this.state.State}
@@ -141,7 +152,7 @@ class LocationSelector extends Component {
                 <Select
                     showSearch
                     allowClear
-                    style={{ width: 200 }}
+                    style={style}
                     placeholder="LGA"
                     optionFilterProp="children"
                     value = {this.state.LGA}
@@ -154,7 +165,7 @@ class LocationSelector extends Component {
                 <Select
                     showSearch
                     allowClear
-                    style={{ width: 200 }}
+                    style={style}
                     placeholder="Ward"
                     optionFilterProp="children"
                     value = {this.state.Ward}
@@ -167,7 +178,7 @@ class LocationSelector extends Component {
                 <Select
                     showSearch
                     allowClear
-                    style={{ width: 200 }}
+                    style={style}
                     placeholder="Facility"
                     optionFilterProp="children"
                     value = {this.state.Facility}
@@ -177,9 +188,12 @@ class LocationSelector extends Component {
                     {this.state.FacilityList}
                 </Select>
                 <br/>
-                Selected Level: {this.state.level}
+                <div hidden = {!this.props.showLocation}>
+                Selected Level: {this.state.selectedLocation ? this.parseLocation(this.state.selectedLocation).Level : ""}
                 <br/>
-                Selected Location: {this.state.selectedLocation}
+                Selected Location: {this.state.selectedLocation ? this.parseLocation(this.state.selectedLocation).Name : ""}
+                </div>
+               
            </div>
         );
     }
