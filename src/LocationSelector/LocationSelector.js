@@ -48,7 +48,7 @@ class LocationSelector extends Component {
         let currentLevel = level
 
         //If value is undefined, then Select was cleared so the current Level is one above this level
-        if (value === undefined){
+        if (value === undefined || this.parseLocation(value).Id === "-1"){
             currentLevel = levels[currentLevelIndex - 1]  
             this.setState({[level]: undefined, selectedLocation:this.state[currentLevel]}, () =>{
                 this.notifyParent(this.parseLocation(this.state[currentLevel]))
@@ -96,12 +96,20 @@ class LocationSelector extends Component {
         }
 
         let optionsList = []
+         //Add a clear option to the front of the array (mobile users won't see the clear button)
 
+        optionsList.push(
+            <Option key = {-1} value = "-1||"><em>Clear Selection</em></Option>
+        )
+
+        //Add the remaining objects
         list.forEach((el)=>{
             optionsList.push(
                 <Option key = {el.Id} value = {`${el.Id}|${el.Name}|${level}`}>{el.Name}</Option>
             )
         })
+        
+       
 
         if (optionsList.length > 0){
             this.setState({[listName]: optionsList})
