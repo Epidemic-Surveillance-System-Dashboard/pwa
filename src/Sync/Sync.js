@@ -15,34 +15,60 @@ class Sync extends Component {
         DataDownloads: []
     }
 
-    getData = async () =>{
-        //Get Data
-        console.log('Getting Users')
-        let promise = await fetch("https://essd-backend-dev.azurewebsites.net/api/users/getAllUsers/123")
-        promise.json().then(data =>{
-            db.User.bulkAdd(data.users).then(()=>{
-                console.log('Finished')
-            }).catch((e) =>{
-                console.log(e)
-            })
-        })   
-    }
+    // getData = async () =>{
+    //     //Get Data
+    //     console.log('Getting Users')
+    //     let promise = await fetch("https://essd-backend-dev.azurewebsites.net/api/users/getAllUsers/123")
+    //     promise.json().then(data =>{
+    //         db.User.bulkAdd(data.users).then(()=>{
+    //             console.log('Finished')
+    //         }).catch((e) =>{
+    //             console.log(e)
+    //         })
+    //     })   
+    // }
 
     startDownload = () =>{
+        let rootURL = "https://essd-backend-dev.azurewebsites.net/api"
         let downloads = [
             {
-                dataName:"Users",
+                //Todo: scope the user requests as per the user's roles
+                dataName:"user",
                 callback: (data) =>{
                     return new Promise ((resolve) =>{
-                        db.User.bulkAdd(data.users).then(() =>{
-                            resolve(true)
-                        }).catch((e) => {
-                            console.log(e)
-                            resolve(false)
+                        db.User.clear().then(()=>{
+                            db.User.bulkAdd(data.users).then(() =>{
+                                resolve(true)
+                            }).catch((e) => {
+                                resolve(false)
+                            })
                         })
                     })
                 },
-                url: "https://essd-backend-dev.azurewebsites.net/api/users/getAllUsers/123"
+                url: `${rootURL}/users/getAllUsers/123`
+            },
+            {
+                //Todo: Scope the location request as per the user's authorized locations
+                dataName:"location",
+                callback: (data) =>{
+                    return new Promise ((resolve) =>{
+                        Promise.all([db.State.clear(),db.LGA.clear(),db.Ward.clear(),db.Facility.clear()]).then(
+                            Promise.all([
+                                db.State.bulkAdd(data.State),
+                                db.LGA.bulkAdd(data.LGA),
+                                db.Ward.bulkAdd(data.Ward),
+                                db.Facility.bulkAdd(data.Facility),
+                            ]).then(
+                                resolve(true)
+                            ).catch(
+                                resolve(false)
+                            )
+                        ).catch(
+                            resolve(false)
+                        )
+                    })
+                },
+                url: `${rootURL}/locationsHierarchy`
             }
         ]
         let dl = []
@@ -110,7 +136,7 @@ class DataProgress extends Component{
 
     failedMessage = `Failed to download ${this.props.dataName} data. Please try again later`
 
-    completeMessage = `Successfully downloaded ${this.props.dataName} data`
+    completeMessage = `Successfully updated ${this.props.dataName} data`
 
     componentDidMount(){
         this.get(this.props.url, this.props.callback)
