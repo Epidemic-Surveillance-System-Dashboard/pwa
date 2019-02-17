@@ -23,6 +23,7 @@ class LocationSelector extends Component {
 
     state = {
         maxLevel: this.props.maxLevel, //Todo
+        National: "1|Nigeria|National" ,
         State:undefined,
         LGA:undefined,
         Ward:undefined,
@@ -109,8 +110,6 @@ class LocationSelector extends Component {
             )
         })
         
-       
-
         if (optionsList.length > 0){
             this.setState({[listName]: optionsList})
         }
