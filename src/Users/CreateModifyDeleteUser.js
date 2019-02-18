@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
-import {Button, Input, Row, Col, Divider} from 'antd'
-
+import {Button, Input, Row, Col, Divider, Popconfirm, message} from 'antd'
+import db from '../Database/database'
 
 const userFields = [
     "FirstName",
@@ -24,7 +24,6 @@ class CreateModifyDeleteUser extends Component {
             this.setState({userInfo: this.computedState(newProps.user)})
         }
     }
-
 
     labelStyle = {
         xs:{
@@ -81,11 +80,27 @@ class CreateModifyDeleteUser extends Component {
         return true
     }
 
+    confirmDelete = async () =>{
+        let url = `https://essd-backend-dev.azurewebsites.net/api/users/deleteUser/${this.state.passedUser.Id}`
+        //Send Delete HTTP Request
+        let deleteRequest = await fetch(url, {method: "delete"})
+        deleteRequest.json().then((data) =>{
+            db.User.delete(this.state.passedUser.Id).then(() =>{
+                message.success("Successfully deleted user.")
+                this.props.refreshUsers()
+            })
+        })
+        .catch((error) =>{
+            message.error("Sorry, something went wrong.")
+        })
+    }
     passwordFeatures = () =>{
         if (this.props.user != null) return(
             <div>
-                <Col className="center">
-                    <Button type ="danger">Delete User</Button>
+                <Col className="right">
+                    <Popconfirm placement="topRight" title="Are you sure you want to delete this user? This action cannot be reverted." onConfirm={this.confirmDelete} okText="Delete" cancelText="Cancel">
+                        <Button type ="danger">Delete User</Button>
+                    </Popconfirm>
                 </Col>
 
             </div>

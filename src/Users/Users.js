@@ -11,8 +11,7 @@ let dataSource = []
 
 class User extends Component {
 
-    componentWillMount = () =>{ 
-        //Get Users from Database
+    populateUsers = () =>{
         db.User.toArray((array) =>{
             array.forEach((element) =>{
                 //Create additional properties as required
@@ -24,6 +23,10 @@ class User extends Component {
             this.setState({dataLoaded:true})
 
         })
+    }
+
+    componentWillMount = () =>{ 
+        this.populateUsers()        
     }
 
     state = {
@@ -103,7 +106,7 @@ class User extends Component {
                 <div hidden = {!this.state.dataLoaded}>
                     <Table dataSource={dataSource} columns={this.columns} className = {this.showHideTableClass()}/>
                     <div className = {this.showHideDetailViewClass()}>
-                        <CreateModifyDeleteUser showTable_f = {this.showTable} user = {this.state.selectedUser} mode = "create"></CreateModifyDeleteUser>
+                        <CreateModifyDeleteUser showTable_f = {this.showTable} user = {this.state.selectedUser} mode = "create" refreshUsers ={this.populateUsers}></CreateModifyDeleteUser>
                     </div>
                 </div>        
                 </Col>      

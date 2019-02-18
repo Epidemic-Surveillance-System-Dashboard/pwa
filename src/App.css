@@ -48,6 +48,10 @@
   text-align: left;
 }
 
+.right{
+  text-align: right;
+}
+
 .displayNone{
   display:none;
 }
