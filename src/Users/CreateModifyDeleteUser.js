@@ -12,6 +12,10 @@ const userFields = [
 
 class CreateModifyDeleteUser extends Component {
 
+    componentDidMount(){
+        if (this.props.mode === "new") this.enableEditing()
+    }
+
     componentWillMount(){
         this.setState({userInfo: this.computedState(this.props.user)})
         this.setState({passedUser: this.props.user})
@@ -94,6 +98,7 @@ class CreateModifyDeleteUser extends Component {
             message.error("Sorry, something went wrong.")
         })
     }
+
     passwordFeatures = () =>{
         if (this.props.user != null) return(
             <div>
@@ -133,20 +138,19 @@ class CreateModifyDeleteUser extends Component {
             let featureNameKey = featureName.replace(" ","")   //e.g. "First Name" -> user.FirstName
             array.push(
                 <Input addonBefore = {this.inputLabelTab(featureName)}
-                    value = {this.state.userInfo[featureNameKey]}
+                    value = {this.state.userInfo ? this.state.userInfo[featureNameKey] : ""}
                     disabled={this.state.disabled}
                     key = {i}
                     onChange = {(e) =>{this.inputChanged(featureNameKey,e)}}/>
             )
         }  
 
-        if (this.props.user != null) return (
+        return(
             <Col>
                 {array}
             </Col>
         )
 
-        return null
     }
 
     modifyControls = () => {
@@ -157,8 +161,8 @@ class CreateModifyDeleteUser extends Component {
         );
         else return (
             <div>
-                <Button onClick = {this.cancelEditing}>Cancel</Button>
-                <Button disabled = {!this.state.userChanged}>Save</Button>
+                <Button hidden = {this.state.mode === "new"} onClick = {this.cancelEditing}>Cancel</Button>
+                <Button disabled = {!this.state.userChanged} onClick = {this.save}>Save</Button>
             </div>
         )
     }
@@ -176,14 +180,49 @@ class CreateModifyDeleteUser extends Component {
     }
 
     userInformationChanged = () =>{
+        //Todo: error checking here for valid inputs
         let changed = false
-        for (let i = 0; i < userFields.length; i++){
-            if (this.state.userInfo[userFields[i]] !== this.state.passedUser[userFields[i]]){
-                changed = true
-                break
+        if (this.props.mode === "new") {
+            changed = true
+        }else{
+            for (let i = 0; i < userFields.length; i++){
+                if (this.state.userInfo[userFields[i]] !== this.state.passedUser[userFields[i]]){
+                    changed = true
+                    break
+                }
             }
         }
         this.setState({userChanged: changed})
+    }
+
+    save = async () =>{
+        switch(this.state.mode){
+            case "new":
+                //Create
+                let userObject = this.state.userInfo
+                userObject.userType = "user" //hardCode for now
+                delete userObject.Id
+                let url = "https://essd-backend-dev.azurewebsites.net/api/users/addUser"
+                let postRequest = await fetch(url, {
+                    method: "POST",
+                    body: JSON.stringify(userObject)
+                })
+                postRequest.json().then((result) =>{
+                    //Add ID to object
+                    userObject.Id = result[0].Id
+                    db.User.add(userObject).then(() =>{
+                        message.success("Successfully added user.")
+                        this.props.refreshUsers()
+                    })
+                })
+                .catch((error) =>{
+                    message.error("Sorry, something went wrong.")
+                })
+                break
+            default:
+                //Update
+                break
+        }
     }
 /**
  * Always render basic elements (first name, last name, etc)
@@ -194,7 +233,7 @@ class CreateModifyDeleteUser extends Component {
     render(){
         return(
             <div>
-                <Row className="rowVMarginSm rowVMarginTopSm">
+                <Row className="rowVMarginSm ">
                     <Col>
                         <Button onClick = {this.props.showTable_f} icon="caret-left">Back</Button>
                     </Col>
