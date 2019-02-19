@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 
-import { Row, Col, Table, Spin, Divider } from 'antd'
-import { Button } from 'antd/lib/radio';
+import { Row, Col, Table, Spin, Button} from 'antd'
 
 import CreateModifyDeleteUser from './CreateModifyDeleteUser'
 
@@ -121,57 +120,79 @@ class User extends Component {
         return this.state.currentView !== "table"
     }
 
+    colStyle = {
+        xs:{span:24, offset:0},
+        sm:{span:22, offset:1},
+        md:{span:18, offset:3},
+        lg:{span:16, offset:4}
+    }
+
     render() {
 
         return (
-                <Row className="rowVMarginSm rowVMarginTopSm">
-                    <Col xs={{ span: 24, offset: 0 }} sm = {{span: 22, offset:1}} md={{ span: 18, offset: 3 }} lg = {{span: 16, offset: 4}}>
+            <div>
+                {/* Data not yet loaded  */}
+                <Row className="rowVMarginSm" hidden = {this.state.dataLoaded}>
+                    <Col {...this.colStyle}>
 
-                        {/* Data not yet loaded  */}
-                        <div className = "spacing" hidden = {this.state.dataLoaded}>
-                            <Spin size="large" hidden = {this.state.dataLoaded} />
+                        <div className = "spacing" >
+                            <Spin size="large"/>
                         </div>
+                    </Col>
+                </Row>
+                
+                {/* Data loaded  */}
+                {
+                    this.state.currentView === "table" &&
+                    <Row className="rowVMarginTopSm" gutter={-1}>
+                        <Col className = "left" xs={{span: 16, offset:0}} sm = {{span:14, offset:1}} md = {{span: 10, offset:3}} lg = {{span: 8, offset:4}}>
+                            <h3>Users Summary</h3>
+                        </Col>
+                        <Col className = "right" span={8}>
+                            <Button 
+                                onClick = {this.addUser}
+                                className = {this.showHideTableClass()}
+                                icon = "user-add"
+                                type = "primary"
+                                >
+                                Add User
+                            </Button>
+                        </Col>
+                    </Row>
+                }
+                
+                <Row>
+                    <Col {...this.colStyle}>
+                        <div className = "rowVMarginTopSm">
+                        <Table 
+                            dataSource={dataSource}
+                            columns={this.columns}
+                            className = {this.showHideTableClass()}
+                        />
 
-                        {/* Data Loaded */}
-                        <div hidden = {!this.state.dataLoaded}>
-                            {/* Main: Table of all users */}
-                            <Col span={16}>
-                                <h3>Users Overview</h3>
-                            </Col>
-                            <Col span={8}>
-                                <Button 
-                                    onClick = {this.addUser}
-                                    className = {this.showHideTableClass()}>
-                                    Add User
-                                </Button>
-                            </Col>
-
-                        
-                            {/* For performance, keep the table rendered and in the DOM, but hidden
-                            when it's supposed to be out of view */}
-                            <Table 
-                                dataSource={dataSource}
-                                columns={this.columns}
-                                className = {this.showHideTableClass()}/>
-
-                            {/* Render new component to create a user as required */}
-                            {this.state.currentView !== "new" ? 
-                                null : 
+                        </div>
+                      
+                        {/* Render new component to create a user as required */}
+                        {this.state.currentView !== "new" ? 
+                            null : 
+                            <div className = "rowVMarginTopSm">
                                 <CreateModifyDeleteUser 
                                     showTable_f = {this.showTable} 
                                     user = {null} 
                                     mode = "new" 
                                     refreshUsers ={this.populateUsers}
                                 />
-                            }
-
-                            {/* For performance, keep the view existing user component in the DOM  */}
-                            <div className = {this.showHideViewClass()}>
-                                <CreateModifyDeleteUser showTable_f = {this.showTable} user = {this.state.selectedUser} mode = "existing" refreshUsers ={this.populateUsers}></CreateModifyDeleteUser>
                             </div>
-                        </div>        
+                        }
+
+                        {/* For performance, keep the view existing user component in the DOM  */}
+                        <div className = {this.showHideViewClass()}>
+                            <CreateModifyDeleteUser showTable_f = {this.showTable} user = {this.state.selectedUser} mode = "existing" refreshUsers ={this.populateUsers}></CreateModifyDeleteUser>
+                        </div>
                     </Col>      
                 </Row>
+            </div>
+                
         )
     }
 }

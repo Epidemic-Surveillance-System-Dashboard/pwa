@@ -265,14 +265,11 @@ class CreateModifyDeleteUser extends Component {
                     </Col>
                 </Row>
                 <Row className="rowVMarginSm">
-                    <h2>
-                        User Details
-                    </h2>
+                    <h3>User Details</h3>
                     {this.modifyControls()}
                     {this.basicFeatures()}
                     <Divider/>
                     {this.adminFeatures()}
-                    
                 </Row>
                 
             </div>
