@@ -17,27 +17,19 @@ class CreateModifyDeleteUser extends Component {
     }
 
     componentWillMount(){
-        this.setState({userInfo: this.computedState(this.props.user)})
-        this.setState({passedUser: this.props.user})
+        this.setState({
+            userInfo: this.computedState(this.props.user),
+            passedUser: this.props.user
+        })
     }
 
     componentDidUpdate(oldProps) {
         const newProps = this.props
         if(oldProps.user !== newProps.user) {
-            this.setState({passedUser: this.props.user})
-            this.setState({userInfo: this.computedState(newProps.user)})
-        }
-    }
-
-    labelStyle = {
-        xs:{
-            span: 6
-        }
-    }
-
-    inputStyle = {
-        xs:{
-            span: 18
+            this.setState({
+                passedUser: this.props.user,
+                userInfo: this.computedState(newProps.user)
+            })
         }
     }
 
@@ -99,7 +91,7 @@ class CreateModifyDeleteUser extends Component {
         })
     }
 
-    passwordFeatures = () =>{
+    adminFeatures = () =>{
         if (this.props.user != null) return(
             <div>
                 <Col className="right">
@@ -169,8 +161,10 @@ class CreateModifyDeleteUser extends Component {
 
     cancelEditing = () =>{
         let user = this.computedState(this.state.passedUser)
-        this.setState({userInfo: user})
-        this.setState({disabled:true})
+        this.setState({
+            userInfo: user,
+            disabled:true
+        })
         this.userInformationChanged()
     }
 
@@ -196,33 +190,65 @@ class CreateModifyDeleteUser extends Component {
     }
 
     save = async () =>{
-        switch(this.state.mode){
-            case "new":
-                //Create
-                let userObject = this.state.userInfo
-                userObject.userType = "user" //hardCode for now
-                delete userObject.Id
-                let url = "https://essd-backend-dev.azurewebsites.net/api/users/addUser"
-                let postRequest = await fetch(url, {
-                    method: "POST",
-                    body: JSON.stringify(userObject)
+        let url, successMessage, errorMessage, method = ""
+        let successHandler = () => {}
+        let userObject = this.state.userInfo
+
+        if (this.state.mode === "new"){
+            //Create User
+            userObject.UserType = "user" //hardCode for now
+            delete userObject.Id
+            url = "https://essd-backend-dev.azurewebsites.net/api/users/addUser"
+            successMessage = "Successfully added user."
+            errorMessage = "Failed to create user. Please try again later."
+            method = "POST"
+            successHandler = (result) =>{
+     
+                userObject.Id = result[0].Id
+                db.User.add(userObject).then(() =>{
+                    message.success(successMessage)
+                    this.props.refreshUsers()
                 })
-                postRequest.json().then((result) =>{
-                    //Add ID to object
-                    userObject.Id = result[0].Id
-                    db.User.add(userObject).then(() =>{
-                        message.success("Successfully added user.")
+        
+ 
+            }
+        }else{
+
+            //Update User
+            userObject.UserType = "user" //hardCode for now
+            url = "https://essd-backend-dev.azurewebsites.net/api/users/updateUser"
+            successMessage = "Successfully updated user."
+            errorMessage = "Failed to update user. Please try again later."
+            method = "PUT"
+            successHandler = (result) =>{
+                if (result.result === "update success"){                
+                    db.User.put(userObject).then(() =>{
+                        message.success(successMessage)
                         this.props.refreshUsers()
                     })
-                })
-                .catch((error) =>{
-                    message.error("Sorry, something went wrong.")
-                })
-                break
-            default:
-                //Update
-                break
+                }
+            }
         }
+        console.log(userObject)
+        let request = await fetch(url, {
+            method: method,
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(userObject),
+        })
+        console.log(request)
+        request.json().then(successHandler)
+        .catch((error) =>{
+            message.error(errorMessage)
+        })
+
+    }
+
+    back = () =>{
+        //Remove any changes before executing callback
+        this.cancelEditing()
+        this.props.showTable_f()
     }
 /**
  * Always render basic elements (first name, last name, etc)
@@ -235,7 +261,7 @@ class CreateModifyDeleteUser extends Component {
             <div>
                 <Row className="rowVMarginSm ">
                     <Col>
-                        <Button onClick = {this.props.showTable_f} icon="caret-left">Back</Button>
+                        <Button onClick = {this.back} icon="caret-left">Back</Button>
                     </Col>
                 </Row>
                 <Row className="rowVMarginSm">
@@ -245,7 +271,7 @@ class CreateModifyDeleteUser extends Component {
                     {this.modifyControls()}
                     {this.basicFeatures()}
                     <Divider/>
-                    {this.passwordFeatures()}
+                    {this.adminFeatures()}
                     
                 </Row>
                 

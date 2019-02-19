@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 
-import { Row, Col, Table, Spin } from 'antd'
+import { Row, Col, Table, Spin, Divider } from 'antd'
 import { Button } from 'antd/lib/radio';
 
 import CreateModifyDeleteUser from './CreateModifyDeleteUser'
@@ -19,7 +19,21 @@ class User extends Component {
                 element.name = `${element.FirstName} ${element.LastName}`
                 element.permissionLevel = "National"
             })
-            dataSource = array
+
+            dataSource = array.sort((a,b) =>{
+                //Sort by last name, then first name
+                try{
+                    let lastNameCompare = a.LastName.localeCompare(b.LastName)
+                    if (lastNameCompare === 0){
+                        return a.FirstName.localeCompare(b.FirstName)
+                    }else{
+                        return lastNameCompare
+                    }
+                    
+                }catch(e){
+                    return -1
+                }
+            })
             this.setState({dataLoaded:true})
 
         })
@@ -121,12 +135,17 @@ class User extends Component {
                         {/* Data Loaded */}
                         <div hidden = {!this.state.dataLoaded}>
                             {/* Main: Table of all users */}
-   
-                            <Button 
-                                onClick = {this.addUser}
-                                className = {this.showHideTableClass()}>
-                                Add User
-                            </Button>
+                            <Col span={16}>
+                                <h3>Users Overview</h3>
+                            </Col>
+                            <Col span={8}>
+                                <Button 
+                                    onClick = {this.addUser}
+                                    className = {this.showHideTableClass()}>
+                                    Add User
+                                </Button>
+                            </Col>
+
                         
                             {/* For performance, keep the table rendered and in the DOM, but hidden
                             when it's supposed to be out of view */}
@@ -146,7 +165,7 @@ class User extends Component {
                                 />
                             }
 
-                            {/* For perforance, keep the view existing user component in the DOM  */}
+                            {/* For performance, keep the view existing user component in the DOM  */}
                             <div className = {this.showHideViewClass()}>
                                 <CreateModifyDeleteUser showTable_f = {this.showTable} user = {this.state.selectedUser} mode = "existing" refreshUsers ={this.populateUsers}></CreateModifyDeleteUser>
                             </div>
