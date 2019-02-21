@@ -59,7 +59,6 @@ class LocationSelector extends Component {
             let callback = (data) => {
                 resolve (data) 
             }
-
             switch(type){
                 case "Facility":
                     db.Facility.where(queryParams).toArray(callback)
@@ -100,9 +99,37 @@ class LocationSelector extends Component {
         selectedLocation: "1|Nigeria|National" //E.g. {Id: 123, Name: "ABC"}
     }
 
+    componentDidUpdate(oldProps) {
+        const newProps = this.props
+        if(oldProps.initialLocation !== newProps.initialLocation) {
+            if (newProps.initialLocation.LocationId !== null){
+                let level = levels.findIndex((el)=>{return el === newProps.initialLocation.Type})
+                this.setInitialLocation(level, newProps.initialLocation.Id, this.setMaxScope)
+            }
+        }
+        if (oldProps.disabled !== newProps.disabled){
+            console.log("x")
+            this.setEnableDisabled(null)
+        }
+    }
+
+
+
     componentDidMount = async () => {
-        //Set selectedLocation to maxScope (default = national)
-        let maxScope = {
+
+        //Set Initial Location
+        if (this.props.initialLocation){
+            let locationObject = {
+                Level: this.props.initialLocation.Type,
+                Id: this.props.initialLocation.Id,
+            }
+            let level = levels.findIndex((el)=>{return el === locationObject.Level})
+            this.setInitialLocation(level, locationObject.Id, this.setMaxScope)
+        }
+
+        //Set selectedLocation to maxScope (default = national) and override initial location if required
+        //TODO: resolve race condition from the multiple setstates (move max scope into callback of init location)
+         let maxScope = {
             Level:  this.props.maxScope ? this.props.maxScope.Level : "National",
             Id:     this.props.maxScope ? this.props.maxScope.Id : "1",
         }
@@ -127,17 +154,37 @@ class LocationSelector extends Component {
         }
 
         //Cache the enabled/disabledLists
-        let disabled = true
-        let enabledDisabledLists = {}
-        for (let i = 0; i < levels.length; i++){
-            //Disable all levels above maxScope.Level, including maxScope
-            enabledDisabledLists[levels[i]] = disabled
+        this.setEnableDisabled(maxScope)
+    }
 
-            //Enable all levels after maxScope.Level
-            if (levels[i] === maxScope.Level) disabled = false
+    setEnableDisabled = (maxScope) =>{
+
+        let enabledDisabledLists = {}
+        //Disable all fields if global state is disabled
+        if (this.props.disabled === true){
+            for (let i = 0; i < levels.length; i++){
+                enabledDisabledLists[levels[i]] = true
+            }
+        //If there is no max scope to set to, then enable / disable based on global state
+        }else if (maxScope == null){
+            for (let i = 0; i < levels.length; i++){
+                enabledDisabledLists[levels[i]] = false
+            }
+        //Otherwise, disable / enable based on max scope 
+        }else{
+            let disabled = true
+            for (let i = 0; i < levels.length; i++){
+                //Disable all levels above maxScope.Level, including maxScope
+                enabledDisabledLists[levels[i]] = disabled
+    
+                //Enable all levels after maxScope.Level
+                if (levels[i] === maxScope.Level) disabled = false
+            }
         }
         this.setState({enabledDisabledLists: enabledDisabledLists})
-        
+    }
+
+    setMaxScope = () =>{
 
     }
 

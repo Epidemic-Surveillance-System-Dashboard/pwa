@@ -13,19 +13,6 @@ class Sync extends Component {
         DataDownloads: []
     }
 
-    // getData = async () =>{
-    //     //Get Data
-    //     console.log('Getting Users')
-    //     let promise = await fetch("https://essd-backend-dev.azurewebsites.net/api/users/getAllUsers/123")
-    //     promise.json().then(data =>{
-    //         db.User.bulkAdd(data.users).then(()=>{
-    //             console.log('Finished')
-    //         }).catch((e) =>{
-    //             console.log(e)
-    //         })
-    //     })   
-    // }
-
     startDownload = () =>{
         let rootURL = "https://essd-backend-dev.azurewebsites.net/api"
         let downloads = [
@@ -33,17 +20,20 @@ class Sync extends Component {
                 //Todo: scope the user requests as per the user's roles
                 dataName:"user",
                 callback: (data) =>{
+                    console.log(data)
                     return new Promise ((resolve) =>{
                         db.User.clear().then(()=>{
+                            console.log(data)
                             db.User.bulkAdd(data.users).then(() =>{
                                 resolve(true)
                             }).catch((e) => {
+                                console.log(e)
                                 resolve(false)
                             })
                         })
                     })
                 },
-                url: `${rootURL}/users/getAllUsers/123`
+                url: `${rootURL}/users/getAllUsers/25`
             },
             {
                 //Todo: Scope the location request as per the user's authorized locations

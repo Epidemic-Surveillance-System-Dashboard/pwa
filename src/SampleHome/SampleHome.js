@@ -27,7 +27,7 @@ class App extends Component {
                 <Row>
                     <Col>
                     <h4>{this.state.location ? this.state.location.Name : ""}</h4>
-                    <LocationSelector parentHandler = {this.updateLocation} showLocation = {true}  maxScope = {{Id:"188", Level :"State"}}></LocationSelector>
+                    <LocationSelector parentHandler = {this.updateLocation} initialLocation = {{Id: "134", Type :"LGA"}} showLocation = {true}></LocationSelector>
                     </Col>
                 </Row>
                    

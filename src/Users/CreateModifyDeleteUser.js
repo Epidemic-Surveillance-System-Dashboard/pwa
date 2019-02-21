@@ -1,5 +1,8 @@
 import React, { Component } from 'react'
 import {Button, Input, Row, Col, Divider, Popconfirm, message} from 'antd'
+
+import LocationSelector from "../LocationSelector/LocationSelector"
+
 import db from '../Database/database'
 
 const userFields = [
@@ -7,7 +10,9 @@ const userFields = [
     "LastName",
     "Email",
     "Phone",
-    "Id"
+    "Id",
+    "LocationId",
+    "LocationType"
 ]
 
 class CreateModifyDeleteUser extends Component {
@@ -120,7 +125,7 @@ class CreateModifyDeleteUser extends Component {
             "First Name",
             "Last Name",
             "Email",
-            "Phone"
+            "Phone",
         ]
 
         let array = []
@@ -139,7 +144,17 @@ class CreateModifyDeleteUser extends Component {
 
         return(
             <Col>
+                <Divider/>
                 {array}
+                <Divider/>
+                {/* Location */}
+                <p>Location</p>
+                {/* Todo: add max scope depending on admin rights*/}
+                <LocationSelector 
+                    parentHandler = {(e)=>{console.log(e)} } 
+                    showLocation = {true} 
+                    initialLocation = {{Id: this.state.userInfo.LocationId, Type :this.state.userInfo.LocationType}}
+                    disabled={this.state.disabled}/>
             </Col>
         )
 
