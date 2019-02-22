@@ -91,22 +91,7 @@ class User extends Component {
         let newUser = dataSource.find(object =>{
             return object.Id === id
         })
-        // if (this.state.selectedUser === newUser){
-        //     this.setState({
-        //         //Flush data first so that any saved changes in the component are flushed
-        //         selectedUser: null
-        //     }, () =>{
-        //         this.setState({
-        //             currentView: "existing", 
-        //             selectedUser: newUser
-        //         })
-        //     })
-        // }else{
-        //     this.setState({
-        //         currentView: "existing", 
-        //         selectedUser: newUser
-        //     })
-        // }
+
         this.setState({
             currentView: "existing", 
             selectedUser: newUser

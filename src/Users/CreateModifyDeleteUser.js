@@ -151,7 +151,7 @@ class CreateModifyDeleteUser extends Component {
                 <p>Location</p>
                 {/* Todo: add max scope depending on admin rights*/}
                 <LocationSelector 
-                    parentHandler = {(e)=>{console.log(e)} } 
+                    parentHandler = {this.updateLocation} 
                     showLocation = {true} 
                     initialLocation = {{Id: this.state.userInfo.LocationId, Type :this.state.userInfo.LocationType}}
                     disabled={this.state.disabled}/>
@@ -161,8 +161,11 @@ class CreateModifyDeleteUser extends Component {
     }
 
     updateLocation = (location) =>{
+        let userInfo = this.state.userInfo
+        userInfo.LocationId = location.Id
+        userInfo.LocationType = location.Type
         this.setState({
-            location: location
+            userInfo: userInfo
         })
     }
 
@@ -214,7 +217,7 @@ class CreateModifyDeleteUser extends Component {
         let url, successMessage, errorMessage, method = ""
         let successHandler = () => {}
         let userObject = this.state.userInfo
-
+        console.log(this.state.userInfo)
         if (this.state.mode === "new"){
             //Create User
             userObject.UserType = "user" //hardCode for now
@@ -224,14 +227,13 @@ class CreateModifyDeleteUser extends Component {
             errorMessage = "Failed to create user. Please try again later."
             method = "POST"
             successHandler = (result) =>{
-     
+                console.log(result)
                 userObject.Id = result[0].Id
                 db.User.add(userObject).then(() =>{
                     message.success(successMessage)
                     this.props.refreshUsers()
+                    this.cancelEditing()
                 })
-        
- 
             }
         }else{
 
@@ -246,11 +248,12 @@ class CreateModifyDeleteUser extends Component {
                     db.User.put(userObject).then(() =>{
                         message.success(successMessage)
                         this.props.refreshUsers()
+                        this.cancelEditing()
                     })
                 }
             }
         }
-        console.log(userObject)
+
         let request = await fetch(url, {
             method: method,
             headers: {
@@ -261,6 +264,7 @@ class CreateModifyDeleteUser extends Component {
         console.log(request)
         request.json().then(successHandler)
         .catch((error) =>{
+            console.log(error)
             message.error(errorMessage)
         })
 

@@ -138,8 +138,8 @@ class LocationSelector extends Component {
         }
 
         let initialLocation = {
-            Type:  this.props.initialLocation ? this.props.initialLocation.Type : maxScope.Type,
-            Id:     this.props.initialLocation ? this.props.initialLocation.Id : maxScope.Id,
+            Type:  this.props.initialLocation.Type ? this.props.initialLocation.Type : maxScope.Type,
+            Id:     this.props.initialLocation.Id ? this.props.initialLocation.Id : maxScope.Id,
         }
 
         this.setState({
