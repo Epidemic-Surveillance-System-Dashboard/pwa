@@ -57,6 +57,27 @@ class Sync extends Component {
                     })
                 },
                 url: `${rootURL}/locationsHierarchy`
+            },
+            {
+                dataName:"metric names",
+                callback: (data) =>{
+                    return new Promise ((resolve) =>{
+                        Promise.all([db.Groups.clear(),db.Sets.clear(),db.Metrics.clear()]).then(
+                            Promise.all([
+                                db.Groups.bulkAdd(data.Groups),
+                                db.Sets.bulkAdd(data.Sets),
+                                db.Metrics.bulkAdd(data.Metrics),
+                            ]).then(
+                                resolve(true)
+                            ).catch(
+                                resolve(false)
+                            )
+                        ).catch(
+                            resolve(false)
+                        )
+                    })
+                },
+                url: `${rootURL}/data/hierarchy`
             }
         ]
         let dl = []

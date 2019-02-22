@@ -10,9 +10,9 @@ db.version(1).stores({
     State:"Id",
 
     //Data
-    Groups:"id",
-    Sets:"Id",
-    Metrics:"Id",
+    Groups:"Id",
+    Sets:"Id,parentId",
+    Metrics:"Id,parentId",
     Data:"Id,time,metricId,facilityId", //Index everything here
     FacilityView:"id,Name,WardId,LGAId,StateId",
 
