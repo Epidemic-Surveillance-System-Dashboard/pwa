@@ -49,7 +49,7 @@ class CreateModifyDeleteUser extends Component {
     state = {
         mode: this.props.mode ? this.props.mode : "view", //View (default unless overridden), create, or edit,
         userChanged: false,
-        disabled: true
+        disabled: true,
 
         //userInfo holds current computed properties (including modifications)
         //passedUser holds the original user information
@@ -158,6 +158,12 @@ class CreateModifyDeleteUser extends Component {
             </Col>
         )
 
+    }
+
+    updateLocation = (location) =>{
+        this.setState({
+            location: location
+        })
     }
 
     modifyControls = () => {

@@ -4,7 +4,7 @@ import {Select} from 'antd'
 
 import db from '../Database/database'
 
-const levels = [
+const hierarchyLevels = [
     "National",
     "State",
     "LGA",
@@ -20,9 +20,10 @@ const style = {
 
 /**
  * Selects a loction in Nigeria
- * @param {parentHandler} - function that takes a Location Object {id,name,level} and updates the parent
- * @param {showLocation} - boolean that show/hides LocationSelector's builtin location text 
+ * @param {parentHandler} - Function passed in by the parent that takes a LocationObject with props {Id, Name, Type} and updates the parent UI
+ * @param {showLocation} - Boolean that shows or hides LocationSelector's built-in selected location text
  * @param {maxScope}: optional - {Id: "188", Level: "State"}
+ * @param {initialLocation}
  */
 class LocationSelector extends Component {
 
@@ -80,15 +81,21 @@ class LocationSelector extends Component {
     }
 
     state = {
+
+        //Selected locations at each level
         National: "1|Nigeria|National" ,
         State:undefined,
         LGA:undefined,
         Ward:undefined,
         Facility:undefined,
+
+        //Selection lists to show at each level
         StateList: undefined,
         LGAList: undefined,
         WardList:undefined,
         FacilityList:undefined,
+
+        //Enables / disables each list
         enabledDisabledLists:{
             "National"  : false,
             "State"     : false,
@@ -96,131 +103,140 @@ class LocationSelector extends Component {
             "Ward"      : false,
             "Facility"  : false
         },
-        selectedLocation: "1|Nigeria|National" //E.g. {Id: 123, Name: "ABC"}
+
+        selectedLocation: "1|Nigeria|National"
     }
 
-    componentDidUpdate(oldProps) {
-        const newProps = this.props
-        if(oldProps.initialLocation !== newProps.initialLocation) {
-            if (newProps.initialLocation.LocationId !== null){
-                let level = levels.findIndex((el)=>{return el === newProps.initialLocation.Type})
-                this.setInitialLocation(level, newProps.initialLocation.Id, this.setMaxScope)
-            }
-        }
-        if (oldProps.disabled !== newProps.disabled){
-            console.log("x")
-            this.setEnableDisabled(null)
-        }
+    componentDidUpdate = async (oldProps) => {
+        
+        if (oldProps.disabled !== this.props.disabled) this.enableDisableLists()
+
+        //No need to update for maxScope; this should not change unless the admin user has changed
+
+        //In the future, this can be updated to also change the user shown
+        //when the prop changes to allow React to persist a LocationSelector
+        //in the DOM, but this is tricky because it also requires LocationSelector
+        //to revert the selected location when editing is cancelled.
     }
 
+    findIndexForLocationType = (locationType) =>{
+        return hierarchyLevels.findIndex((el) => {
+            return el === locationType
+        })
+    }
 
+    setLocations = async () =>{
+        /**
+         * Preconditions:
+         *  - initialLocation is within maxScope
+         *  - maxScope must be higher or equal to initialLocation
+         */
 
-    componentDidMount = async () => {
-
-        //Set Initial Location
-        if (this.props.initialLocation){
-            let locationObject = {
-                Level: this.props.initialLocation.Type,
-                Id: this.props.initialLocation.Id,
-            }
-            let level = levels.findIndex((el)=>{return el === locationObject.Level})
-            this.setInitialLocation(level, locationObject.Id, this.setMaxScope)
-        }
-
-        //Set selectedLocation to maxScope (default = national) and override initial location if required
-        //TODO: resolve race condition from the multiple setstates (move max scope into callback of init location)
-         let maxScope = {
-            Level:  this.props.maxScope ? this.props.maxScope.Level : "National",
+        let maxScope = {
+            Type:  this.props.maxScope ? this.props.maxScope.Type : "National",
             Id:     this.props.maxScope ? this.props.maxScope.Id : "1",
         }
 
-        let levelIndex = levels.findIndex((el)=>{return el === maxScope.Level})
-
-        if (maxScope.Level !== "National"){
-            let locationObj = (await this.findLocationByQuery(maxScope.Level, {Id:maxScope.Id}))[0]
-            this.setInitialLocation(levelIndex,maxScope.Id, () =>{
-                this.setState({selectedLocation:`${locationObj.Id}|${locationObj.Name}|${maxScope.Level}`}, () =>{
-                    //Update first list that is not disabled
-                    if (levelIndex+1 < levels.length) this.updateList(levels[levelIndex+1], levelIndex+1)
-
-                    //Notify parent
-                    this.notifyParent(this.parseLocation(this.state.selectedLocation))
-                })
-            })
-
-        }else{
-            this.notifyParent(this.parseLocation(this.state.selectedLocation))    
-            if (levelIndex+1 < levels.length) this.updateList(levels[levelIndex+1], levelIndex+1)
+        let initialLocation = {
+            Type:  this.props.initialLocation ? this.props.initialLocation.Type : maxScope.Type,
+            Id:     this.props.initialLocation ? this.props.initialLocation.Id : maxScope.Id,
         }
 
-        //Cache the enabled/disabledLists
-        this.setEnableDisabled(maxScope)
+        this.setState({
+            maxScope: maxScope,
+            initialLocation: initialLocation
+
+        }, () =>{
+
+            let initLocationIndex = this.findIndexForLocationType(initialLocation.Type)
+
+            //Work backwards to define all the locations that the initial location belongs to
+    
+            let locations = {
+                "National"  : "1|Nigeria|National",
+                "State"     : undefined,
+                "LGA"       : undefined,
+                "Ward"      : undefined,
+                "Facility"  : undefined
+            }
+            
+            this.getLocationHierarchyForInitLocation(initLocationIndex, initialLocation.Id, this.setLocationState, locations)
+        })
+
+
     }
 
-    setEnableDisabled = (maxScope) =>{
+    getLocationHierarchyForInitLocation = async (currentIndex, currentLocationId,completionCallback, locations) =>{
+        if (currentIndex === 0){
+            completionCallback(locations)
+            return
+        }else{
+            let location = await (this.findLocationByQuery(hierarchyLevels[currentIndex], {Id:currentLocationId}))
+            location = location[0]
+            locations[hierarchyLevels[currentIndex]] = `${location.Id}|${location.Name}|${hierarchyLevels[currentIndex]}`
+            this.getLocationHierarchyForInitLocation(currentIndex-1, location.parentId, completionCallback, locations)
+        }
+    }
 
+    setLocationState = (data) =>{
+        this.setState({...data}, () =>{
+            //Then update lists for each level that is defined, plus the first undefined level
+            for (let i = 0; i < hierarchyLevels.length; i++){
+                this.updateList(hierarchyLevels[i], i, () =>{})
+
+                //Set the selected location to the parent of the first undefined location
+                //or the facility level
+                if (data[hierarchyLevels[i]] === undefined){
+                    this.setState({
+                        selectedLocation: data[hierarchyLevels[i-1]]
+                    })
+                    break
+                }else if (i === hierarchyLevels.length-1){
+                    this.setState({
+                        selectedLocation: data[hierarchyLevels[i]]
+                    })
+                    break
+                }
+            }
+            this.enableDisableLists()
+        })
+    }
+
+    componentDidMount = () => {
+        this.setLocations()
+    }
+
+    enableDisableLists = () =>{
+
+        let maxScope = this.state.maxScope
         let enabledDisabledLists = {}
+
         //Disable all fields if global state is disabled
         if (this.props.disabled === true){
-            for (let i = 0; i < levels.length; i++){
-                enabledDisabledLists[levels[i]] = true
+            for (let i = 0; i < hierarchyLevels.length; i++){
+                enabledDisabledLists[hierarchyLevels[i]] = true
             }
-        //If there is no max scope to set to, then enable / disable based on global state
-        }else if (maxScope == null){
-            for (let i = 0; i < levels.length; i++){
-                enabledDisabledLists[levels[i]] = false
-            }
-        //Otherwise, disable / enable based on max scope 
         }else{
             let disabled = true
-            for (let i = 0; i < levels.length; i++){
+            for (let i = 0; i < hierarchyLevels.length; i++){
                 //Disable all levels above maxScope.Level, including maxScope
-                enabledDisabledLists[levels[i]] = disabled
+                enabledDisabledLists[hierarchyLevels[i]] = disabled
     
                 //Enable all levels after maxScope.Level
-                if (levels[i] === maxScope.Level) disabled = false
+                if (hierarchyLevels[i] === maxScope.Type) disabled = false
             }
         }
         this.setState({enabledDisabledLists: enabledDisabledLists})
     }
 
-    setMaxScope = () =>{
-
-    }
-
-    setInitialLocation = async (levelIndex, Id, callback) => {
-        if (levelIndex === 0){
-            callback()
-            return
-        }else{
-            //Set State / LGA / etc
-        
-            //Find object
-            const location = (await this.findLocationByQuery(levels[levelIndex], {Id:Id}))[0]
-            let locationText = `${location.Id}|${location.Name}|${levels[levelIndex]}`
-
-            //Cretae option list (of 1 option for selected location value
-            let option = [<Option key = {0} value = {locationText}>{location.Name}</Option>]
-            let optionListName = `${levels[levelIndex]}List`
-
-            //Set the location and list
-            this.setState({
-                [levels[levelIndex]]: `${location.Id}|${location.Name}|${levels[levelIndex]}`,
-                [optionListName]    : option
-            }, () =>{
-                this.setInitialLocation(levelIndex-1, location.parentId, callback)
-            })
-        }
-    }
-
     handleChange = (level, value) =>{
         //Find Current Level
-        let currentLevelIndex = levels.findIndex((el) => {return el === level}) //Todo: error checking
+        let currentLevelIndex = this.findIndexForLocationType(level)
         let currentLevel = level
 
         //If value is undefined, then Select was cleared so the current Level is one above this level
         if (value === undefined || this.parseLocation(value).Id === "-1"){
-            currentLevel = levels[currentLevelIndex - 1]  
+            currentLevel = hierarchyLevels[currentLevelIndex - 1]  
             this.setState({[level]: undefined, selectedLocation:this.state[currentLevel]}, () =>{
                 this.notifyParent(this.parseLocation(this.state[currentLevel]))
             })
@@ -232,8 +248,8 @@ class LocationSelector extends Component {
         }
         
         //Whenever the value has changed, all the subordinate options have been invalidated 
-        for (let i = currentLevelIndex + 1; i < levels.length; i++){
-            let statePropertyName = levels[i]
+        for (let i = currentLevelIndex + 1; i < hierarchyLevels.length; i++){
+            let statePropertyName = hierarchyLevels[i]
             const x = i
             this.setState({[statePropertyName]: undefined}, () =>{
                 this.updateList(statePropertyName, x)
@@ -241,20 +257,20 @@ class LocationSelector extends Component {
         }
     }
 
-    updateList = async (level, levelIndex) => {
+    updateList = async (level, levelIndex, callBack) => {
+        
         let list = []
-        let listName = `${level}List`   //E.g. We will be updating this.state.FacilityList
-        let queryProperty = levels[levelIndex] //eg level = lga but we need 'LGA' for data.LGA
+        let listName = `${level}List`                       //E.g. We will be updating this.state.FacilityList
+        let queryProperty = hierarchyLevels[levelIndex]      //eg level = lga but we need 'LGA' for data.LGA
 
         //States are special because they don't require a nation lookup
         if (level === "State"){
             list = await this.findAllLocations(level)
-            console.log(list)
         }else{
-            levelIndex = levels.findIndex((el) => {return el === level})
+            levelIndex = hierarchyLevels.findIndex((el) => {return el === level})
 
-            queryProperty = levels[levelIndex] //eg level = lga, dataProperty = LGA
-            let aboveLevel = levels[levelIndex-1]
+            queryProperty = hierarchyLevels[levelIndex] //eg level = lga, queryProperty = LGA
+            let aboveLevel = hierarchyLevels[levelIndex-1]
             if (this.state[aboveLevel] === undefined){
                 //Short circuit if the above level is undefined
                 this.setState({[listName]: []})
@@ -282,17 +298,19 @@ class LocationSelector extends Component {
         if (optionsList.length > 0){
             this.setState({[listName]: optionsList})
         }
+
+        if (callBack) callBack()
     }
 
     parseLocation (value) {
         if (value === undefined) return {
-            Id:"",Name:"",Level:""
+            Id:"",Name:"",Type:""
         }
         let valueArr = value.split("|")
         return{
             Id:     valueArr[0],
             Name:   valueArr[1],
-            Level:  valueArr[2]
+            Type:  valueArr[2]
         }
     }
 
@@ -317,7 +335,6 @@ class LocationSelector extends Component {
                 <br/>
                 <Select
                     showSearch
-                    allowClear
                     style={style}
                     placeholder="State"
                     optionFilterProp="children"
@@ -331,7 +348,6 @@ class LocationSelector extends Component {
                 <br/>
                 <Select
                     showSearch
-                    allowClear
                     style={style}
                     placeholder="LGA"
                     optionFilterProp="children"
@@ -345,7 +361,6 @@ class LocationSelector extends Component {
                 <br/>
                 <Select
                     showSearch
-                    allowClear
                     style={style}
                     placeholder="Ward"
                     optionFilterProp="children"
@@ -359,7 +374,6 @@ class LocationSelector extends Component {
                 <br/>
                 <Select
                     showSearch
-                    allowClear
                     style={style}
                     placeholder="Facility"
                     optionFilterProp="children"
@@ -373,11 +387,7 @@ class LocationSelector extends Component {
                 <br/>
                 <div hidden = {!this.props.showLocation}>
                     <p>
-                        Selected Level: {this.state.selectedLocation ? this.parseLocation(this.state.selectedLocation).Level : ""}
-                    </p>
-                    <br/>
-                    <p>
-                        Selected Location: {this.state.selectedLocation ? this.parseLocation(this.state.selectedLocation).Name : ""}
+                        Selected Location: {`${this.parseLocation(this.state.selectedLocation).Name} (${this.parseLocation(this.state.selectedLocation).Type})`}
                     </p>
                 </div>
                

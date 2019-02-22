@@ -88,12 +88,30 @@ class User extends Component {
     }];
 
     editUser = (id) =>{
+        let newUser = dataSource.find(object =>{
+            return object.Id === id
+        })
+        // if (this.state.selectedUser === newUser){
+        //     this.setState({
+        //         //Flush data first so that any saved changes in the component are flushed
+        //         selectedUser: null
+        //     }, () =>{
+        //         this.setState({
+        //             currentView: "existing", 
+        //             selectedUser: newUser
+        //         })
+        //     })
+        // }else{
+        //     this.setState({
+        //         currentView: "existing", 
+        //         selectedUser: newUser
+        //     })
+        // }
         this.setState({
             currentView: "existing", 
-            selectedUser: dataSource.find(object =>{
-                return object.Id === id
-            }),
+            selectedUser: newUser
         })
+
     }
 
     showHideTableClass = () =>{
@@ -185,10 +203,23 @@ class User extends Component {
                             </div>
                         }
 
-                        {/* For performance, keep the view existing user component in the DOM  */}
+                        {/* Render new component to create a user as required */}
+                        {this.state.currentView !== "existing" ? 
+                            null : 
+                            <div className = "rowVMarginTopSm">
+                                <CreateModifyDeleteUser 
+                                    showTable_f = {this.showTable} 
+                                    user = {this.state.selectedUser} 
+                                    mode = "existing" 
+                                    refreshUsers ={this.populateUsers}
+                                />
+                            </div>
+                        }
+
+                        {/* For performance, keep the view existing user component in the DOM 
                         <div className = {this.showHideViewClass()}>
                             <CreateModifyDeleteUser showTable_f = {this.showTable} user = {this.state.selectedUser} mode = "existing" refreshUsers ={this.populateUsers}></CreateModifyDeleteUser>
-                        </div>
+                        </div> */}
                     </Col>      
                 </Row>
             </div>
