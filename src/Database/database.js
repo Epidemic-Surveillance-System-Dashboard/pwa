@@ -18,7 +18,10 @@ db.version(1).stores({
 
     //Users
     Dashboard:"Id",
-    User:"Id" // only store non-essential information
+    User:"Id",   // only store non-essential information
+
+    //Auth
+    LocalUser: "Id"
 
 })
 

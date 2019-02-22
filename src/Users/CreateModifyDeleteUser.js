@@ -227,8 +227,7 @@ class CreateModifyDeleteUser extends Component {
             errorMessage = "Failed to create user. Please try again later."
             method = "POST"
             successHandler = (result) =>{
-                console.log(result)
-                userObject.Id = result[0].Id
+                userObject.Id = result.Id
                 db.User.add(userObject).then(() =>{
                     message.success(successMessage)
                     this.props.refreshUsers()
@@ -244,7 +243,7 @@ class CreateModifyDeleteUser extends Component {
             errorMessage = "Failed to update user. Please try again later."
             method = "PUT"
             successHandler = (result) =>{
-                if (result.result === "update success"){                
+                if (result.result === "Update successful"){                
                     db.User.put(userObject).then(() =>{
                         message.success(successMessage)
                         this.props.refreshUsers()
