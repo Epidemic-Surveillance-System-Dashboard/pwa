@@ -119,6 +119,10 @@ class LocationSelector extends Component {
         //to revert the selected location when editing is cancelled.
     }
 
+    componentWillMount = () =>{
+        this.setLocations()
+    }
+
     findIndexForLocationType = (locationType) =>{
         return hierarchyLevels.findIndex((el) => {
             return el === locationType
@@ -200,10 +204,6 @@ class LocationSelector extends Component {
             }
             this.enableDisableLists()
         })
-    }
-
-    componentDidMount = () => {
-        this.setLocations()
     }
 
     enableDisableLists = () =>{
