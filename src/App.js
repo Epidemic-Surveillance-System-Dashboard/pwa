@@ -15,6 +15,7 @@ import SampleHome from './SampleHome/SampleHome'
 import Account from './Account/Account'
 import User from './Users/Users'
 import Sync from './Sync/Sync'
+import Analysis from './Analysis/Analysis'
 
 import './App.css';
 
@@ -26,6 +27,7 @@ const pathNamesAndTitles = {
 	"/": "Home",
 	"/account": "Account",
 	"/dashboard": "Dashboard",
+	"/analysis": "Analysis",
 	"/users"	: "Users",
 	"/sync"		: "Synchronize Data"
 }
@@ -77,16 +79,21 @@ class App extends Component {
 								</Link>
 							</Menu.Item>
 							<Menu.Item key="3">
+								<Link to="/analysis">
+									<Icon type="stock" />Analysis
+								</Link>
+							</Menu.Item>
+							<Menu.Item key="4">
 								<Link to="/account">
 									<Icon type="user" />Account
 								</Link>
 							</Menu.Item>
-							<Menu.Item key="4">
+							<Menu.Item key="5">
 								<Link to="/users">
 									<Icon type="team" />Users
 								</Link>
 							</Menu.Item>
-							<Menu.Item key="5">
+							<Menu.Item key="6">
 								<Link to="/sync">
 									<Icon type="sync" />Synchronize Data
 								</Link>
@@ -103,6 +110,7 @@ class App extends Component {
 					<Content>
 						<Route exact path="/" component={SampleHome} />
 						<Route path="/dashboard" component={Dashboard} />
+						<Route path="/analysis" component={Analysis} />
 						<Route path="/account" component={Account} />
 						<Route path="/users" component={User} />
 						<Route path="/sync" component={Sync} />
