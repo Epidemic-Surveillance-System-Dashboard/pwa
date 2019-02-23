@@ -217,7 +217,7 @@ class CreateModifyDeleteUser extends Component {
         let url, successMessage, errorMessage, method = ""
         let successHandler = () => {}
         let userObject = this.state.userInfo
-        console.log(this.state.userInfo)
+
         if (this.state.mode === "new"){
             //Create User
             userObject.UserType = "user" //hardCode for now
@@ -260,7 +260,7 @@ class CreateModifyDeleteUser extends Component {
             },
             body: JSON.stringify(userObject),
         })
-        console.log(request)
+
         request.json().then(successHandler)
         .catch((error) =>{
             console.log(error)

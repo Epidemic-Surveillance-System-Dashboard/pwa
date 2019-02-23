@@ -16,12 +16,12 @@ db.version(1).stores({
     Data:"Id,time,metricId,facilityId", //Index everything here
     FacilityView:"id,Name,WardId,LGAId,StateId",
 
-    //Users
-    Dashboard:"Id",
+    //Users (all of ESSD)
     User:"Id",   // only store non-essential information
 
-    //Auth
-    LocalUser: "Id"
+    //User (local)
+    LocalUser: "Id",
+    Dashboard:"Id",
 
 })
 
