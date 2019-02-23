@@ -27,11 +27,7 @@ class Analysis extends Component {
         loading: false,
         list: listData,
     }
-    handleMenuClick = (location) =>{
-        message.info('Click on menu item.');
-        console.log('click', location);
-
-    }
+  
     updateLocation = (location) => {
         this.setState({ location: location })
     }
@@ -80,18 +76,10 @@ class Analysis extends Component {
                                 renderItem={item => (
                                     <List.Item
                                         key={item.facility}
-                                        actions={[<a>Edit</a>,
-                                        <Dropdown overlay={
-                                            <Menu onClick={this.handleMenuClick(item.facility)}>
-                                                <Menu.Item key="1"><Icon type="edit" />Edit Location</Menu.Item>
-                                                <Menu.Item key="2"><Icon type="bg-colors" />Change Colors</Menu.Item>
-                                                <Menu.Item key="3"><Icon type="delete" />Delete</Menu.Item>
-                                            </Menu>
-                                        } trigger={['click']}>
+                                        actions={[,
                                             <Button style={{ marginLeft: 8 }}>
-                                                Options <Icon type="down" />
+                                                Edit <Icon type="edit" />
                                             </Button>
-                                        </Dropdown>
                                         ]}>
                                         <List.Item.Meta
                                             avatar={<Avatar icon="environment" style={{ backgroundColor: item.color }} />}
