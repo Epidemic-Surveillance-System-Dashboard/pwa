@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 
-import { Row, Col, Table, Spin } from 'antd'
-import { Button } from 'antd/lib/radio';
+import { Row, Col, Table, Spin, Button} from 'antd'
 
 import CreateModifyDeleteUser from './CreateModifyDeleteUser'
 
@@ -11,8 +10,7 @@ let dataSource = []
 
 class User extends Component {
 
-    componentWillMount = () =>{ 
-        //Get Users from Database
+    populateUsers = () =>{
         db.User.toArray((array) =>{
             array.forEach((element) =>{
                 //Create additional properties as required
@@ -20,16 +18,35 @@ class User extends Component {
                 element.name = `${element.FirstName} ${element.LastName}`
                 element.permissionLevel = "National"
             })
-            dataSource = array
+
+            dataSource = array.sort((a,b) =>{
+                //Sort by last name, then first name
+                try{
+                    let lastNameCompare = a.LastName.localeCompare(b.LastName)
+                    if (lastNameCompare === 0){
+                        return a.FirstName.localeCompare(b.FirstName)
+                    }else{
+                        return lastNameCompare
+                    }
+                    
+                }catch(e){
+                    return -1
+                }
+            })
             this.setState({dataLoaded:true})
 
         })
     }
 
+    componentWillMount = () =>{ 
+        this.populateUsers()        
+    }
+
     state = {
         showTable: true,
         selectedUser: null,
-        dataLoaded:false
+        dataLoaded:false,
+        currentView: "table"
     }
 
     columns = [{
@@ -71,43 +88,127 @@ class User extends Component {
     }];
 
     editUser = (id) =>{
-        this.setState({
-            showTable: false, 
-            selectedUser: dataSource.find(object =>{
-                return object.Id === id
-            })
+        let newUser = dataSource.find(object =>{
+            return object.Id === id
         })
+
+        this.setState({
+            currentView: "existing", 
+            selectedUser: newUser
+        })
+
     }
 
     showHideTableClass = () =>{
-        return this.state.showTable === true ? "" : "displayNone"
+        return this.state.currentView === "table" ? "" : "displayNone"
     }
 
-    showHideDetailViewClass = () =>{
-        return this.state.showTable === true ? "displayNone" : ""
+    showHideViewClass = () =>{
+        return this.state.currentView === "existing" ? "" : "displayNone"
     }
 
     showTable = () =>{
-        this.setState({showTable: true})
+        this.setState(
+            {currentView: "table"}
+        )
     }
 
-    
+    addUser = () =>{
+        this.setState({
+            currentView : "new"
+        })
+    }
+
+    tableHidden = () =>{
+        return this.state.currentView !== "table"
+    }
+
+    colStyle = {
+        xs:{span:24, offset:0},
+        sm:{span:22, offset:1},
+        md:{span:18, offset:3},
+        lg:{span:16, offset:4}
+    }
 
     render() {
+
         return (
-            <Row>
-                <Col xs={{ span: 24, offset: 0 }} sm = {{span: 22, offset:1}} md={{ span: 18, offset: 3 }} lg = {{span: 16, offset: 4}}>
-                <div className = "spacing" hidden = {this.state.dataLoaded}>
-                    <Spin size="large" hidden = {this.state.dataLoaded} />
-                </div>
-                <div hidden = {!this.state.dataLoaded}>
-                    <Table dataSource={dataSource} columns={this.columns} className = {this.showHideTableClass()}/>
-                    <div className = {this.showHideDetailViewClass()}>
-                        <CreateModifyDeleteUser showTable_f = {this.showTable} user = {this.state.selectedUser} mode = "create"></CreateModifyDeleteUser>
-                    </div>
-                </div>        
-                </Col>      
-            </Row>
+            <div>
+                {/* Data not yet loaded  */}
+                <Row className="rowVMarginSm" hidden = {this.state.dataLoaded}>
+                    <Col {...this.colStyle}>
+
+                        <div className = "spacing" >
+                            <Spin size="large"/>
+                        </div>
+                    </Col>
+                </Row>
+                
+                {/* Data loaded  */}
+                {
+                    this.state.currentView === "table" &&
+                    <Row className="rowVMarginTopSm" gutter={-1}>
+                        <Col className = "left" xs={{span: 16, offset:0}} sm = {{span:14, offset:1}} md = {{span: 10, offset:3}} lg = {{span: 8, offset:4}}>
+                            <h3>Users Summary</h3>
+                        </Col>
+                        <Col className = "right" span={8}>
+                            <Button 
+                                onClick = {this.addUser}
+                                className = {this.showHideTableClass()}
+                                icon = "user-add"
+                                type = "primary"
+                                >
+                                Add User
+                            </Button>
+                        </Col>
+                    </Row>
+                }
+                
+                <Row>
+                    <Col {...this.colStyle}>
+                        <div className = "rowVMarginTopSm">
+                        <Table 
+                            dataSource={dataSource}
+                            columns={this.columns}
+                            className = {this.showHideTableClass()}
+                        />
+
+                        </div>
+                      
+                        {/* Render new component to create a user as required */}
+                        {this.state.currentView !== "new" ? 
+                            null : 
+                            <div className = "rowVMarginTopSm">
+                                <CreateModifyDeleteUser 
+                                    showTable_f = {this.showTable} 
+                                    user = {null} 
+                                    mode = "new" 
+                                    refreshUsers ={this.populateUsers}
+                                />
+                            </div>
+                        }
+
+                        {/* Render new component to create a user as required */}
+                        {this.state.currentView !== "existing" ? 
+                            null : 
+                            <div className = "rowVMarginTopSm">
+                                <CreateModifyDeleteUser 
+                                    showTable_f = {this.showTable} 
+                                    user = {this.state.selectedUser} 
+                                    mode = "existing" 
+                                    refreshUsers ={this.populateUsers}
+                                />
+                            </div>
+                        }
+
+                        {/* For performance, keep the view existing user component in the DOM 
+                        <div className = {this.showHideViewClass()}>
+                            <CreateModifyDeleteUser showTable_f = {this.showTable} user = {this.state.selectedUser} mode = "existing" refreshUsers ={this.populateUsers}></CreateModifyDeleteUser>
+                        </div> */}
+                    </Col>      
+                </Row>
+            </div>
+                
         )
     }
 }

@@ -5,11 +5,9 @@ import {Select} from 'antd'
 import db from '../Database/database'
 
 const hierarchyLevels = [
-    "National",
-    "State",
-    "LGA",
-    "Ward",
-    "Facility"
+    "Group",
+    "Set",
+    "Metric",
 ]
 
 const Option = Select.Option;
@@ -21,13 +19,12 @@ const style = {
 /**
  * Selects a loction in Nigeria
  * @param {parentHandler} - Function passed in by the parent that takes a LocationObject with props {Id, Name, Type} and updates the parent UI
- * @param {showLocation} - Boolean that shows or hides LocationSelector's built-in selected location text
- * @param {maxScope}: optional - {Id: "188", Level: "State"}
- * @param {initialLocation}
+ * @param {showData} - Boolean that shows or hides LocationSelector's built-in selected location text
+ * @param {initialData}
  */
-class LocationSelector extends Component {
+class MetricSelector extends Component {
 
-    findAllLocations = (type) => {
+    findAll = (type) => {
         return new Promise((resolve) =>{
             //Cannot access type via db[type], so we have to do it manually
             let callback = (data) => {
@@ -35,17 +32,14 @@ class LocationSelector extends Component {
             }
 
             switch(type){
-                case "Facility":
-                    db.Facility.toArray(callback)
+                case "Metric":
+                    db.Metrics.toArray(callback)
                 break
-                case "Ward":
-                    db.Ward.toArray(callback)
+                case "Set":
+                    db.Sets.toArray(callback)
                 break
-                case "LGA":
-                    db.LGA.toArray(callback)
-                break
-                case "State":
-                    db.State.toArray(callback)
+                case "Group":
+                    db.Groups.toArray(callback)
                 break
                 default:
                     //
@@ -54,24 +48,21 @@ class LocationSelector extends Component {
         })
     }
 
-    findLocationByQuery(type, queryParams){
+    findByQuery(type, queryParams){
         return new Promise((resolve) =>{
             //Cannot access type via db[type], so we have to do it manually
             let callback = (data) => {
                 resolve (data) 
             }
             switch(type){
-                case "Facility":
-                    db.Facility.where(queryParams).toArray(callback)
+                case "Metric":
+                    db.Metrics.where(queryParams).toArray(callback)
                 break
-                case "Ward":
-                    db.Ward.where(queryParams).toArray(callback)
+                case "Set":
+                    db.Sets.where(queryParams).toArray(callback)
                 break
-                case "LGA":
-                    db.LGA.where(queryParams).toArray(callback)
-                break
-                case "State":
-                    db.State.where(queryParams).toArray(callback)
+                case "Group":
+                    db.Groups.where(queryParams).toArray(callback)
                 break
                 default:
                     //
@@ -82,29 +73,24 @@ class LocationSelector extends Component {
 
     state = {
 
-        //Selected locations at each level
-        National: "1|Nigeria|National" ,
-        State:undefined,
-        LGA:undefined,
-        Ward:undefined,
-        Facility:undefined,
+        //Selected values at each level
+        Group:undefined,
+        Set:undefined,
+        Metric:undefined,
 
         //Selection lists to show at each level
-        StateList: undefined,
-        LGAList: undefined,
-        WardList:undefined,
-        FacilityList:undefined,
+        GroupList: undefined,
+        SetList: undefined,
+        MetricList:undefined,      
 
         //Enables / disables each list
         enabledDisabledLists:{
-            "National"  : false,
-            "State"     : false,
-            "LGA"       : false,
-            "Ward"      : false,
-            "Facility"  : false
+            "Group"  : false,
+            "Set"     : false,
+            "Metric"       : false,
         },
 
-        selectedLocation: "1|Nigeria|National"
+        selectedData: undefined
     }
 
     componentDidUpdate = async (oldProps) => {
@@ -120,7 +106,7 @@ class LocationSelector extends Component {
     }
 
     componentWillMount = () =>{
-        this.setLocations()
+        this.setData()
     }
 
     findIndexForLocationType = (locationType) =>{
@@ -129,60 +115,51 @@ class LocationSelector extends Component {
         })
     }
 
-    setLocations = async () =>{
+    setData = async () =>{
         /**
          * Preconditions:
-         *  - initialLocation is within maxScope
-         *  - maxScope must be higher or equal to initialLocation
+         *  - initialData is within maxScope
          */
 
-        let maxScope = {
-            Type:  this.props.maxScope ? this.props.maxScope.Type : "National",
-            Id:     this.props.maxScope ? this.props.maxScope.Id : "1",
-        }
-
-        let initialLocation = {
-            Type:  this.props.initialLocation.Type ? this.props.initialLocation.Type : maxScope.Type,
-            Id:     this.props.initialLocation.Id ? this.props.initialLocation.Id : maxScope.Id,
+        let initialData = {
+            Type:  this.props.initialData ? this.props.initialData.Type : "Group",
+            Id:     this.props.initialData ? this.props.initialData.Id : "207",
         }
 
         this.setState({
-            maxScope: maxScope,
-            initialLocation: initialLocation
+            initialData: initialData
 
         }, () =>{
 
-            let initLocationIndex = this.findIndexForLocationType(initialLocation.Type)
+            let initLocationIndex = this.findIndexForLocationType(initialData.Type)
 
             //Work backwards to define all the locations that the initial location belongs to
     
             let locations = {
-                "National"  : "1|Nigeria|National",
-                "State"     : undefined,
-                "LGA"       : undefined,
-                "Ward"      : undefined,
-                "Facility"  : undefined
+                "Group"  : undefined,
+                "Set"     : undefined,
+                "Metric"   : undefined,
             }
             
-            this.getLocationHierarchyForInitLocation(initLocationIndex, initialLocation.Id, this.setLocationState, locations)
+            this.getLocationHierarchyForInitLocation(initLocationIndex, initialData.Id, this.setDataState, locations)
         })
 
 
     }
 
     getLocationHierarchyForInitLocation = async (currentIndex, currentLocationId,completionCallback, locations) =>{
+
+        let location = await (this.findByQuery(hierarchyLevels[currentIndex], {Id:currentLocationId}))
+        location = location[0]
+        locations[hierarchyLevels[currentIndex]] = `${location.Id}|${location.Name}|${hierarchyLevels[currentIndex]}`
         if (currentIndex === 0){
             completionCallback(locations)
-            return
         }else{
-            let location = await (this.findLocationByQuery(hierarchyLevels[currentIndex], {Id:currentLocationId}))
-            location = location[0]
-            locations[hierarchyLevels[currentIndex]] = `${location.Id}|${location.Name}|${hierarchyLevels[currentIndex]}`
             this.getLocationHierarchyForInitLocation(currentIndex-1, location.parentId, completionCallback, locations)
         }
     }
 
-    setLocationState = (data) =>{
+    setDataState = (data) =>{
         this.setState({...data}, () =>{
             //Then update lists for each level that is defined, plus the first undefined level
             for (let i = 0; i < hierarchyLevels.length; i++){
@@ -191,17 +168,25 @@ class LocationSelector extends Component {
                 //Set the selected location to the parent of the first undefined location
                 //or the facility level
 
-                let selectedLocation = undefined
+                let selectedData = undefined
 
-                if (selectedLocation !== undefined){
+                if (data[hierarchyLevels[i]] === undefined){
+                    selectedData =  data[hierarchyLevels[i-1]]
+                }else if (i === hierarchyLevels.length-1){
+                    selectedData =  data[hierarchyLevels[i]]
+                }
+
+                if (selectedData !== undefined){
                     let callback = () =>{
-                        this.notifyParent(this.parseData(this.state.selectedLocation))
+                        this.notifyParent(this.parseData(this.state.selectedData))
                     }
+
                     this.setState({
-                        selectedLocation: selectedLocation
+                        selectedData: selectedData
                     }, callback)
                     break
                 }
+
             }
             this.enableDisableLists()
         })
@@ -209,7 +194,6 @@ class LocationSelector extends Component {
 
     enableDisableLists = () =>{
 
-        let maxScope = this.state.maxScope
         let enabledDisabledLists = {}
 
         //Disable all fields if global state is disabled
@@ -218,13 +202,8 @@ class LocationSelector extends Component {
                 enabledDisabledLists[hierarchyLevels[i]] = true
             }
         }else{
-            let disabled = true
             for (let i = 0; i < hierarchyLevels.length; i++){
-                //Disable all levels above maxScope.Level, including maxScope
-                enabledDisabledLists[hierarchyLevels[i]] = disabled
-    
-                //Enable all levels after maxScope.Level
-                if (hierarchyLevels[i] === maxScope.Type) disabled = false
+                enabledDisabledLists[hierarchyLevels[i]] = false
             }
         }
         this.setState({enabledDisabledLists: enabledDisabledLists})
@@ -236,15 +215,15 @@ class LocationSelector extends Component {
         let currentLevel = level
 
         //If value is undefined, then Select was cleared so the current Level is one above this level
-        if (value === undefined || this.parseLocation(value).Id === "-1"){
+        if (value === undefined || this.parseData(value).Id === "-1"){
             currentLevel = hierarchyLevels[currentLevelIndex - 1]  
-            this.setState({[level]: undefined, selectedLocation:this.state[currentLevel]}, () =>{
-                this.notifyParent(this.parseLocation(this.state[currentLevel]))
+            this.setState({[level]: undefined, selectedData:this.state[currentLevel]}, () =>{
+                this.notifyParent(this.parseData(this.state[currentLevel]))
             })
         }else{
             //Update Select
-            this.setState({[level]: value, selectedLocation:value},  () =>{
-                this.notifyParent(this.parseLocation(this.state[currentLevel]))
+            this.setState({[level]: value, selectedData:value},  () =>{
+                this.notifyParent(this.parseData(this.state[currentLevel]))
             })
         }
         
@@ -265,8 +244,8 @@ class LocationSelector extends Component {
         let queryProperty = hierarchyLevels[levelIndex]      //eg level = lga but we need 'LGA' for data.LGA
 
         //States are special because they don't require a nation lookup
-        if (level === "State"){
-            list = await this.findAllLocations(level)
+        if (level === "Group"){
+            list = await this.findAll(level)
         }else{
             levelIndex = hierarchyLevels.findIndex((el) => {return el === level})
 
@@ -277,8 +256,8 @@ class LocationSelector extends Component {
                 this.setState({[listName]: []})
                 return
             }else{
-                let aboveLevelId = this.parseLocation(this.state[aboveLevel]).Id
-                list = await this.findLocationByQuery(queryProperty,{parentId: aboveLevelId})
+                let aboveLevelId = this.parseData(this.state[aboveLevel]).Id
+                list = await this.findByQuery(queryProperty,{parentId: aboveLevelId})
             }
         }
 
@@ -303,7 +282,7 @@ class LocationSelector extends Component {
         if (callBack) callBack()
     }
 
-    parseLocation (value) {
+    parseData (value) {
         if (value === undefined) return {
             Id:"",Name:"",Type:""
         }
@@ -324,71 +303,49 @@ class LocationSelector extends Component {
     render() {
         return (
            <div>
-               <Select
+                <Select
+                    showSearch
                     style={style}
-                    placeholder="Country"
+                    placeholder="Group"
                     optionFilterProp="children"
-                    defaultValue = "Nigeria"
-                    disabled
+                    value = {this.state.Group}
+                    onChange={(value) => {this.handleChange("Group", value)}}
+                    disabled = {this.state.enabledDisabledLists.Group}
+                    filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                 >
-                    <Option value="Nigeria">Nigeria</Option>
+                    {this.state.GroupList}
                 </Select>
                 <br/>
                 <Select
                     showSearch
                     style={style}
-                    placeholder="State"
+                    placeholder="Set"
                     optionFilterProp="children"
-                    value = {this.state.State}
-                    onChange={(value) => {this.handleChange("State", value)}}
-                    disabled = {this.state.enabledDisabledLists.State}
+                    value = {this.state.Set}
+                    onChange={(value) => {this.handleChange("Set", value)}}
+                    disabled = {this.state.enabledDisabledLists.Set}
                     filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                 >
-                    {this.state.StateList}
+                    {this.state.SetList}
                 </Select>
                 <br/>
                 <Select
                     showSearch
                     style={style}
-                    placeholder="LGA"
+                    placeholder="Metric"
                     optionFilterProp="children"
-                    value = {this.state.LGA}
-                    onChange={(value) => {this.handleChange("LGA", value)}}
-                    disabled = {this.state.enabledDisabledLists.LGA}
+                    value = {this.state.Metric}
+                    onChange={(value) => {this.handleChange("Metric", value)}}
+                    disabled = {this.state.enabledDisabledLists.Metric}
                     filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                 >
-                    {this.state.LGAList}
+                    {this.state.MetricList}
                 </Select>
+            
                 <br/>
-                <Select
-                    showSearch
-                    style={style}
-                    placeholder="Ward"
-                    optionFilterProp="children"
-                    value = {this.state.Ward}
-                    onChange={(value) => {this.handleChange("Ward", value)}}
-                    disabled = {this.state.enabledDisabledLists.Ward}
-                    filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-                >
-                    {this.state.WardList}
-                </Select>
-                <br/>
-                <Select
-                    showSearch
-                    style={style}
-                    placeholder="Facility"
-                    optionFilterProp="children"
-                    value = {this.state.Facility}
-                    onChange={(value) => {this.handleChange("Facility", value)}}
-                    disabled = {this.state.enabledDisabledLists.Facility}
-                    filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-                >
-                    {this.state.FacilityList}
-                </Select>
-                <br/>
-                <div hidden = {!this.props.showLocation}>
+                <div hidden = {!this.props.showData}>
                     <p>
-                        Selected Location: {`${this.parseLocation(this.state.selectedLocation).Name} (${this.parseLocation(this.state.selectedLocation).Type})`}
+                        Selected data: {`${this.parseData(this.state.selectedData).Name} (${this.parseData(this.state.selectedData).Type})`}
                     </p>
                 </div>
                
@@ -397,4 +354,4 @@ class LocationSelector extends Component {
     }
 }
 
-export default LocationSelector;
+export default MetricSelector;

@@ -1,40 +1,40 @@
 import React, { Component } from 'react'
-import {Button, Form, Input, Select, Row, Col, Divider} from 'antd'
+import {Button, Input, Row, Col, Divider, Popconfirm, message} from 'antd'
 
+import LocationSelector from "../LocationSelector/LocationSelector"
+
+import db from '../Database/database'
 
 const userFields = [
     "FirstName",
     "LastName",
     "Email",
     "Phone",
-    "Id"
+    "Id",
+    "LocationId",
+    "LocationType"
 ]
 
 class CreateModifyDeleteUser extends Component {
 
+    componentDidMount(){
+        if (this.props.mode === "new") this.enableEditing()
+    }
+
     componentWillMount(){
-        this.setState({userInfo: this.computedState(this.props.user)})
-        this.setState({passedUser: this.props.user})
+        this.setState({
+            userInfo: this.computedState(this.props.user),
+            passedUser: this.props.user
+        })
     }
 
     componentDidUpdate(oldProps) {
         const newProps = this.props
         if(oldProps.user !== newProps.user) {
-            this.setState({passedUser: this.props.user})
-            this.setState({userInfo: this.computedState(newProps.user)})
-        }
-    }
-
-
-    labelStyle = {
-        xs:{
-            span: 6
-        }
-    }
-
-    inputStyle = {
-        xs:{
-            span: 18
+            this.setState({
+                passedUser: this.props.user,
+                userInfo: this.computedState(newProps.user)
+            })
         }
     }
 
@@ -49,7 +49,7 @@ class CreateModifyDeleteUser extends Component {
     state = {
         mode: this.props.mode ? this.props.mode : "view", //View (default unless overridden), create, or edit,
         userChanged: false,
-        disabled: true
+        disabled: true,
 
         //userInfo holds current computed properties (including modifications)
         //passedUser holds the original user information
@@ -81,11 +81,28 @@ class CreateModifyDeleteUser extends Component {
         return true
     }
 
-    passwordFeatures = () =>{
+    confirmDelete = async () =>{
+        let url = `https://essd-backend-dev.azurewebsites.net/api/users/deleteUser/${this.state.passedUser.Id}`
+        //Send Delete HTTP Request
+        let deleteRequest = await fetch(url, {method: "delete"})
+        deleteRequest.json().then((data) =>{
+            db.User.delete(this.state.passedUser.Id).then(() =>{
+                message.success("Successfully deleted user.")
+                this.props.refreshUsers()
+            })
+        })
+        .catch((error) =>{
+            message.error("Sorry, something went wrong.")
+        })
+    }
+
+    adminFeatures = () =>{
         if (this.props.user != null) return(
             <div>
-                <Col className="center">
-                    <Button type ="danger">Delete User</Button>
+                <Col className="right">
+                    <Popconfirm placement="topRight" title="Are you sure you want to delete this user? This action cannot be reverted." onConfirm={this.confirmDelete} okText="Delete" cancelText="Cancel">
+                        <Button type ="danger">Delete User</Button>
+                    </Popconfirm>
                 </Col>
 
             </div>
@@ -108,7 +125,7 @@ class CreateModifyDeleteUser extends Component {
             "First Name",
             "Last Name",
             "Email",
-            "Phone"
+            "Phone",
         ]
 
         let array = []
@@ -118,20 +135,38 @@ class CreateModifyDeleteUser extends Component {
             let featureNameKey = featureName.replace(" ","")   //e.g. "First Name" -> user.FirstName
             array.push(
                 <Input addonBefore = {this.inputLabelTab(featureName)}
-                    value = {this.state.userInfo[featureNameKey]}
+                    value = {this.state.userInfo ? this.state.userInfo[featureNameKey] : ""}
                     disabled={this.state.disabled}
                     key = {i}
                     onChange = {(e) =>{this.inputChanged(featureNameKey,e)}}/>
             )
         }  
 
-        if (this.props.user != null) return (
+        return(
             <Col>
+                <Divider/>
                 {array}
+                <Divider/>
+                {/* Location */}
+                <p>Location</p>
+                {/* Todo: add max scope depending on admin rights*/}
+                <LocationSelector 
+                    parentHandler = {this.updateLocation} 
+                    showLocation = {true} 
+                    initialLocation = {{Id: this.state.userInfo.LocationId, Type :this.state.userInfo.LocationType}}
+                    disabled={this.state.disabled}/>
             </Col>
         )
 
-        return null
+    }
+
+    updateLocation = (location) =>{
+        let userInfo = this.state.userInfo
+        userInfo.LocationId = location.Id
+        userInfo.LocationType = location.Type
+        this.setState({
+            userInfo: userInfo
+        })
     }
 
     modifyControls = () => {
@@ -142,16 +177,18 @@ class CreateModifyDeleteUser extends Component {
         );
         else return (
             <div>
-                <Button onClick = {this.cancelEditing}>Cancel</Button>
-                <Button disabled = {!this.state.userChanged}>Save</Button>
+                <Button hidden = {this.state.mode === "new"} onClick = {this.cancelEditing}>Cancel</Button>
+                <Button disabled = {!this.state.userChanged} onClick = {this.save}>Save</Button>
             </div>
         )
     }
 
     cancelEditing = () =>{
         let user = this.computedState(this.state.passedUser)
-        this.setState({userInfo: user})
-        this.setState({disabled:true})
+        this.setState({
+            userInfo: user,
+            disabled:true
+        })
         this.userInformationChanged()
     }
 
@@ -161,14 +198,81 @@ class CreateModifyDeleteUser extends Component {
     }
 
     userInformationChanged = () =>{
+        //Todo: error checking here for valid inputs
         let changed = false
-        for (let i = 0; i < userFields.length; i++){
-            if (this.state.userInfo[userFields[i]] !== this.state.passedUser[userFields[i]]){
-                changed = true
-                break
+        if (this.props.mode === "new") {
+            changed = true
+        }else{
+            for (let i = 0; i < userFields.length; i++){
+                if (this.state.userInfo[userFields[i]] !== this.state.passedUser[userFields[i]]){
+                    changed = true
+                    break
+                }
             }
         }
         this.setState({userChanged: changed})
+    }
+
+    save = async () =>{
+        let url, successMessage, errorMessage, method = ""
+        let successHandler = () => {}
+        let userObject = this.state.userInfo
+
+        if (this.state.mode === "new"){
+            //Create User
+            userObject.UserType = "user" //hardCode for now
+            delete userObject.Id
+            url = "https://essd-backend-dev.azurewebsites.net/api/users/addUser"
+            successMessage = "Successfully added user."
+            errorMessage = "Failed to create user. Please try again later."
+            method = "POST"
+            successHandler = (result) =>{
+                userObject.Id = result.Id
+                db.User.add(userObject).then(() =>{
+                    message.success(successMessage)
+                    this.props.refreshUsers()
+                    this.cancelEditing()
+                })
+            }
+        }else{
+
+            //Update User
+            userObject.UserType = "user" //hardCode for now
+            url = "https://essd-backend-dev.azurewebsites.net/api/users/updateUser"
+            successMessage = "Successfully updated user."
+            errorMessage = "Failed to update user. Please try again later."
+            method = "PUT"
+            successHandler = (result) =>{
+                if (result.result === "Update successful"){                
+                    db.User.put(userObject).then(() =>{
+                        message.success(successMessage)
+                        this.props.refreshUsers()
+                        this.cancelEditing()
+                    })
+                }
+            }
+        }
+
+        let request = await fetch(url, {
+            method: method,
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(userObject),
+        })
+
+        request.json().then(successHandler)
+        .catch((error) =>{
+            console.log(error)
+            message.error(errorMessage)
+        })
+
+    }
+
+    back = () =>{
+        //Remove any changes before executing callback
+        this.cancelEditing()
+        this.props.showTable_f()
     }
 /**
  * Always render basic elements (first name, last name, etc)
@@ -179,20 +283,17 @@ class CreateModifyDeleteUser extends Component {
     render(){
         return(
             <div>
-                <Row className="rowVMarginSm rowVMarginTopSm">
+                <Row className="rowVMarginSm ">
                     <Col>
-                        <Button onClick = {this.props.showTable_f} icon="caret-left">Back</Button>
+                        <Button onClick = {this.back} icon="caret-left">Back</Button>
                     </Col>
                 </Row>
                 <Row className="rowVMarginSm">
-                    <h2>
-                        User Details
-                    </h2>
+                    <h3>User Details</h3>
                     {this.modifyControls()}
                     {this.basicFeatures()}
                     <Divider/>
-                    {this.passwordFeatures()}
-                    
+                    {this.adminFeatures()}
                 </Row>
                 
             </div>

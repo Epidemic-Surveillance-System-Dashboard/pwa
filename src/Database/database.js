@@ -4,21 +4,24 @@ const db = new Dexie('ESSD_DB')
 
 db.version(1).stores({
     //Locations
-    Facility:"Id",
-    Ward:"Id",
-    LGA:"Id",
+    Facility:"Id,parentId",
+    Ward:"Id,parentId",
+    LGA:"Id,parentId",
     State:"Id",
 
     //Data
-    Groups:"id",
-    Sets:"Id",
-    Metrics:"Id",
+    Groups:"Id",
+    Sets:"Id,parentId",
+    Metrics:"Id,parentId",
     Data:"Id,time,metricId,facilityId", //Index everything here
     FacilityView:"id,Name,WardId,LGAId,StateId",
 
-    //Users
+    //Users (all of ESSD)
+    User:"Id",   // only store non-essential information
+
+    //User (local)
+    LocalUser: "Id",
     Dashboard:"Id",
-    User:"Id" // only store non-essential information
 
 })
 
