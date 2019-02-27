@@ -20,10 +20,8 @@ class Sync extends Component {
                 //Todo: scope the user requests as per the user's roles
                 dataName:"user",
                 callback: (data) =>{
-                    console.log(data)
                     return new Promise ((resolve) =>{
                         db.User.clear().then(()=>{
-                            console.log(data)
                             db.User.bulkAdd(data.users).then(() =>{
                                 resolve(true)
                             }).catch((e) => {

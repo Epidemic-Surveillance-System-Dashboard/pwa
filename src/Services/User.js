@@ -50,9 +50,11 @@ function logout(){
 function user(){
     return new Promise ((resolve, reject) =>{
         db.LocalUser.toArray(arr =>{
-            if (arr.length !== 0) resolve(null)
+            if (arr.length !== 1) resolve(null)
             else{
-                resolve(arr[0])
+                let result = arr[0]
+                result.userType = "Admin" //hard code for now
+                resolve(result)
             }
         })
     })
