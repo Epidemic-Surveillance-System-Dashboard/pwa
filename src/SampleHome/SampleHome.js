@@ -4,6 +4,7 @@ import {Row, Col} from 'antd'
 import './SampleHome.css';
 import MetricSelector from "../MetricSelector/MetricSelector"
 import LocationSelector from "../LocationSelector/LocationSelector"
+import Login from "../Login/Login"
 import userService from '../Services/User'
 
 class App extends Component {
@@ -33,7 +34,7 @@ class App extends Component {
                     <h4>{this.state.location ? this.state.location.Name : ""}</h4>
                     <LocationSelector parentHandler = {this.updateLocation} showLocation = {false}></LocationSelector>
                 </header> */}
-                <Row>
+                {/* <Row>
                     User Name is {this.state.user.FirstName}
                 </Row>
                 <Row>
@@ -41,8 +42,10 @@ class App extends Component {
                     <h4>{this.state.location ? this.state.location.Name : ""}</h4>
                     <MetricSelector parentHandler = {this.updateLocation} showData = {true}></MetricSelector>
                     </Col>
-                </Row>
-                   
+                </Row> */}
+                <Login>
+                    
+                </Login>
             </div>
         );
     }

@@ -22,7 +22,7 @@ class Sync extends Component {
                 callback: (data) =>{
                     return new Promise ((resolve) =>{
                         db.User.clear().then(()=>{
-                            db.User.bulkAdd(data.users).then(() =>{
+                            db.User.bulkAdd(data).then(() =>{
                                 resolve(true)
                             }).catch((e) => {
                                 console.log(e)
@@ -31,7 +31,7 @@ class Sync extends Component {
                         })
                     })
                 },
-                url: `${rootURL}/users/getAllUsers/25`
+                url: `${rootURL}/users/temp/allUsers`
             },
             {
                 //Todo: Scope the location request as per the user's authorized locations
