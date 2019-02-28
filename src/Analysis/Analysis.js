@@ -3,6 +3,7 @@ import { Button, List, Card, Row, Col, Select, Divider, Avatar, Menu, Icon, Drop
 
 import './Analysis.css';
 import LocationSelector from "../LocationSelector/LocationSelector"
+import MetricSelector from "../MetricSelector/MetricSelector"
 
 const Option = Select.Option
 const listData = [];
@@ -50,6 +51,7 @@ class Analysis extends Component {
                 <Row className={``} gutter={16}>
                     <Col xs={{ span: 24, offset: 0 }} sm={{ span: 22, offset: 1 }} md={{ span: 18, offset: 3 }} lg={{ span: 16, offset: 4 }}>
                         <Card className="left" size="medium" title="Select Metric">
+                            <MetricSelector parentHandler = {this.updateLocation} showData = {true}></MetricSelector>
                             <Select defaultValue="lucy" style={{ width: 120 }} onChange={this.handleChange()}>
                                 <Option value="jack">Jack</Option>
                                 <Option value="lucy">Lucy</Option>
