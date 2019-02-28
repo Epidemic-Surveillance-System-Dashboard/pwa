@@ -7,6 +7,8 @@ import './Dashboard.css'
 
 import Visualizer from '../Visualizer/Visualizer'
 
+import db from '../Database/database'
+
 let graphExamples = [
     {
         title: "Metric Ex | Malaria Vaccinations",
@@ -91,7 +93,8 @@ class Dashboard extends Component {
     state = {
         fullSize: true,
         reportCard: false,
-        graphOpenCloseState: null
+        graphOpenCloseState: null,
+        tempGraphReady: false
     }
 
     componentWillMount() {
@@ -105,8 +108,32 @@ class Dashboard extends Component {
         this.setState({ graphOpenCloseState: visiblity })
     }
 
-    fullSizeOrListChanged = (e) => {
-        this.setState({ fullSize: e.target.value === "0" ? false : true })
+    componentDidMount(){
+        let MetricId = "6741"
+        db.Data.where({MetricId: MetricId}).toArray((arr) =>{
+            const monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN",
+                "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"
+            ]
+            console.table(arr)
+            
+            arr.forEach(el =>{
+                let date = new Date(el.Time) //Probably faster to do text analysis but this is easier for now
+                el.Month = monthNames[date.getMonth()]
+                el.Year = date.getFullYear()
+                el.Value = Number.parseInt(el.Value)
+            })
+
+            console.table(arr)
+
+            this.setState({
+                tempGraphReady: true,
+                tempGraphData: arr
+            })
+        })
+    }
+
+    fullSizeOrListChanged = (e) =>{
+        this.setState({fullSize: e.target.value === "0" ? false: true})
     }
 
     reportCardOrGraphsChanged = (e) => {
@@ -178,6 +205,9 @@ class Dashboard extends Component {
     render() {
         return (
             <div className="center">
+                {this.state.tempGraphReady &&
+                    <Visualizer type = "metric" show = {true} data = {this.state.tempGraphData}></Visualizer>
+                }
                 <Row className={`rowVMarginSm rowVMarginTopSm`}>
                     <Col xs={{ span: 24, offset: 0 }} md={{ span: 12, offset: 6 }} lg={{ span: 8, offset: 8 }}>
                         <Radio.Group defaultValue="0" buttonStyle="solid" onChange={this.reportCardOrGraphsChanged}>

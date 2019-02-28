@@ -20,10 +20,8 @@ class Sync extends Component {
                 //Todo: scope the user requests as per the user's roles
                 dataName:"user",
                 callback: (data) =>{
-                    console.log(data)
                     return new Promise ((resolve) =>{
                         db.User.clear().then(()=>{
-                            console.log(data)
                             db.User.bulkAdd(data.users).then(() =>{
                                 resolve(true)
                             }).catch((e) => {
@@ -57,6 +55,26 @@ class Sync extends Component {
                     })
                 },
                 url: `${rootURL}/locationsHierarchy`
+            },
+            {
+                dataName:"metric values",
+                callback: (data) =>{
+                    return new Promise ((resolve) =>{
+                        Promise.all([db.Data.clear()]).then(
+                            Promise.all([
+                                db.Data.bulkAdd(data.Data)
+                            ]).then(
+                                resolve(true)
+                            ).catch(
+                                resolve(false)
+                            )
+                        ).catch(
+                            resolve(false)
+                        )
+                    })
+                },
+                //TODO: Scope URL to user 
+                url: `${rootURL}/data/location?state=TEXAS&lga=AUSTIN&ward=HOUSTON&facility=WAYNE Health Clinic`
             },
             {
                 dataName:"metric names",

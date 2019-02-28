@@ -4,6 +4,7 @@ import {Button, Input, Row, Col, Divider, Popconfirm, message} from 'antd'
 import LocationSelector from "../LocationSelector/LocationSelector"
 
 import db from '../Database/database'
+import user from '../Services/User'
 
 const userFields = [
     "FirstName",
@@ -50,7 +51,7 @@ class CreateModifyDeleteUser extends Component {
         mode: this.props.mode ? this.props.mode : "view", //View (default unless overridden), create, or edit,
         userChanged: false,
         disabled: true,
-
+        locationDisabled: true
         //userInfo holds current computed properties (including modifications)
         //passedUser holds the original user information
     }
@@ -97,7 +98,8 @@ class CreateModifyDeleteUser extends Component {
     }
 
     adminFeatures = () =>{
-        if (this.props.user != null) return(
+        //Only show delete this is a secondary view (ie showTable_f exists)
+        if (this.props.user != null && this.props.showTable_f !== null) return(
             <div>
                 <Col className="right">
                     <Popconfirm placement="topRight" title="Are you sure you want to delete this user? This action cannot be reverted." onConfirm={this.confirmDelete} okText="Delete" cancelText="Cancel">
@@ -187,14 +189,27 @@ class CreateModifyDeleteUser extends Component {
         let user = this.computedState(this.state.passedUser)
         this.setState({
             userInfo: user,
-            disabled:true
+            disabled:true,
+            locationDisabled:true,
         })
         this.userInformationChanged()
     }
 
     enableEditing = () => {
-        this.setState({disabled:false})
-        this.userInformationChanged()
+        user.user().then(u =>{
+            if (u.userType === "Admin"){
+                this.setState({
+                    disabled:false,
+                    locationDisabled:false,
+                })
+            }else{
+                this.setState({
+                    disabled:false,
+                    locationDisabled:true,
+                })
+            }
+            this.userInformationChanged()
+        })   
     }
 
     userInformationChanged = () =>{
@@ -227,12 +242,19 @@ class CreateModifyDeleteUser extends Component {
             errorMessage = "Failed to create user. Please try again later."
             method = "POST"
             successHandler = (result) =>{
-                userObject.Id = result.Id
-                db.User.add(userObject).then(() =>{
-                    message.success(successMessage)
-                    this.props.refreshUsers()
-                    this.cancelEditing()
-                })
+                console.log(result)
+                if ("Id" in result){
+                    userObject.Id = result.Id
+                    db.User.add(userObject).then(() =>{
+                        message.success(successMessage)
+                        this.props.refreshUsers()
+                        this.cancelEditing()
+                    })
+                }else{
+                    console.log('throwing an error')
+                    throw new Error(result.error)
+                }
+
             }
         }else{
 
@@ -283,11 +305,14 @@ class CreateModifyDeleteUser extends Component {
     render(){
         return(
             <div>
-                <Row className="rowVMarginSm ">
-                    <Col>
-                        <Button onClick = {this.back} icon="caret-left">Back</Button>
-                    </Col>
-                </Row>
+                {
+                    this.props.showTable_f &&
+                    <Row className="rowVMarginSm ">
+                        <Col>
+                            <Button onClick = {this.back} icon="caret-left">Back</Button>
+                        </Col>
+                    </Row>
+                }
                 <Row className="rowVMarginSm">
                     <h3>User Details</h3>
                     {this.modifyControls()}

@@ -15,8 +15,8 @@ function login(username, password){
             Email:"Testing 123",
             FirstName : "test_fName",
             LastName : "test_LName",
-            LocationId : "133",
-            LocationType : "Facility"
+            LocationId : "206",
+            LocationType : "State"
         }
 
         db.LocalUser.clear().then(
@@ -50,9 +50,11 @@ function logout(){
 function user(){
     return new Promise ((resolve, reject) =>{
         db.LocalUser.toArray(arr =>{
-            if (arr.length !== 0) resolve(null)
+            if (arr.length !== 1) resolve(null)
             else{
-                resolve(arr[0])
+                let result = arr[0]
+                result.userType = "Admin" //hard code for now
+                resolve(result)
             }
         })
     })
