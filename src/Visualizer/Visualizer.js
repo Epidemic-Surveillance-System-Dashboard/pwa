@@ -292,27 +292,29 @@ class Visualizer extends Component {
         let sum = 0
         let count = 0
 
-        for (let i = 0; i < this.mockMetric.data.length; i++) {
+        let data = this.props.data || this.mockMetric.data
+        console.log(data)
+        for (let i = 0; i < data.length; i++) {
             //Create data for the year
             let dataPoint = {
-                x: this.mockMetric.data[i].Month,
-                y: this.mockMetric.data[i].Value
+                x: data[i].Month,
+                y: data[i].Value
             }
             dataForYear.push(dataPoint)
 
             //Add to Average Calculation
-            sum += this.mockMetric.data[i].Value
+            sum += data[i].Value
             count++
 
             //With 12 data points OR at end of data set, create a LineMarkSeries
-            if (i === (this.mockMetric.data.length - 1) || (i + 1) % 12 === 0) {
+            if (i === (data.length - 1) || (i + 1) % 12 === 0) {
                 let color = this.getNextColor()
                 let _d = dataForYear.slice()
                 elements.series.push(
                     <LineMarkSeries key={i} data={_d} color={color} colorType="literal"/>
                 )
 
-                let title = `${this.mockMetric.data[yearStartIndex].Month} ${this.mockMetric.data[yearStartIndex].Year}-${this.mockMetric.data[i].Month} ${this.mockMetric.data[i].Year}`
+                let title = `${data[yearStartIndex].Month} ${data[yearStartIndex].Year}-${data[i].Month} ${data[i].Year}`
 
                 legend.push({
                     title: title,
@@ -326,12 +328,12 @@ class Visualizer extends Component {
         }
         
         //Add Average line
-        let numMonths = Math.min(this.mockMetric.data.length,12)
+        let numMonths = Math.min(data.length,12)
         let marks = []
         let average = count > 0 ? sum / count : 0
         for (let i = 0; i < numMonths; i++){
             marks.push({
-                x:this.mockMetric.data[i].Month,
+                x: data[i].Month,
                 y: average
             })
         }

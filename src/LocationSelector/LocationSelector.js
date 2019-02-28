@@ -171,11 +171,13 @@ class LocationSelector extends Component {
     }
 
     getLocationHierarchyForInitLocation = async (currentIndex, currentLocationId,completionCallback, locations) =>{
+        console.log(locations)
         if (currentIndex === 0){
             completionCallback(locations)
             return
         }else{
             let location = await (this.findLocationByQuery(hierarchyLevels[currentIndex], {Id:currentLocationId}))
+        console.log(location)
             location = location[0]
             locations[hierarchyLevels[currentIndex]] = `${location.Id}|${location.Name}|${hierarchyLevels[currentIndex]}`
             this.getLocationHierarchyForInitLocation(currentIndex-1, location.parentId, completionCallback, locations)

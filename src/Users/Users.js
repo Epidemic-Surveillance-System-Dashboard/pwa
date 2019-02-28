@@ -201,10 +201,6 @@ class User extends Component {
                             </div>
                         }
 
-                        {/* For performance, keep the view existing user component in the DOM 
-                        <div className = {this.showHideViewClass()}>
-                            <CreateModifyDeleteUser showTable_f = {this.showTable} user = {this.state.selectedUser} mode = "existing" refreshUsers ={this.populateUsers}></CreateModifyDeleteUser>
-                        </div> */}
                     </Col>      
                 </Row>
             </div>

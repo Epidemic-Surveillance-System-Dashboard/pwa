@@ -15,8 +15,8 @@ function login(username, password){
             Email:"Testing 123",
             FirstName : "test_fName",
             LastName : "test_LName",
-            LocationId : "133",
-            LocationType : "Facility"
+            LocationId : "206",
+            LocationType : "State"
         }
 
         db.LocalUser.clear().then(

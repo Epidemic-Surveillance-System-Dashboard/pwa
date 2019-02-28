@@ -57,6 +57,26 @@ class Sync extends Component {
                 url: `${rootURL}/locationsHierarchy`
             },
             {
+                dataName:"metric values",
+                callback: (data) =>{
+                    return new Promise ((resolve) =>{
+                        Promise.all([db.Data.clear()]).then(
+                            Promise.all([
+                                db.Data.bulkAdd(data.Data)
+                            ]).then(
+                                resolve(true)
+                            ).catch(
+                                resolve(false)
+                            )
+                        ).catch(
+                            resolve(false)
+                        )
+                    })
+                },
+                //TODO: Scope URL to user 
+                url: `${rootURL}/data/location?state=TEXAS&lga=AUSTIN&ward=HOUSTON&facility=WAYNE Health Clinic`
+            },
+            {
                 dataName:"metric names",
                 callback: (data) =>{
                     return new Promise ((resolve) =>{
