@@ -14,20 +14,22 @@ let graphExamples = [
         title: "Metric Ex | Malaria Vaccinations",
         location: "Ward 1",
         type: "metric",
-        id: 0
-    },
-    {
-        title: "Set Ex | Malaria Vaccinations - Male",
-        location: "Ward 2",
-        type: "set",
-        id:1
-    },
-    {
-        title: "Group Ex | Malaria Vaccinations - Male and Female",
-        location: "Ward 3",
-        type: "group",
-        id:2
-    },
+        id: 7231,
+        graphId: 0
+    }
+    // ,
+    // {
+    //     title: "Set Ex | Malaria Vaccinations - Male",
+    //     location: "Ward 2",
+    //     type: "set",
+    //     graphId:1
+    // },
+    // {
+    //     title: "Group Ex | Malaria Vaccinations - Male and Female",
+    //     location: "Ward 3",
+    //     type: "group",
+    //     graphId:2
+    // },
 
 ]
 
@@ -109,22 +111,8 @@ class Dashboard extends Component {
     }
 
     componentDidMount(){
-        let MetricId = "6741"
+        let MetricId = "7231"
         db.Data.where({MetricId: MetricId}).toArray((arr) =>{
-            const monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN",
-                "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"
-            ]
-            console.table(arr)
-            
-            arr.forEach(el =>{
-                let date = new Date(el.Time) //Probably faster to do text analysis but this is easier for now
-                el.Month = monthNames[date.getMonth()]
-                el.Year = date.getFullYear()
-                el.Value = Number.parseInt(el.Value)
-            })
-
-            console.table(arr)
-
             this.setState({
                 tempGraphReady: true,
                 tempGraphData: arr

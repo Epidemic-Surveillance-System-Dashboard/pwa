@@ -34,7 +34,7 @@ class App extends Component {
                     <h4>{this.state.location ? this.state.location.Name : ""}</h4>
                     <LocationSelector parentHandler = {this.updateLocation} showLocation = {false}></LocationSelector>
                 </header> */}
-                {/* <Row>
+                <Row>
                     User Name is {this.state.user.FirstName}
                 </Row>
                 <Row>
@@ -42,7 +42,7 @@ class App extends Component {
                     <h4>{this.state.location ? this.state.location.Name : ""}</h4>
                     <MetricSelector parentHandler = {this.updateLocation} showData = {true}></MetricSelector>
                     </Col>
-                </Row> */}
+                </Row>
                 <Login>
                     
                 </Login>
