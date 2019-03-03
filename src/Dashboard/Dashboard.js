@@ -118,6 +118,7 @@ class Dashboard extends Component {
         //Set, Id = 1247
         let MetricId = "7231"
         let SetId = "1247"
+        let SetName = "Facility Attendance Male" //Store the name with the ID so we can avoid a lookup
 
         //Logic for Metrics:
         // db.Data.where({MetricId: MetricId}).toArray((arr) =>{
@@ -142,19 +143,18 @@ class Dashboard extends Component {
 
             Promise.all(promises).then(values =>{
     
-                let legit = []
-                console.log(values)
-                console.log(arr)
+                let validData = []
+
                 for(let i = 0; i < values.length; i++){
                     try{
-                        if (values[i] !== undefined){
-                                console.log(arr[i])
-                                let x = values[i]
-                                
-                                x.Metric = arr[i].Name
-                                x.Date = new Date(x.Time)
-                                x.Value = Number.parseInt(x.Value)                        
-                                if (x.Metric !== undefined) legit.push(x)
+                        if (values[i] !== undefined){         
+                            //Skip the totals because they are often incorrect
+                            if (arr[i].Name === SetName) continue
+                            let x = values[i]
+                            x.Metric = arr[i].Name.replace(`${SetName}, `, "")
+                            x.Date = new Date(x.Time)
+                            x.Value = Number.parseInt(x.Value)                        
+                            if (x.Metric !== undefined && x.Metric !== SetName) validData.push(x)
                         }
                     }catch(e){
                         //Probably empty
@@ -162,13 +162,11 @@ class Dashboard extends Component {
     
                 }
 
-                console.table(legit)
-
                 this.setState({
                     tempGraphReady: true,
                     tempGraphData: {
-                        name: "asdf",
-                        data: legit
+                        name: SetName,
+                        data: validData
                     }
                 })
                 
