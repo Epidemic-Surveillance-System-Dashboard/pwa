@@ -223,7 +223,8 @@ class Visualizer extends Component {
     }
 
     createHistogramData(){
-        let rawData = this.mockSet
+        let rawData = this.props.data || this.mockSet
+        console.log(this.mockSet)
         let barSeriesData = this.createBarSeriesData(rawData)
         return {
             barSeries: barSeriesData.barSeries,

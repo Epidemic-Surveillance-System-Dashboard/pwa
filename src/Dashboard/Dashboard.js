@@ -111,13 +111,76 @@ class Dashboard extends Component {
     }
 
     componentDidMount(){
+        //Test Cases
+
+        //Metric, Id = 7231
+
+        //Set, Id = 1247
         let MetricId = "7231"
-        db.Data.where({MetricId: MetricId}).toArray((arr) =>{
-            this.setState({
-                tempGraphReady: true,
-                tempGraphData: arr
+        let SetId = "1247"
+
+        //Logic for Metrics:
+        // db.Data.where({MetricId: MetricId}).toArray((arr) =>{
+        //     this.setState({
+        //         tempGraphReady: true,
+        //         tempGraphData: arr
+        //     })
+        // })
+
+        db.Metrics.where({parentId: SetId}).toArray(arr =>{
+            //Sort (using Key as proxy for order)
+            arr.sort((a,b) => {
+                return a.Key - b.Key
             })
+            
+            let promises = []
+
+            arr.forEach(el =>{
+                let newPromise = db.Data.get({MetricId: el.Id, Time: "2015-05-01T11:00:00.000Z"})
+                promises.push(newPromise)
+            })
+
+            Promise.all(promises).then(values =>{
+    
+                let legit = []
+                console.log(values)
+                console.log(arr)
+                for(let i = 0; i < values.length; i++){
+                    try{
+                        if (values[i] !== undefined){
+                                console.log(arr[i])
+                                let x = values[i]
+                                
+                                x.Metric = arr[i].Name
+                                x.Date = new Date(x.Time)
+                                x.Value = Number.parseInt(x.Value)                        
+                                if (x.Metric !== undefined) legit.push(x)
+                        }
+                    }catch(e){
+                        //Probably empty
+                    }
+    
+                }
+
+                console.table(legit)
+
+                this.setState({
+                    tempGraphReady: true,
+                    tempGraphData: {
+                        name: "asdf",
+                        data: legit
+                    }
+                })
+                
+            })
+            
         })
+        // db.Data.where({ MetricId: MetricId }).toArray((arr) => {
+        //     this.setState({
+        //         tempGraphReady: true,
+        //         tempGraphData: arr
+        //     })
+        // })
     }
 
     fullSizeOrListChanged = (e) =>{
@@ -194,7 +257,7 @@ class Dashboard extends Component {
         return (
             <div className="center">
                 {this.state.tempGraphReady &&
-                    <Visualizer type = "metric" show = {true} data = {this.state.tempGraphData}></Visualizer>
+                    <Visualizer type = "set" show = {true} data = {this.state.tempGraphData}></Visualizer>
                 }
                 <Row className={`rowVMarginSm rowVMarginTopSm`}>
                     <Col xs={{ span: 24, offset: 0 }} md={{ span: 12, offset: 6 }} lg = {{span: 8, offset: 8}}>
