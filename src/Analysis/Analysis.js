@@ -3,6 +3,7 @@ import { Button, List, Card, Row, Col, Select, Divider, Avatar, Menu, Icon, Drop
 
 import './Analysis.css';
 import LocationSelector from "../LocationSelector/LocationSelector"
+import LocationWrapper from "../Analysis/LocationWrapper"
 import MetricSelector from "../MetricSelector/MetricSelector"
 
 const Option = Select.Option
@@ -33,7 +34,8 @@ class Analysis extends Component {
         showTable: true,
         selectedUser: null,
         dataLoaded: false,
-        currentView: "table"
+        currentView: "table",
+        selectedLocation:null
 
     }
 
@@ -52,8 +54,8 @@ class Analysis extends Component {
         let newUser = dataSource.find(object => {
             return object.Id === id
         })*/
-
         this.setState({
+            selectedLocation: location,
             currentView: "existing",
             //selectedUser: newUser
         })
@@ -137,8 +139,8 @@ class Analysis extends Component {
                 {this.state.currentView !== "existing" ?
                     null :
                     <div className="">
-                        <LocationSelector
-                            parentHandler={this.updateLocation} showLocation={false}
+                        <LocationWrapper
+                            parentHandler={this.updateLocation} initialLocation={this.selectedLocation}
                         />
                     </div>
                 }
