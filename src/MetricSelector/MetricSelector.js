@@ -122,8 +122,8 @@ class MetricSelector extends Component {
          */
 
         let initialData = {
-            Type:  this.props.initialData ? this.props.initialData.Type : "Group",
-            Id:     this.props.initialData ? this.props.initialData.Id : "653",
+            Type:  this.props.initialData ? this.props.initialData.Type : "Metric",
+            Id:     this.props.initialData ? this.props.initialData.Id : "11493",
         }
 
         this.setState({
