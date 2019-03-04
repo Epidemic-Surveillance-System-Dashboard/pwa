@@ -8,15 +8,16 @@ import './Dashboard.css'
 import Visualizer from '../Visualizer/Visualizer'
 
 import db from '../Database/database'
+import VisualizerManager from '../Visualizer/VisualizerManager';
 
 let graphExamples = [
-    {
-        title: "Metric Ex | Malaria Vaccinations",
-        location: "Ward 1",
-        type: "metric",
-        id: 7231,
-        graphId: 0
-    }
+    // {
+    //     title: "Metric Ex | Malaria Vaccinations",
+    //     location: "Ward 1",
+    //     type: "metric",
+    //     id: 7231,
+    //     graphId: 0
+    // }
     // ,
     // {
     //     title: "Set Ex | Malaria Vaccinations - Male",
@@ -24,12 +25,12 @@ let graphExamples = [
     //     type: "set",
     //     graphId:1
     // },
-    // {
-    //     title: "Group Ex | Malaria Vaccinations - Male and Female",
-    //     location: "Ward 3",
-    //     type: "group",
-    //     graphId:2
-    // },
+    {
+        title: "Group Ex | Malaria Vaccinations - Male and Female",
+        location: "Ward 3",
+        type: "group",
+        graphId:2
+    },
 
 ]
 
@@ -120,6 +121,8 @@ class Dashboard extends Component {
         let SetId = "1247"
         let SetName = "Facility Attendance Male" //Store the name with the ID so we can avoid a lookup
 
+        let GroupId = "691"
+
         //Logic for Metrics:
         // db.Data.where({MetricId: MetricId}).toArray((arr) =>{
         //     this.setState({
@@ -128,57 +131,56 @@ class Dashboard extends Component {
         //     })
         // })
 
-        db.Metrics.where({parentId: SetId}).toArray(arr =>{
-            //Sort (using Key as proxy for order)
-            arr.sort((a,b) => {
-                return a.Key - b.Key
-            })
-            
-            let promises = []
-
-            arr.forEach(el =>{
-                let newPromise = db.Data.get({MetricId: el.Id, Time: "2015-05-01T11:00:00.000Z"})
-                promises.push(newPromise)
-            })
-
-            Promise.all(promises).then(values =>{
-    
-                let validData = []
-
-                for(let i = 0; i < values.length; i++){
-                    try{
-                        if (values[i] !== undefined){         
-                            //Skip the totals because they are often incorrect
-                            if (arr[i].Name === SetName) continue
-                            let x = values[i]
-                            x.Metric = arr[i].Name.replace(`${SetName}, `, "")
-                            x.Date = new Date(x.Time)
-                            x.Value = Number.parseInt(x.Value)                        
-                            if (x.Metric !== undefined && x.Metric !== SetName) validData.push(x)
-                        }
-                    }catch(e){
-                        //Probably empty
-                    }
-    
-                }
-
-                this.setState({
-                    tempGraphReady: true,
-                    tempGraphData: {
-                        name: SetName,
-                        data: validData
-                    }
-                })
-                
-            })
-            
-        })
-        // db.Data.where({ MetricId: MetricId }).toArray((arr) => {
-        //     this.setState({
-        //         tempGraphReady: true,
-        //         tempGraphData: arr
+        // db.Metrics.where({parentId: SetId}).toArray(arr =>{
+        //     //Sort (using Key as proxy for order)
+        //     arr.sort((a,b) => {
+        //         return a.Key - b.Key
         //     })
+            
+        //     let promises = []
+
+        //     arr.forEach(el =>{
+        //         let newPromise = db.Data.get({MetricId: el.Id, Time: "2015-05-01T11:00:00.000Z"})
+        //         promises.push(newPromise)
+        //     })
+
+        //     Promise.all(promises).then(values =>{
+    
+        //         let validData = []
+
+        //         for(let i = 0; i < values.length; i++){
+        //             try{
+        //                 if (values[i] !== undefined){         
+        //                     if (arr[i].Name === SetName) continue  //Skip the totals because they are often incorrect
+        //                     let x = values[i]
+        //                     x.Metric = arr[i].Name.replace(`${SetName}, `, "") //Strip away redundant text
+        //                     x.Date = new Date(x.Time)
+        //                     x.Value = Number.parseInt(x.Value)                        
+        //                     if (x.Metric !== undefined && x.Metric !== SetName) validData.push(x)
+        //                 }
+        //             }catch(e){
+        //                 //Probably empty
+        //             }
+    
+        //         }
+
+        //         //Sort Array
+        //         if (values[0].hasOwnProperty('RelativeOrder')) values.sort((a,b) =>{
+        //             return a.RelativeOrder - b.RelativeOrder
+        //         })
+
+        //         this.setState({
+        //             tempGraphReady: true,
+        //             tempGraphData: {
+        //                 name: SetName,
+        //                 data: validData
+        //             }
+        //         })
+                
+        //     })
+            
         // })
+
     }
 
     fullSizeOrListChanged = (e) =>{
@@ -254,6 +256,22 @@ class Dashboard extends Component {
     render() {
         return (
             <div className="center">
+
+            {/* 
+                Facility: za Bagega Primary Health Centre
+                    Id: 148
+                Metric = Facility Attendance Male
+                    Id: 7231
+            */}
+
+            <VisualizerManager
+                locationId = "1215"
+                locationType = "Facility"
+                dataId = "11493"
+                dataType = "Metric"
+                startDate = {new Date("2015-01-01T00:00:00.000Z")}
+                endDate =   {new Date("2015-12-01T00:00:00.000Z")}
+            />
                 {this.state.tempGraphReady &&
                     <Visualizer type = "set" show = {true} data = {this.state.tempGraphData}></Visualizer>
                 }

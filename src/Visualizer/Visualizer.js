@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
 
-import './Visualizer.css';
-
 //react-vis for graphs
 import '../../node_modules/react-vis/dist/style.css';
 import { FlexibleWidthXYPlot, XAxis, YAxis, HorizontalGridLines, LineSeries, LineMarkSeries, DiscreteColorLegend, VerticalGridLines, HorizontalBarSeries} from 'react-vis';
@@ -328,12 +326,12 @@ class Visualizer extends Component {
         for (let i = 0; i < data.length; i++) {
 
             if (currentYear === null){
-                currentYear = data[i].Date.getFullYear()
+                currentYear = data[i].Date.getUTCFullYear()
             }
 
             //Create data for the year
             dataForYear.push({
-                x: monthNames[data[i].Date.getMonth()],
+                x: monthNames[data[i].Date.getUTCMonth()],
                 y: data[i].Value
             })
 
@@ -342,7 +340,7 @@ class Visualizer extends Component {
             count++
 
             //With 12 data points OR at end of data set, create a LineMarkSeries
-            if (i === (data.length - 1) || data[(i + 1)].Date.getFullYear() !== currentYear) {
+            if (i === (data.length - 1) || data[(i + 1)].Date.getUTCFullYear() !== currentYear) {
                 let color = this.getNextColor()
 
                 elements.series.push(
@@ -359,7 +357,7 @@ class Visualizer extends Component {
 
                 //Reset
                 dataForYear = []
-                if (i !== (data.length -1)) currentYear = data[(i + 1)].Date.getFullYear()
+                if (i !== (data.length -1)) currentYear = data[(i + 1)].Date.getUTCFullYear()
             }
         }
         

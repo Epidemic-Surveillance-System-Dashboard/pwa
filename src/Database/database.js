@@ -13,7 +13,7 @@ db.version(1).stores({
     Groups:"Id",
     Sets:"Id,parentId",
     Metrics:"Id,parentId",
-    Data:"Id,Time,MetricId,FacilityId", //Index everything here
+    Data:"Id,Time,MetricId,FacilityId,[FacilityId+MetricId+Time]", //Index everything here
     FacilityView:"id,Name,WardId,LGAId,StateId",
 
     //Users (all of ESSD)
