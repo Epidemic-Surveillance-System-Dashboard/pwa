@@ -34,18 +34,19 @@ class App extends Component {
                     <h4>{this.state.location ? this.state.location.Name : ""}</h4>
                     <LocationSelector parentHandler = {this.updateLocation} showLocation = {false}></LocationSelector>
                 </header> */}
-                <Row>
-                    User Name is {this.state.user.FirstName}
-                </Row>
-                <Row>
-                    <Col>
-                    <h4>{this.state.location ? this.state.location.Name : ""}</h4>
-                    <MetricSelector parentHandler = {this.updateLocation} showData = {true}></MetricSelector>
-                    </Col>
-                </Row>
-                {this.state.user == null? <Login></Login> : <p>
-                        User is logged in. This is a temp home page.
-                    </p>}
+               
+                {
+                    this.state.user == null? <Login></Login> :  
+                    <React.Fragment>
+                    <Row> User Name is {this.state.user.FirstName} </Row>
+                    <Row>
+                        <Col>
+                        <h4>{this.state.location ? this.state.location.Name : ""}</h4>
+                        <MetricSelector parentHandler = {this.updateLocation} showData = {true}></MetricSelector>
+                        </Col>
+                    </Row>
+                    </React.Fragment>
+                }
             </div>
         );
     }
