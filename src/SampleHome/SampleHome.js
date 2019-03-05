@@ -11,7 +11,7 @@ class App extends Component {
 
     state = {
         location:null,
-        user: {FirstName: "hi"}
+        user: null
     }
 
     updateLocation = (location) =>{
@@ -19,9 +19,9 @@ class App extends Component {
     }
 
     componentWillMount(){
-       /* userService.login().then(user =>{
-            this.setState({user: user})
-        })*/
+        userService.user().then((userObj) => {
+            this.setState({user: userObj});
+        });
     }
 
     render() {
@@ -43,10 +43,11 @@ class App extends Component {
                     <MetricSelector parentHandler = {this.updateLocation} showData = {true}></MetricSelector>
                     </Col>
                 </Row> */}
-                <Login>
-                    
-                </Login>
-            </div>
+                {this.state.user == null? <Login></Login> : <p>
+                        User is logged in. This is a temp home page.
+                    </p>}
+
+            </div>  
         );
     }
 }
