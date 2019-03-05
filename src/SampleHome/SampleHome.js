@@ -19,9 +19,9 @@ class App extends Component {
     }
 
     componentWillMount(){
-        userService.login().then(user =>{
+       /* userService.login().then(user =>{
             this.setState({user: user})
-        })
+        })*/
     }
 
     render() {

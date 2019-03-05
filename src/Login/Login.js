@@ -1,12 +1,13 @@
 import React, { Component } from 'react'
 import {Row, Col, Input, Button} from 'antd'
 import db from '../Database/database'
+import UserService from '../Services/User';
 
 class Login extends Component {
 
     state = {
-        username: null,
-        password:null
+        Email: null,
+        Password: null
     }
 
     handleInput = (value, property) =>{
@@ -22,8 +23,7 @@ class Login extends Component {
     }
 
     login = () => {
-        //POST this.state.username and this.state.password
-        //return user information
+        UserService.login(this.state.Email,this.state.Password);
     }
 
     render(){
@@ -34,13 +34,13 @@ class Login extends Component {
                         <Input 
                             addonBefore={this.preTab("Username")}
                             onChange = {(e) =>{
-                                this.handleInput(e.target.value, "username")
+                                this.handleInput(e.target.value, "Email")
                             }}/>
 
                         <Input 
                             addonBefore={this.preTab("Password")}
                             onChange = {(e) =>{
-                                this.handleInput(e.target.value, "password")
+                                this.handleInput(e.target.value, "Password")
                             }}/>
                             
                         <Button type="primary"
