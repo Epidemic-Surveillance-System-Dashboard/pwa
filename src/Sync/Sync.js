@@ -74,7 +74,7 @@ class Sync extends Component {
                     })
                 },
                 //TODO: Scope URL to user 
-                url: `${rootURL}/data/location?state=TEXAS&lga=AUSTIN&ward=HOUSTON&facility=WAYNE Health Clinic`
+                url: `${rootURL}/data/location?state=za Zamfara&lga=za Anka&ward=za Bagega&facility=za Bagega Primary Health Centre`
             },
             {
                 dataName:"metric names",

@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
 
-import './Visualizer.css';
-
 //react-vis for graphs
 import '../../node_modules/react-vis/dist/style.css';
 import { FlexibleWidthXYPlot, XAxis, YAxis, HorizontalGridLines, LineSeries, LineMarkSeries, DiscreteColorLegend, VerticalGridLines, HorizontalBarSeries} from 'react-vis';
@@ -16,6 +14,10 @@ const strokeColors = [
 const averageColor = "#e74c3c"
 
 let colorCounter = 0
+
+const monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN",
+"JUL", "AUG", "SEP", "OCT", "NOV", "DEC"
+]
 
 class Visualizer extends Component {
 
@@ -219,7 +221,7 @@ class Visualizer extends Component {
     }
 
     createHistogramData(){
-        let rawData = this.mockSet
+        let rawData = this.props.data
         let barSeriesData = this.createBarSeriesData(rawData)
         return {
             barSeries: barSeriesData.barSeries,
@@ -288,34 +290,68 @@ class Visualizer extends Component {
 
         let dataForYear = []
         let legend = []
-        let yearStartIndex = 0
         let sum = 0
         let count = 0
 
-        let data = this.props.data || this.mockMetric.data
-        console.log(data)
+        let data = this.props.data.data || this.mockMetric.data
+
+        if (data[0].hasOwnProperty("Date") === false){
+            console.log('adding dates')
+            data.forEach(el =>{
+                el.Date = new Date(el.Time)
+                el.Value = Number.parseInt(el.Value)
+            })
+
+            data.sort((a,b)=>{
+                return a.Date - b.Date
+            })
+        }
+
+        let currentYear = null 
+
+        //Create a transparent line series with the correct month order
+        //to initialize the x-axis. This is necessary because sometimes
+        // the data has no values for consecutive months.
+
+        let blankData = []
+        for (let i = 0; i < monthNames.length; i++){
+            blankData.push({
+                x: monthNames[i],
+                y: 0
+            })
+        }
+        let blankDataSeries =  <LineMarkSeries key={-1} data={blankData} color="transparent" colorType="literal"/>
+        elements.series.push(blankDataSeries)
+
+        //Create a LineMarkSeries for each year.
+
         for (let i = 0; i < data.length; i++) {
-            //Create data for the year
-            let dataPoint = {
-                x: data[i].Month,
-                y: data[i].Value
+
+            if (currentYear === null){
+                currentYear = data[i].Date.getUTCFullYear()
             }
-            dataForYear.push(dataPoint)
+
+            //Create data for the year
+            dataForYear.push({
+                x: monthNames[data[i].Date.getUTCMonth()],
+                y: data[i].Value
+            })
 
             //Add to Average Calculation
             sum += data[i].Value
             count++
 
             //With 12 data points OR at end of data set, create a LineMarkSeries
-            if (i === (data.length - 1) || (i + 1) % 12 === 0) {
+            if (i === (data.length - 1) || data[(i + 1)].Date.getUTCFullYear() !== currentYear) {
                 let color = this.getNextColor()
-                let _d = dataForYear.slice()
+
                 elements.series.push(
-                    <LineMarkSeries key={i} data={_d} color={color} colorType="literal"/>
+                    <LineMarkSeries key={i} data={dataForYear} color={color} colorType="literal"/>
                 )
 
-                let title = `${data[yearStartIndex].Month} ${data[yearStartIndex].Year}-${data[i].Month} ${data[i].Year}`
+                let title = `${currentYear}`
 
+                //Add legend entry for LineMarkSeries
                 legend.push({
                     title: title,
                     color: color
@@ -323,22 +359,21 @@ class Visualizer extends Component {
 
                 //Reset
                 dataForYear = []
-                yearStartIndex = (i + 1)
+                if (i !== (data.length -1)) currentYear = data[(i + 1)].Date.getUTCFullYear()
             }
         }
         
         //Add Average line
-        let numMonths = Math.min(data.length,12)
         let marks = []
         let average = count > 0 ? sum / count : 0
-        for (let i = 0; i < numMonths; i++){
+        for (let i = 0; i < monthNames.length; i++){
             marks.push({
-                x: data[i].Month,
+                x: monthNames[i],
                 y: average
             })
         }
         
-        //Add Average to Legend
+        //Add legend entry for Average
         legend.push({
             title: "Average",
             color: averageColor
@@ -347,7 +382,6 @@ class Visualizer extends Component {
         elements.series.push(<LineSeries key = {elements.length+1} data = {marks} strokeDasharray={[7,5]} color = {averageColor} colorType = "literal"/>)
 
         //Create legend
-
         let legendElement = <DiscreteColorLegend orientation="horizontal" items={legend}/>
         elements.legend = legendElement
 
@@ -376,13 +410,13 @@ class Visualizer extends Component {
     renderGraph = () =>{
         let graph = null
         switch (this.props.type) {
-            case "group":
+            case "Group":
                 graph = this.MultipleBar()
                 break
-            case "set":
+            case "Set":
                 graph = this.Histogram()
                 break
-            case "metric":
+            case "Metric":
                 graph = this.Line()
                 break
             default:
