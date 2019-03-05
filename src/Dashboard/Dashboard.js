@@ -5,19 +5,67 @@ import {Table, Button,List, Card, Row, Col, Radio} from 'antd'
 import '../../node_modules/react-vis/dist/style.css'
 import './Dashboard.css'
 
-import Visualizer from '../Visualizer/Visualizer'
-
-import db from '../Database/database'
 import VisualizerManager from '../Visualizer/VisualizerManager';
 
 let graphExamples = [
-    // {
-    //     title: "Metric Ex | Malaria Vaccinations",
-    //     location: "Ward 1",
-    //     type: "metric",
-    //     id: 7231,
-    //     graphId: 0
-    // }
+    {
+        Title: "Facility Attendance Female, 29d-11 months",
+        LocationName:"za Bagega Primary Health Centre",
+        LocationId: "1215",
+        LocationType : "Facility",
+        DataId : "11729",
+        DataType : "Metric",
+        StartDate : new Date("2015-01-01T00:00:00.000Z"),
+        EndDate :  new Date("2015-12-01T00:00:00.000Z"),
+        GraphId: 0
+    },
+    {
+        Title: "Facility Attendance Outpatient Value",
+        LocationName:"za Bagega Primary Health Centre",
+        LocationId: "1215",
+        LocationType : "Facility",
+        DataId : "11493",
+        DataType : "Metric",
+        StartDate : new Date("2015-01-01T00:00:00.000Z"),
+        EndDate :  new Date("2016-12-01T00:00:00.000Z"),
+        GraphId: 1
+    },
+    {
+        Title: "Facility Attendance Outpatient",
+        LocationName:"za Bagega Ward",
+        LocationId: "386",
+        LocationType : "Ward",
+        DataId : "2094",
+        DataType : "Set",
+        DataPresentation: "none", //none, total, or distribution
+        StartDate : new Date("2015-01-01T00:00:00.000Z"),
+        EndDate :  new Date("2015-12-01T00:00:00.000Z"),
+        GraphId: 2
+    },
+    {
+        Title: "Facility Attendance Outpatient",
+        LocationName:"za Bagega Ward",
+        LocationId: "386",
+        LocationType : "Ward",
+        DataId : "2094",
+        DataType : "Set",
+        DataPresentation: "total", //none, total, or distribution
+        StartDate : new Date("2015-01-01T00:00:00.000Z"),
+        EndDate :  new Date("2017-12-01T00:00:00.000Z"),
+        GraphId: 3
+    },
+    {
+        Title: "Facility Attendance Outpatient",
+        LocationName:"za Bagega Ward",
+        LocationId: "386",
+        LocationType : "Ward",
+        DataId : "2094",
+        DataType : "Set",
+        DataPresentation: "none", //none, total, or distribution
+        StartDate : new Date("2015-01-01T00:00:00.000Z"),
+        EndDate :  new Date("2017-12-01T00:00:00.000Z"),
+        GraphId: 4
+    }
     // ,
     // {
     //     title: "Set Ex | Malaria Vaccinations - Male",
@@ -25,12 +73,12 @@ let graphExamples = [
     //     type: "set",
     //     graphId:1
     // },
-    {
-        title: "Group Ex | Malaria Vaccinations - Male and Female",
-        location: "Ward 3",
-        type: "group",
-        graphId:2
-    },
+    // {
+    //     title: "Group Ex | Malaria Vaccinations - Male and Female",
+    //     location: "Ward 3",
+    //     type: "group",
+    //     graphId:2
+    // },
 
 ]
 
@@ -77,27 +125,12 @@ const metricData = [
     },
 ]
 
-
-const dashboardGraphs = [
-    {
-        dataType:"Metric",
-        dataID: 1,
-        dataName: "Malaria Vaccinations",     //Cache to reduce # of db queries
-        locationID:1,
-        locationType:"Ward",
-        locationName:"Example Ward",            //Cache
-        startDate:new Date(),
-        endDate: new Date(),
-    }
-]
-
 class Dashboard extends Component {
 
     state = {
         fullSize: true,
         reportCard: false,
         graphOpenCloseState: null,
-        tempGraphReady: false
     }
 
     componentWillMount(){
@@ -242,10 +275,15 @@ class Dashboard extends Component {
                     renderItem = {(item, key) =>(
                         <List.Item >
                             <List.Item.Meta
-                            title = {item.title}
-                            description = {item.location}/>
+                            title = {item.Title}
+                            description = {item.LocationName}/>
                             {this.createCollapseExpandButton(key)}
-                            <Visualizer type = {item.type} show = {this.state.graphOpenCloseState[key].open}></Visualizer>
+
+                            <VisualizerManager
+                                {...item} //LocationId, Location, etc...
+                                show = {this.state.graphOpenCloseState[key].open}
+                            />
+
                         </List.Item>
                     )}>
                 </List>
@@ -257,24 +295,16 @@ class Dashboard extends Component {
         return (
             <div className="center">
 
-            {/* 
-                Facility: za Bagega Primary Health Centre
-                    Id: 148
-                Metric = Facility Attendance Male
-                    Id: 7231
-            */}
-
-            <VisualizerManager
+            {/* Example Visualizer Manager Use */}
+           {/* <VisualizerManager
                 locationId = "1215"
                 locationType = "Facility"
                 dataId = "11493"
                 dataType = "Metric"
                 startDate = {new Date("2015-01-01T00:00:00.000Z")}
                 endDate =   {new Date("2015-12-01T00:00:00.000Z")}
-            />
-                {this.state.tempGraphReady &&
-                    <Visualizer type = "set" show = {true} data = {this.state.tempGraphData}></Visualizer>
-                }
+            /> */}
+
                 <Row className={`rowVMarginSm rowVMarginTopSm`}>
                     <Col xs={{ span: 24, offset: 0 }} md={{ span: 12, offset: 6 }} lg = {{span: 8, offset: 8}}>
                         <Radio.Group defaultValue="0" buttonStyle="solid" onChange = {this.reportCardOrGraphsChanged}>

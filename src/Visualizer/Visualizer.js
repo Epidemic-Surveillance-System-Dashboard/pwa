@@ -221,8 +221,7 @@ class Visualizer extends Component {
     }
 
     createHistogramData(){
-        let rawData = this.props.data || this.mockSet
-        console.log(this.mockSet)
+        let rawData = this.props.data
         let barSeriesData = this.createBarSeriesData(rawData)
         return {
             barSeries: barSeriesData.barSeries,
@@ -294,16 +293,19 @@ class Visualizer extends Component {
         let sum = 0
         let count = 0
 
-        let data = this.props.data || this.mockMetric.data
+        let data = this.props.data.data || this.mockMetric.data
 
-        data.forEach(el =>{
-            el.Date = new Date(el.Time)
-            el.Value = Number.parseInt(el.Value)
-        })
+        if (data[0].hasOwnProperty("Date") === false){
+            console.log('adding dates')
+            data.forEach(el =>{
+                el.Date = new Date(el.Time)
+                el.Value = Number.parseInt(el.Value)
+            })
 
-        data.sort((a,b)=>{
-            return a.Date - b.Date
-        })
+            data.sort((a,b)=>{
+                return a.Date - b.Date
+            })
+        }
 
         let currentYear = null 
 
@@ -408,13 +410,13 @@ class Visualizer extends Component {
     renderGraph = () =>{
         let graph = null
         switch (this.props.type) {
-            case "group":
+            case "Group":
                 graph = this.MultipleBar()
                 break
-            case "set":
+            case "Set":
                 graph = this.Histogram()
                 break
-            case "metric":
+            case "Metric":
                 graph = this.Line()
                 break
             default:

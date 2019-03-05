@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 //react-vis for graphs
 import '../../node_modules/react-vis/dist/style.css';
 
-import {Empty} from 'antd'
+import {Empty, Spin} from 'antd'
 
 import Visualizer from './Visualizer'
 
@@ -36,12 +36,12 @@ import db from '../Database/database'
 
 /**
  * PROPS:
- * @param locationId: String
- * @param locationType: String "National" | "State" | "LGA" | "Ward" | "Facility"
- * @param dataId: String
- * @param dataType: String "Metric" | "Set" | "Group"
- * @param startDate: Date
- * @param endDate: Date (if applicable)
+ * @param LocationId: String
+ * @param LocationType: String "National" | "State" | "LGA" | "Ward" | "Facility"
+ * @param DataId: String
+ * @param DataType: String "Metric" | "Set" | "Group"
+ * @param StartDate: Date
+ * @param EndDate: Date (if applicable)
  */
 class VisualizerManager extends Component {
 
@@ -53,12 +53,12 @@ class VisualizerManager extends Component {
     checkInputs = () => {
         let valid = true
         let validInputs = {
-            "locationId": value => {return value !== undefined && value !== null},
-            "locationType": value => {return ["Nation", "State", "LGA", "Ward", "Facility"].includes(value)},
-            "dataId": value => {return value !== undefined && value !== null},
-            "dataType": value => {return ["Metric", "Set", "Group"].includes(value)},
-            "startDate": value => {return Object.prototype.toString.call(value) === '[object Date]'},
-            "endDate": value => {return Object.prototype.toString.call(value) === '[object Date]'}, 
+            "LocationId": value => {return value !== undefined && value !== null},
+            "LocationType": value => {return ["National", "State", "LGA", "Ward", "Facility"].includes(value)},
+            "DataId": value => {return value !== undefined && value !== null},
+            "DataType": value => {return ["Metric", "Set", "Group"].includes(value)},
+            "StartDate": value => {return Object.prototype.toString.call(value) === '[object Date]'},
+            "EndDate": value => {return Object.prototype.toString.call(value) === '[object Date]'}, 
         }
 
         for (var key in validInputs){
@@ -84,11 +84,10 @@ class VisualizerManager extends Component {
     }
 
     isSimpleData = () =>{
-        //Simple data is only Facility, Metric and over the course of 1 year.
+        //Simple data is only Facility, Metric 
         //All other data requires aggregation and therefore will be queried from the database.
-        if (this.props.locationType !== "facility") return false
-        if (this.props.dataType !== "Metric") return false
-        if (this.props.endDate.getFullYear() !== this.props.startDate.getFullYear()) return false
+        if (this.props.LocationType !== "Facility") return false
+        if (this.props.DataType !== "Metric") return false
         return true
     }
 
@@ -101,76 +100,133 @@ class VisualizerManager extends Component {
         return dateString
     }
 
-
-/**
- * PROPS:
- * @param locationId: String
- * @param locationType: String "National" | "State" | "LGA" | "Ward" | "Facility"
- * @param dataId: String
- * @param dataType: String "Metric" | "Set" | "Group"
- * @param startDate: Date
- * @param endDate: Date (if applicable)
- */
     /**
      * Preconditions:
      * locationType === "Facility"
      * dataType === "Metric"
      */
     getSimpleData = () =>{
-        console.log('Simple Data')
         db.Data.where(
             ["FacilityId", "MetricId", 'Time']
         ).between(
-            [this.props.locationId, this.props.dataId, this.formatDate(this.props.startDate)],
-            [this.props.locationId, this.props.dataId, this.formatDate(this.props.endDate)],
+            [this.props.LocationId, this.props.DataId, this.formatDate(this.props.StartDate)],
+            [this.props.LocationId, this.props.DataId, this.formatDate(this.props.EndDate)],
             true,
             true
         )
         .toArray((arr) =>{
             this.setState({
-                data: arr,
+                data: {
+                    data: arr
+                },
+                graphType :"Metric",
                 ready: true
             })
         })
-
     }
 
+    /**
+     * 1. Try to find data from local store
+     * 2. If not possible, try to find data from internet
+     *     - If exists, cache
+     * 3. If not, some error message
+     */
     getComplexData = () =>{
-
-    }
-
-    getMetric = () =>{
-        return new Promise (resolve =>{
-      
-            console.log(this.props.locationId)
-            console.log(this.props.dataId)
-            console.log(this.formatDate(this.props.startDate, true))
-            console.log(this.formatDate(this.props.endDate, false))
-            db.Data.where(
-                    ["FacilityId", "MetricId", 'Time']
-                ).between(
-                    [this.props.locationId, this.props.dataId, this.formatDate(this.props.startDate, true)],
-                    [this.props.locationId, this.props.dataId, this.formatDate(this.props.endDate, false)],
-                    true,
-                    true
-                )
-                .toArray((arr) =>{
-                console.table(arr)
-                this.setState({
-                    data: arr,
-                    ready: true
-                }, () =>{
-                    console.log()
-                })
-                resolve(arr)
-            })
+        db.DashboardData.toArray().then(arr =>{
+            
+            //If doesn't exist, then get data from url
+            if (arr.length === 0){
+                this.queryComplexData()
+            }
         })
     }
 
+    formatDateForRemoteQuery = (date) =>{
+        return `${date.getUTCFullYear()}-${("0" + (date.getUTCMonth()+1)).slice(-2)}-${("0" + date.getUTCDate()).slice(-2)}`
+    }
 
+    queryComplexData = () =>{
+        return new Promise (resolve =>{
+
+            //Build Query URL
+            let period = "month"
+            
+            if (this.props.StartDate.getUTCFullYear() !== this.props.EndDate.getUTCFullYear()) period = "year"
+            let rootURL = `https://essd-backend-dev.azurewebsites.net/api/data/query?`
+            let url = rootURL + 
+                    "LocationId=" + this.props.LocationId
+                +   "&LocationType=" + this.props.LocationType
+                +   "&DataId=" + this.props.DataId
+                +   "&DataType=" + this.props.DataType
+                +   "&StartDate=" + this.formatDateForRemoteQuery(this.props.StartDate)
+                +   "&EndDate=" + this.formatDateForRemoteQuery(this.props.EndDate)
+                +   "&Period=" + period
+                +   "&Distribution=" + this.props.DataPresentation
+
+
+            //Data comes back as an array
+            fetch(url,{}).then(stream => stream.json().then(result =>{
+
+                if (period === "year"){
+                    //TODO: Switch to vertical bar graph in the future
+                    result.forEach(el =>{
+                        el.Value = Number.parseFloat(el.Total)
+                        el.Metric = el.Yr
+                    })
+
+                    result.sort((a,b) =>{
+                        return a.Yr - b.Yr
+                    })
+
+                    if (this.props.DataPresentation === "none" || this.props.DataPresentation === "total"){ //== total
+                        this.setState({
+                            ready: true,
+                            data: {
+                                data: result,
+                                name: this.props.Title
+                            },
+                            graphType: "Set",
+
+                        })
+                    }else{
+
+                    }
+                }else{
+                    //Period = year
+
+                    result.forEach(el => {
+                        let d = new Date(this.props.StartDate)
+                        d.setUTCMonth(el.Month - 1)
+                        el.Date = d
+                        el.Value = Number.parseInt(el.Total)
+                    })
+                    
+                    this.setState({
+                        ready: true,
+                        graphType: "Metric",
+                        data: {
+                            data: result
+                        }
+                    })
+                }
+
+                //TODO: store data locally
+            }))
+        })
+    }
 
     componentDidMount = () =>{
-        if (this.checkInputs()) this.getSimpleData()
+        if (this.checkInputs()){
+            if (this.isSimpleData()){
+                this.getSimpleData()
+            }else{
+                this.getComplexData()
+            }
+        }
+    }
+
+    getType = () =>{
+
     }
 
     render() {
@@ -178,15 +234,18 @@ class VisualizerManager extends Component {
             return (
                 <div>
                     {
-                        this.state.ready === false && "not ready"
+                        this.state.ready === false && 
+                        <div className="graphPlaceholder">
+                            <Spin></Spin>
+                        </div>
+                        
                     }
                     {
                         this.state.ready === true && 
                         <Visualizer 
-                            type = "metric"
-                            show = {true}
+                            type = {this.state.graphType}
+                            show = {this.props.show}
                             data = {this.state.data}
-                        // <Visualizer type = "set" show = {true} data = {this.state.tempGraphData}></Visualizer>
                         />
                     }
                 </div>
@@ -194,7 +253,7 @@ class VisualizerManager extends Component {
         }else{
             return(
                 <Empty
-                description="Something went wrong :( Please check your VisualizerManager inputs."
+                description="Something went wrong. Please check your VisualizerManager inputs."
                 />
             )
         }
