@@ -123,7 +123,7 @@ class MetricSelector extends Component {
 
         let initialData = {
             Type:  this.props.initialData ? this.props.initialData.Type : "Group",
-            Id:     this.props.initialData ? this.props.initialData.Id : "691",
+            Id:     this.props.initialData ? this.props.initialData.Id : "1191",
         }
 
         this.setState({
@@ -241,7 +241,8 @@ class MetricSelector extends Component {
         
         let list = []
         let listName = `${level}List`                       //E.g. We will be updating this.state.FacilityList
-        let queryProperty = hierarchyLevels[levelIndex]      //eg level = lga but we need 'LGA' for data.LGA
+        let queryProperty = hierarchyLevels[levelIndex]      //eg level = lga but we need 'LGA' for data.LGA\
+        let aboveLevel = undefined
 
         //States are special because they don't require a nation lookup
         if (level === "Group"){
@@ -250,7 +251,7 @@ class MetricSelector extends Component {
             levelIndex = hierarchyLevels.findIndex((el) => {return el === level})
 
             queryProperty = hierarchyLevels[levelIndex] //eg level = lga, queryProperty = LGA
-            let aboveLevel = hierarchyLevels[levelIndex-1]
+            aboveLevel = hierarchyLevels[levelIndex-1]
             if (this.state[aboveLevel] === undefined){
                 //Short circuit if the above level is undefined
                 this.setState({[listName]: []})
@@ -262,17 +263,43 @@ class MetricSelector extends Component {
         }
 
         let optionsList = []
-         //Add a clear option to the front of the array (mobile users won't see the clear button)
 
+         //Add a clear option to the front of the array (mobile users won't see the clear button)
         optionsList.push(
             <Option key = {-1} value = "-1||"><em>Clear Selection</em></Option>
         )
+        //Add total and distribution of the above group or set
+        if (level === "Set" || level === "Metric"){
+            let totalString = `All ${this.state[aboveLevel].split("|")[1]} (Total)`
+            optionsList.push(
+                <Option key = {-1} value = {`-2|${totalString}|${aboveLevel}`}>{totalString}</Option>
+            )
+            let distributionString = `All ${this.state[aboveLevel].split("|")[1]} (Distribution)`
+            optionsList.push(
+                <Option key = {-1} value = {`-3|${distributionString}|${aboveLevel}`}>{distributionString}</Option>
+            )
+        }
 
+        //If the Set Above includes a Total or Distribution, then there are no metrics to show
+        if (level === "Metric"){
+            if (this.state[aboveLevel].split("|")[0] < 0){
+                this.setState({
+                    [listName]: []
+                })
+                return
+            }
+        }
+
+        let aboveName = aboveLevel === undefined ? null : this.state[aboveLevel].split("|")[1]
         //Add the remaining objects
         list.forEach((el)=>{
-            optionsList.push(
-                <Option key = {el.Id} value = {`${el.Id}|${el.Name}|${level}`}>{el.Name}</Option>
-            )
+            //Add to list unless the name is the same as the one above
+            if (aboveName !== el.Name){
+                optionsList.push(
+                    <Option key = {el.Id} value = {`${el.Id}|${el.Name}|${level}`}>{el.Name}</Option>
+                )
+            }
+
         })
         
         if (optionsList.length > 0){
