@@ -105,8 +105,8 @@ class MetricSelector extends Component {
         //to revert the selected location when editing is cancelled.
     }
 
-    componentWillMount = () =>{
-        this.setData()
+    componentDidMount = () =>{
+        this.setInitialDataState()
     }
 
     findIndexForLocationType = (locationType) =>{
@@ -115,115 +115,53 @@ class MetricSelector extends Component {
         })
     }
 
-    setData = async () =>{
-        /**
-         * Preconditions:
-         *  - initialData is within maxScope
-         */
-
-        let initialData = {
-            Type:  this.props.initialData ? this.props.initialData.Type : "Group",
-            Id:     this.props.initialData ? this.props.initialData.Id : "1191",
-        }
-
-        this.setState({
-            initialData: initialData
-
-        }, () =>{
-
-            let initLocationIndex = this.findIndexForLocationType(initialData.Type)
-
-            //Work backwards to define all the locations that the initial location belongs to
-    
-            let locations = {
-                "Group"  : undefined,
-                "Set"     : undefined,
-                "Metric"   : undefined,
-            }
-            
-            this.getLocationHierarchyForInitLocation(initLocationIndex, initialData.Id, this.setDataState, locations)
-        })
-
-
-    }
-
-    getLocationHierarchyForInitLocation = async (currentIndex, currentLocationId,completionCallback, locations) =>{
-
-        let location = await (this.findByQuery(hierarchyLevels[currentIndex], {Id:currentLocationId}))
-        location = location[0]
-        locations[hierarchyLevels[currentIndex]] = `${location.Id}|${location.Name}|${hierarchyLevels[currentIndex]}`
-        if (currentIndex === 0){
-            completionCallback(locations)
+    setInitialDataState = () =>{
+        this.enableDisableLists()
+        if (this.props.initialData === undefined){
+            //If undefined, then only update Group List
+            this.updateList("Group", 0, null)
+            this.notifyParent()
         }else{
-            this.getLocationHierarchyForInitLocation(currentIndex-1, location.parentId, completionCallback, locations)
+            this.setState({
+                Group:  this.props.initialData.GroupValue.length > 0    ? this.props.initialData.GroupValue     : undefined,
+                Set:    this.props.initialData.SetValue.length > 0      ? this.props.initialData.SetValue       : undefined,
+                Metric: this.props.initialData.MetricValue.length > 0   ? this.props.initialData.MetricValue    : undefined,
+            }, () =>{
+                this.notifyParent()
+                this.updateList("Group", 0, null)
+                this.updateList("Set", 0, null)
+                this.updateList("Metric", 0, null)
+            })
         }
-    }
-
-    setDataState = (data) =>{
-        this.setState({...data}, () =>{
-            //Then update lists for each level that is defined, plus the first undefined level
-            for (let i = 0; i < hierarchyLevels.length; i++){
-                this.updateList(hierarchyLevels[i], i, () =>{})
-
-                //Set the selected location to the parent of the first undefined location
-                //or the facility level
-
-                let selectedData = undefined
-
-                if (data[hierarchyLevels[i]] === undefined){
-                    selectedData =  data[hierarchyLevels[i-1]]
-                }else if (i === hierarchyLevels.length-1){
-                    selectedData =  data[hierarchyLevels[i]]
-                }
-
-                if (selectedData !== undefined){
-                    let callback = () =>{
-                        this.notifyParent(this.parseData(this.state.selectedData))
-                    }
-
-                    this.setState({
-                        selectedData: selectedData
-                    }, callback)
-                    break
-                }
-
-            }
-            this.enableDisableLists()
-        })
     }
 
     enableDisableLists = () =>{
 
         let enabledDisabledLists = {}
 
+        let disabled = this.props.disabled !== undefined ? this.props.disabled : false
         //Disable all fields if global state is disabled
-        if (this.props.disabled === true){
-            for (let i = 0; i < hierarchyLevels.length; i++){
-                enabledDisabledLists[hierarchyLevels[i]] = true
-            }
-        }else{
-            for (let i = 0; i < hierarchyLevels.length; i++){
-                enabledDisabledLists[hierarchyLevels[i]] = false
-            }
+        for (let i = 0; i < hierarchyLevels.length; i++){
+            enabledDisabledLists[hierarchyLevels[i]] = disabled
         }
         this.setState({enabledDisabledLists: enabledDisabledLists})
     }
 
     handleChange = (level, value) =>{
         //Find Current Level
-        let currentLevelIndex = this.findIndexForLocationType(level)
-        let currentLevel = level
+        let currentLevelIndex = this.findIndexForLocationType(level)    
 
         //If value is undefined, then Select was cleared so the current Level is one above this level
         if (value === undefined || this.parseData(value).Id === "-1"){
-            currentLevel = hierarchyLevels[currentLevelIndex - 1]  
-            this.setState({[level]: undefined, selectedData:this.state[currentLevel]}, () =>{
-                this.notifyParent(this.parseData(this.state[currentLevel]))
+            this.setState({[level]: undefined}, () =>{
+                this.createLocationObject()
+                this.notifyParent()
             })
         }else{
             //Update Select
             this.setState({[level]: value, selectedData:value},  () =>{
-                this.notifyParent(this.parseData(this.state[currentLevel]))
+                this.createLocationObject()
+                this.notifyParent()
             })
         }
         
@@ -233,8 +171,62 @@ class MetricSelector extends Component {
             const x = i
             this.setState({[statePropertyName]: undefined}, () =>{
                 this.updateList(statePropertyName, x)
+                this.createLocationObject()
             })
         }
+
+    }
+
+    createLocationObject = () =>{
+
+        let type = undefined, name = undefined, split = undefined
+
+        if (this.state.Metric !== undefined){
+            split = this.state.Metric.split("|")
+            type = split[2]
+            name = split[1]
+        }else if (this.state.Set !== undefined){
+            split = this.state.Set.split("|")
+            type = split[2]
+            name = split[1]
+        }else if (this.state.Group !== undefined){
+            split = this.state.Group.split("|")
+            type = split[2]
+            name = split[1]
+        }
+        
+        let typeID = type !== undefined ? split[0] : undefined
+
+        let totalOrDistribution = "Total" // Default to total
+
+        if (type !== "Metric"){
+            //If this is not a metric and has a total or distribution, we need to find out which one it is
+            let nextType = hierarchyLevels[this.findIndexForLocationType(type) + 1]
+
+            if (this.state[nextType] !== undefined){
+                let nextType = typeID.split("-")
+                typeID = nextType[2]            //Get the ID of the above Set or Group without the -# prefix
+                if (nextType[1] === "2"){
+                    totalOrDistribution = "Total"
+                }else{
+                    totalOrDistribution = "Distribution"
+                }
+            }
+        }else{
+            totalOrDistribution = "None"
+        }
+
+        let result = {
+            Type: type,
+            Id: typeID,
+            Name: name,
+            TotalOrDistribution: totalOrDistribution,
+            GroupValue: this.state.Group,
+            SetValue: this.state.Set,
+            MetricValue: this.state.Metric
+        }
+        
+        return result
     }
 
     updateList = async (level, levelIndex, callBack) => {
@@ -249,7 +241,6 @@ class MetricSelector extends Component {
             list = await this.findAll(level)
         }else{
             levelIndex = hierarchyLevels.findIndex((el) => {return el === level})
-
             queryProperty = hierarchyLevels[levelIndex] //eg level = lga, queryProperty = LGA
             aboveLevel = hierarchyLevels[levelIndex-1]
             if (this.state[aboveLevel] === undefined){
@@ -268,21 +259,22 @@ class MetricSelector extends Component {
         optionsList.push(
             <Option key = {-1} value = "-1||"><em>Clear Selection</em></Option>
         )
+
         //Add total and distribution of the above group or set
         if (level === "Set" || level === "Metric"){
             let totalString = `All ${this.state[aboveLevel].split("|")[1]} (Total)`
             optionsList.push(
-                <Option key = {-1} value = {`-2|${totalString}|${aboveLevel}`}>{totalString}</Option>
+                <Option key = {-1} value = {`-2-${this.state[aboveLevel].split("|")[0]}|${totalString}|${aboveLevel}`}>{totalString}</Option>
             )
             let distributionString = `All ${this.state[aboveLevel].split("|")[1]} (Distribution)`
             optionsList.push(
-                <Option key = {-1} value = {`-3|${distributionString}|${aboveLevel}`}>{distributionString}</Option>
+                <Option key = {-1} value = {`-3-${this.state[aboveLevel].split("|")[0]}|${distributionString}|${aboveLevel}`}>{distributionString}</Option>
             )
         }
 
         //If the Set Above includes a Total or Distribution, then there are no metrics to show
         if (level === "Metric"){
-            if (this.state[aboveLevel].split("|")[0] < 0){
+            if (this.state[aboveLevel].split("|")[0].charAt(0)  === "-"){
                 this.setState({
                     [listName]: []
                 })
@@ -321,9 +313,9 @@ class MetricSelector extends Component {
         }
     }
 
-    notifyParent = (locationObject) =>{
+    notifyParent = () =>{
         if (this.props.parentHandler !== undefined && this.props.parentHandler !== null){
-            this.props.parentHandler(locationObject)
+            this.props.parentHandler(this.createLocationObject())
         }
     }
 
@@ -370,9 +362,9 @@ class MetricSelector extends Component {
                 </Select>
             
                 <br/>
-                <div hidden = {!this.props.showData}>
+                <div hidden = {this.props.showLabel !== undefined ? !this.props.showLabel : false}>
                     <p>
-                        Selected data: {`${this.parseData(this.state.selectedData).Name} (${this.parseData(this.state.selectedData).Type})`}
+                        Selected Data: {`${this.createLocationObject().Name} (${this.createLocationObject().Type})`}
                     </p>
                 </div>
                
