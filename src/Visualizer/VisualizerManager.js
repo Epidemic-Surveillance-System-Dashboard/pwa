@@ -64,10 +64,11 @@ class VisualizerManager extends Component {
         for (var key in validInputs){
             if (validInputs[key](this.props[key]) === false){
                 valid = false
+                console.log(key)
                 break
             }
         }
-
+        if (valid) console.log('inputs passed')
         return valid
     }
 
@@ -86,6 +87,8 @@ class VisualizerManager extends Component {
     isSimpleData = () =>{
         //Simple data is only Facility, Metric 
         //All other data requires aggregation and therefore will be queried from the database.
+        console.log(this.props.LocationType)
+        console.log(this.props.DataType)
         if (this.props.LocationType !== "Facility") return false
         if (this.props.DataType !== "Metric") return false
         return true
@@ -163,6 +166,7 @@ class VisualizerManager extends Component {
                 +   "&Period=" + period
                 +   "&Distribution=" + this.props.DataPresentation
 
+            console.log(url)
 
             //Data comes back as an array
             fetch(url,{}).then(stream => stream.json().then(result =>{
@@ -216,17 +220,25 @@ class VisualizerManager extends Component {
     }
 
     componentDidMount = () =>{
+        this.run()
+    }
+
+
+    componentWillReceiveProps(nextProps) {
+        // You don't have to do this check first, but it can help prevent an unneeded render
+        this.run()
+    }
+
+    run = () => {
         if (this.checkInputs()){
             if (this.isSimpleData()){
+                console.log('simple data')
                 this.getSimpleData()
             }else{
+                console.log('complex data')
                 this.getComplexData()
             }
         }
-    }
-
-    getType = () =>{
-
     }
 
     render() {
@@ -252,10 +264,11 @@ class VisualizerManager extends Component {
             )
         }else{
             return(
-                <Empty
-                description="Something went wrong. Please check your VisualizerManager inputs."
-                />
-            )
+                <div className="graphPlaceholder">
+                    <Empty
+                        description="Something went wrong. Please check your VisualizerManager inputs."
+                    />
+                </div>)
         }
     }
 }

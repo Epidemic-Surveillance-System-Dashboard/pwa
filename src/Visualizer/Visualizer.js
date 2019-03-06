@@ -294,7 +294,9 @@ class Visualizer extends Component {
         let count = 0
 
         let data = this.props.data.data || this.mockMetric.data
-
+        
+        console.log(data)
+        if (data.length === 0) return null
         if (data[0].hasOwnProperty("Date") === false){
             console.log('adding dates')
             data.forEach(el =>{
@@ -393,18 +395,28 @@ class Visualizer extends Component {
 
         let elements = this.createLineSeriesWithLegend()
 
-        return (
-            <div className="center">
-                <FlexibleWidthXYPlot xType="ordinal" height={this.defaults.height} >
-                    <HorizontalGridLines />
-                    <VerticalGridLines />
-                    <XAxis />
-                    <YAxis />
-                    {elements.series}
-                </FlexibleWidthXYPlot>
-                {elements.legend}
-            </div>
-        )
+        if (elements === null){
+            return(
+                <div>
+                    Hmm... no data
+                </div>
+            )
+        }else{
+            return (
+                <div className="center">
+                    <FlexibleWidthXYPlot xType="ordinal" height={this.defaults.height} >
+                        <HorizontalGridLines />
+                        <VerticalGridLines />
+                        <XAxis />
+                        <YAxis />
+                        {elements.series}
+                    </FlexibleWidthXYPlot>
+                    {elements.legend}
+                </div>
+            )
+        }
+
+
     }
 
     renderGraph = () =>{

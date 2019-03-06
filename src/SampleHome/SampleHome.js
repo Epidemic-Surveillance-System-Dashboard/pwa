@@ -6,6 +6,7 @@ import MetricSelector from "../MetricSelector/MetricSelector"
 import LocationSelector from "../LocationSelector/LocationSelector"
 import Login from "../Login/Login"
 import userService from '../Services/User'
+import CreateGraph from '../Graph/CreateGraph';
 
 class App extends Component {
 
@@ -36,13 +37,13 @@ class App extends Component {
                     <LocationSelector parentHandler = {this.updateLocation} showLocation = {false}></LocationSelector>
                 </header> */}
                
-               <MetricSelector 
+               {/* <MetricSelector 
                     parentHandler = {this.updateLocation} 
                     showLabel = {true}
                     // disabled = {true}
                     initialData = {{
-                        Type: "Group", 
-                        Id: "1191",
+                        Type: "Set", 
+                        Id: "2094",
                         TotalOrDistribution:"Total", //Total | Distribution | None. Applicable if Type === Group or Set.
                         GroupValue: "1191|Facility Attendance|Group",
                         SetValue: "2094|Facility Attendance Male|Set",
@@ -61,7 +62,9 @@ class App extends Component {
                         </Col>
                     </Row>
                     </React.Fragment>
-                }
+                } */}
+
+                <CreateGraph/>
             </div>
         );
     }

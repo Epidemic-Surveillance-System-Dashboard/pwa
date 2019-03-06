@@ -6,6 +6,7 @@ import '../../node_modules/react-vis/dist/style.css'
 import './Dashboard.css'
 
 import VisualizerManager from '../Visualizer/VisualizerManager';
+import CreateGraph from '../Graph/CreateGraph'
 
 let graphExamples = [
     {
@@ -130,6 +131,7 @@ class Dashboard extends Component {
     state = {
         fullSize: true,
         reportCard: false,
+        showGraphs: true,
         graphOpenCloseState: null,
     }
 
@@ -142,78 +144,6 @@ class Dashboard extends Component {
         }
         visiblity["collapseOrExpandText"] = {text: "Collapse All"}
         this.setState({graphOpenCloseState: visiblity})
-    }
-
-    componentDidMount(){
-        //Test Cases
-
-        //Metric, Id = 7231
-
-        //Set, Id = 1247
-        let MetricId = "7231"
-        let SetId = "1247"
-        let SetName = "Facility Attendance Male" //Store the name with the ID so we can avoid a lookup
-
-        let GroupId = "691"
-
-        //Logic for Metrics:
-        // db.Data.where({MetricId: MetricId}).toArray((arr) =>{
-        //     this.setState({
-        //         tempGraphReady: true,
-        //         tempGraphData: arr
-        //     })
-        // })
-
-        // db.Metrics.where({parentId: SetId}).toArray(arr =>{
-        //     //Sort (using Key as proxy for order)
-        //     arr.sort((a,b) => {
-        //         return a.Key - b.Key
-        //     })
-            
-        //     let promises = []
-
-        //     arr.forEach(el =>{
-        //         let newPromise = db.Data.get({MetricId: el.Id, Time: "2015-05-01T11:00:00.000Z"})
-        //         promises.push(newPromise)
-        //     })
-
-        //     Promise.all(promises).then(values =>{
-    
-        //         let validData = []
-
-        //         for(let i = 0; i < values.length; i++){
-        //             try{
-        //                 if (values[i] !== undefined){         
-        //                     if (arr[i].Name === SetName) continue  //Skip the totals because they are often incorrect
-        //                     let x = values[i]
-        //                     x.Metric = arr[i].Name.replace(`${SetName}, `, "") //Strip away redundant text
-        //                     x.Date = new Date(x.Time)
-        //                     x.Value = Number.parseInt(x.Value)                        
-        //                     if (x.Metric !== undefined && x.Metric !== SetName) validData.push(x)
-        //                 }
-        //             }catch(e){
-        //                 //Probably empty
-        //             }
-    
-        //         }
-
-        //         //Sort Array
-        //         if (values[0].hasOwnProperty('RelativeOrder')) values.sort((a,b) =>{
-        //             return a.RelativeOrder - b.RelativeOrder
-        //         })
-
-        //         this.setState({
-        //             tempGraphReady: true,
-        //             tempGraphData: {
-        //                 name: SetName,
-        //                 data: validData
-        //             }
-        //         })
-                
-        //     })
-            
-        // })
-
     }
 
     fullSizeOrListChanged = (e) =>{
@@ -291,6 +221,16 @@ class Dashboard extends Component {
 
     }
 
+    showHideCreateGraphUI = () =>{
+        this.setState({
+            showGraphs: !this.state.showGraphs
+        }, () =>{
+            if (this.state.showGraphs){
+                window.dispatchEvent(new Event ('resize'));
+            }
+        })
+    }
+
     render() {
         return (
             <div className="center">
@@ -314,7 +254,7 @@ class Dashboard extends Component {
                     </Col>
                 </Row>
                 <div className = "gutterOverflowMask">
-                    <div className={`${!this.state.reportCard? "displayNone" : ""}`}>
+                    <div className={`${!this.state.reportCard ? "displayNone" : ""}`}>
                         <Row className={`rowVMarginSm`}>
                             <h3>Last Month's Performance</h3>
                         </Row>   
@@ -328,18 +268,38 @@ class Dashboard extends Component {
                         </Row>    
                     </div>    
                     <div className={`${this.state.reportCard? "displayNone" : ""}`}>
-                        <Row className={`rowVMarginSm`}>
-                            <Col className = "left" xs={{ span: 24, offset: 0 }} sm = {{span: 22, offset:1}} md={{ span: 18, offset: 3 }} lg = {{span: 16, offset: 4}}>
-                                <Button onClick = {this.toggleAllGraphs}>{this.state.graphOpenCloseState["collapseOrExpandText"].text}</Button>
-                            </Col>
-                        </Row>
-                        <Row className={`rowVMarginSm`} gutter= {16}>
-                            <Col xs={{ span: 24, offset: 0 }} sm = {{span: 22, offset:1}} md={{ span: 18, offset: 3 }} lg = {{span: 16, offset: 4}}>
-                                <Card className = "left" size ="small">
-                                    {this.renderGraphs()}
-                                </Card>
-                            </Col>
-                        </Row>     
+
+                        {/* UI For Viewing Graphs */}
+                        <div className = {this.state.showGraphs ? "" : "displayNone"}>
+                            <Row className={`rowVMarginSm`}>
+                                <Col className = "left" xs={{ span: 12, offset: 0 }} sm = {{span: 11, offset:1}} md={{ span: 9, offset: 3 }} lg = {{span: 8, offset: 4}}>
+                                    <Button onClick = {this.toggleAllGraphs}>{this.state.graphOpenCloseState["collapseOrExpandText"].text}</Button>
+                                </Col>
+                                <Col className = "right" xs={{ span: 12, offset: 0 }} sm = {{span: 11, offset:0}} md={{ span: 9, offset: 0 }} lg = {{span: 8, offset: 0}}>
+                                    <Button icon="plus" type = "primary" onClick = {this.showHideCreateGraphUI}>Add Graph</Button>
+                                </Col>
+                            </Row>
+                            <Row className={`rowVMarginSm`} gutter= {16}>
+                                <Col xs={{ span: 24, offset: 0 }} sm = {{span: 22, offset:1}} md={{ span: 18, offset: 3 }} lg = {{span: 16, offset: 4}}>
+                                    <Card className = "left" size ="small">
+                                        {this.renderGraphs()}
+                                    </Card>
+                                </Col>
+                            </Row>     
+                        </div>
+                        
+                        {/* UI For Creating Graphs */}
+                        <div className = {this.state.showGraphs ? "displayNone" : ""}>
+                            <Row className = "rowVMarginSm">
+                                <Col><Button icon = "caret-left" onClick = {this.showHideCreateGraphUI}>Back</Button></Col>
+                                
+                            </Row>
+                            <Row className = "rowVMarginSm">
+                                <CreateGraph/>
+                            </Row>
+                            
+                            
+                        </div>
                     </div>    
                 </div>
             </div>
