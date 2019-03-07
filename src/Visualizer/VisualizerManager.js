@@ -65,6 +65,7 @@ class VisualizerManager extends Component {
             if (validInputs[key](this.props[key]) === false){
                 valid = false
                 console.log(key)
+                console.log(this.props[key])
                 break
             }
         }
@@ -172,6 +173,7 @@ class VisualizerManager extends Component {
             fetch(url,{}).then(stream => stream.json().then(result =>{
 
                 if (period === "year"){
+                    console.log('Year')
                     //TODO: Switch to vertical bar graph in the future
                     result.forEach(el =>{
                         el.Value = Number.parseFloat(el.Total)
@@ -196,22 +198,30 @@ class VisualizerManager extends Component {
 
                     }
                 }else{
-                    //Period = year
+                    console.log('Month')
+                    //Period === month
 
                     result.forEach(el => {
                         let d = new Date(this.props.StartDate)
                         d.setUTCMonth(el.Month - 1)
                         el.Date = d
                         el.Value = Number.parseInt(el.Total)
+                        el.Metric = el.MetricName
                     })
+
+                    let graphType = this.props.DataPresentation === "distribution" ? "Set" : "Metric"
+
+                    console.log(graphType)
                     
                     this.setState({
                         ready: true,
-                        graphType: "Metric",
+                        graphType: graphType,
                         data: {
-                            data: result
+                            data: result,
+                            name: this.props.Title
                         }
                     })
+
                 }
 
                 //TODO: store data locally
@@ -223,11 +233,32 @@ class VisualizerManager extends Component {
         this.run()
     }
 
-
-    componentWillReceiveProps(nextProps) {
-        // You don't have to do this check first, but it can help prevent an unneeded render
-        this.run()
+    componentDidUpdate(){
+        console.log('did update')
+        console.log(this.props)
+        // <VisualizerManager
+        // Title="Hi"
+        // LocationName={this.state.Location? this.state.Location.Name : undefined}
+        // LocationId = {this.state.Location? this.state.Location.Id : undefined}
+        // LocationType={this.state.Location? this.state.Location.Type : undefined}
+        // DataId = {this.state.Data ? this.state.Data.Id : undefined}
+        // DataType = {this.state.Data ? this.state.Data.Type : undefined}
+        // StartDate = {new Date("2015-01-01T00:00:00.000Z")}
+        // EndDate = {new Date("2015-12-01T00:00:00.000Z")}
+        // DataPresentation = {this.state.Data? this.state.Data.TotalOrDistribution : undefined}
     }
+
+
+
+    // componentWillReceiveProps(nextProps) {
+    //     // You don't have to do this check first, but it can help prevent an unneeded render
+    //     this.run()
+    // }
+
+    // componentDidUpdate(prevState, nextState){
+    //     this.run()
+    //     console.log(nextState)
+    // }
 
     run = () => {
         if (this.checkInputs()){
@@ -242,6 +273,7 @@ class VisualizerManager extends Component {
     }
 
     render() {
+
         if (this.checkInputs()){
             return (
                 <div>

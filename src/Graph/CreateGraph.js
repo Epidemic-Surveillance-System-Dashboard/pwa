@@ -13,7 +13,11 @@ class CreateGraph extends Component {
 
     updateLocation = (location) =>{
         console.log(location)
+        //Force refresh of the location because w
         this.setState({Location: location})
+        // this.setState({Location: undefined}, () =>{
+        //     this.setState({Location: location})
+        // })
     }
 
     updateData = (data) =>{
@@ -21,9 +25,6 @@ class CreateGraph extends Component {
         this.setState({Data: data})
     }
     
-
-
-
 // 
 
 // {
@@ -47,6 +48,12 @@ class CreateGraph extends Component {
                 <h4>Select Location</h4>
                 <LocationSelector
                     parentHandler = {this.updateLocation}
+                    initialLocation = {
+                        {
+                            Id: "1215",
+                            Type: "Facility"
+                        }
+                    }
                 />
                 <h4>Select Data</h4>
                 <MetricSelector

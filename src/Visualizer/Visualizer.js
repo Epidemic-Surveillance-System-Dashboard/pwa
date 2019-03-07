@@ -222,6 +222,9 @@ class Visualizer extends Component {
 
     createHistogramData(){
         let rawData = this.props.data
+        if (rawData.length === 0){
+            return null
+        }
         let barSeriesData = this.createBarSeriesData(rawData)
         return {
             barSeries: barSeriesData.barSeries,
@@ -261,6 +264,14 @@ class Visualizer extends Component {
         // let data = this.createBarSeriesData(this.mockSet.data)
 
         let data = this.createHistogramData()
+
+        if (data === null){
+            return(
+                <div>
+                    empty
+                </div>
+            )
+        }
 
         return (
             <div className="center">
