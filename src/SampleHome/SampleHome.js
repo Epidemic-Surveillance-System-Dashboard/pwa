@@ -11,17 +11,18 @@ class App extends Component {
 
     state = {
         location:null,
-        user: {FirstName: "hi"}
+        user: null
     }
 
     updateLocation = (location) =>{
+        console.log(location)
         this.setState({location: location})
     }
 
     componentWillMount(){
-        userService.login().then(user =>{
-            this.setState({user: user})
-        })
+        userService.user().then((userObj) => {
+            this.setState({user: userObj});
+        });
     }
 
     render() {
@@ -34,18 +35,33 @@ class App extends Component {
                     <h4>{this.state.location ? this.state.location.Name : ""}</h4>
                     <LocationSelector parentHandler = {this.updateLocation} showLocation = {false}></LocationSelector>
                 </header> */}
-                {/* <Row>
-                    User Name is {this.state.user.FirstName}
-                </Row>
-                <Row>
-                    <Col>
-                    <h4>{this.state.location ? this.state.location.Name : ""}</h4>
-                    <MetricSelector parentHandler = {this.updateLocation} showData = {true}></MetricSelector>
-                    </Col>
-                </Row> */}
-                <Login>
-                    
-                </Login>
+               
+               <MetricSelector 
+                    parentHandler = {this.updateLocation} 
+                    showLabel = {true}
+                    // disabled = {true}
+                    initialData = {{
+                        Type: "Group", 
+                        Id: "1191",
+                        TotalOrDistribution:"Total", //Total | Distribution | None. Applicable if Type === Group or Set.
+                        GroupValue: "1191|Facility Attendance|Group",
+                        SetValue: "2094|Facility Attendance Male|Set",
+                        MetricValue:"-3-2094|All Facility Attendance Male (Distribution)|Set"
+                        //This means Group = 1191, and Total for Group
+                    }}>
+                </MetricSelector>
+
+                {
+                    this.state.user == null? <Login></Login> :  
+                    <React.Fragment>
+                    <Row> User Name is {this.state.user.FirstName} </Row>
+                    <Row>
+                        <Col>
+                        <h4>{this.state.location ? this.state.location.Name : ""}</h4>
+                        </Col>
+                    </Row>
+                    </React.Fragment>
+                }
             </div>
         );
     }

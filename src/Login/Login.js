@@ -1,12 +1,14 @@
 import React, { Component } from 'react'
 import {Row, Col, Input, Button} from 'antd'
 import db from '../Database/database'
+import UserService from '../Services/User';
+import { withRouter } from 'react-router-dom'
 
 class Login extends Component {
 
     state = {
-        username: null,
-        password:null
+        Email: null,
+        Password: null
     }
 
     handleInput = (value, property) =>{
@@ -22,11 +24,23 @@ class Login extends Component {
     }
 
     login = () => {
-        //POST this.state.username and this.state.password
-        //return user information
+        console.log(this.props.history);
+        UserService.login(this.state.Email,this.state.Password).then((success) => {
+            if(success){
+                //redirect
+                UserService.user().then((result) => {
+                    console.log(result);
+                    this.props.history.push('/dashboard');
+                })
+            }
+            else{
+                //failed to login
+            }
+        })
     }
 
     render(){
+        //console.log(history);
         return (
             <div>
                 <Row>
@@ -34,13 +48,13 @@ class Login extends Component {
                         <Input 
                             addonBefore={this.preTab("Username")}
                             onChange = {(e) =>{
-                                this.handleInput(e.target.value, "username")
+                                this.handleInput(e.target.value, "Email")
                             }}/>
 
                         <Input 
                             addonBefore={this.preTab("Password")}
                             onChange = {(e) =>{
-                                this.handleInput(e.target.value, "password")
+                                this.handleInput(e.target.value, "Password")
                             }}/>
                             
                         <Button type="primary"
@@ -58,4 +72,4 @@ class Login extends Component {
     }
 }
 
-export default Login;
+export default withRouter(Login);

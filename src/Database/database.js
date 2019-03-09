@@ -13,8 +13,7 @@ db.version(1).stores({
     Groups:"Id",
     Sets:"Id,parentId",
     Metrics:"Id,parentId",
-    Data:"Id,Time,MetricId,FacilityId", //Index everything here
-    FacilityView:"id,Name,WardId,LGAId,StateId",
+    Data:"Id,Time,MetricId,FacilityId,[FacilityId+MetricId+Time]", //Index everything here
 
     //Users (all of ESSD)
     User:"Id",   // only store non-essential information
@@ -22,6 +21,7 @@ db.version(1).stores({
     //User (local)
     LocalUser: "Id",
     Dashboard:"Id",
+    DashboardData: "Id"
 
 })
 

@@ -67,3 +67,10 @@
   justify-content: center;
   height:60vh;
 }
+
+.graphPlaceholder{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 404px;/* 350px graph with legend runs about 404px high*/
+}

@@ -5,29 +5,80 @@ import {Table, Button,List, Card, Row, Col, Radio} from 'antd'
 import '../../node_modules/react-vis/dist/style.css'
 import './Dashboard.css'
 
-import Visualizer from '../Visualizer/Visualizer'
-
-import db from '../Database/database'
+import VisualizerManager from '../Visualizer/VisualizerManager';
 
 let graphExamples = [
     {
-        title: "Metric Ex | Malaria Vaccinations",
-        location: "Ward 1",
-        type: "metric",
-        id: 0
+        Title: "Facility Attendance Female, 29d-11 months",
+        LocationName:"za Bagega Primary Health Centre",
+        LocationId: "1215",
+        LocationType : "Facility",
+        DataId : "11729",
+        DataType : "Metric",
+        StartDate : new Date("2015-01-01T00:00:00.000Z"),
+        EndDate :  new Date("2015-12-01T00:00:00.000Z"),
+        GraphId: 0
     },
     {
-        title: "Set Ex | Malaria Vaccinations - Male",
-        location: "Ward 2",
-        type: "set",
-        id: 1
+        Title: "Facility Attendance Outpatient Value",
+        LocationName:"za Bagega Primary Health Centre",
+        LocationId: "1215",
+        LocationType : "Facility",
+        DataId : "11493",
+        DataType : "Metric",
+        StartDate : new Date("2015-01-01T00:00:00.000Z"),
+        EndDate :  new Date("2016-12-01T00:00:00.000Z"),
+        GraphId: 1
     },
     {
-        title: "Group Ex | Malaria Vaccinations - Male and Female",
-        location: "Ward 3",
-        type: "group",
-        id: 2
+        Title: "Facility Attendance Outpatient",
+        LocationName:"za Bagega Ward",
+        LocationId: "386",
+        LocationType : "Ward",
+        DataId : "2094",
+        DataType : "Set",
+        DataPresentation: "none", //none, total, or distribution
+        StartDate : new Date("2015-01-01T00:00:00.000Z"),
+        EndDate :  new Date("2015-12-01T00:00:00.000Z"),
+        GraphId: 2
     },
+    {
+        Title: "Facility Attendance Outpatient",
+        LocationName:"za Bagega Ward",
+        LocationId: "386",
+        LocationType : "Ward",
+        DataId : "2094",
+        DataType : "Set",
+        DataPresentation: "total", //none, total, or distribution
+        StartDate : new Date("2015-01-01T00:00:00.000Z"),
+        EndDate :  new Date("2017-12-01T00:00:00.000Z"),
+        GraphId: 3
+    },
+    {
+        Title: "Facility Attendance Outpatient",
+        LocationName:"za Bagega Ward",
+        LocationId: "386",
+        LocationType : "Ward",
+        DataId : "2094",
+        DataType : "Set",
+        DataPresentation: "none", //none, total, or distribution
+        StartDate : new Date("2015-01-01T00:00:00.000Z"),
+        EndDate :  new Date("2017-12-01T00:00:00.000Z"),
+        GraphId: 4
+    }
+    // ,
+    // {
+    //     title: "Set Ex | Malaria Vaccinations - Male",
+    //     location: "Ward 2",
+    //     type: "set",
+    //     graphId:1
+    // },
+    // {
+    //     title: "Group Ex | Malaria Vaccinations - Male and Female",
+    //     location: "Ward 3",
+    //     type: "group",
+    //     graphId:2
+    // },
 
 ]
 
@@ -74,27 +125,12 @@ const metricData = [
     },
 ]
 
-
-const dashboardGraphs = [
-    {
-        dataType:"Metric",
-        dataID: 1,
-        dataName: "Malaria Vaccinations",     //Cache to reduce # of db queries
-        locationID:1,
-        locationType:"Ward",
-        locationName:"Example Ward",            //Cache
-        startDate:new Date(),
-        endDate: new Date(),
-    }
-]
-
 class Dashboard extends Component {
 
     state = {
         fullSize: true,
         reportCard: false,
         graphOpenCloseState: null,
-        tempGraphReady: false
     }
 
     componentWillMount() {
@@ -109,27 +145,75 @@ class Dashboard extends Component {
     }
 
     componentDidMount(){
-        let MetricId = "6741"
-        db.Data.where({MetricId: MetricId}).toArray((arr) =>{
-            const monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN",
-                "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"
-            ]
-            console.table(arr)
+        //Test Cases
+
+        //Metric, Id = 7231
+
+        //Set, Id = 1247
+        let MetricId = "7231"
+        let SetId = "1247"
+        let SetName = "Facility Attendance Male" //Store the name with the ID so we can avoid a lookup
+
+        let GroupId = "691"
+
+        //Logic for Metrics:
+        // db.Data.where({MetricId: MetricId}).toArray((arr) =>{
+        //     this.setState({
+        //         tempGraphReady: true,
+        //         tempGraphData: arr
+        //     })
+        // })
+
+        // db.Metrics.where({parentId: SetId}).toArray(arr =>{
+        //     //Sort (using Key as proxy for order)
+        //     arr.sort((a,b) => {
+        //         return a.Key - b.Key
+        //     })
             
-            arr.forEach(el =>{
-                let date = new Date(el.Time) //Probably faster to do text analysis but this is easier for now
-                el.Month = monthNames[date.getMonth()]
-                el.Year = date.getFullYear()
-                el.Value = Number.parseInt(el.Value)
-            })
+        //     let promises = []
 
-            console.table(arr)
+        //     arr.forEach(el =>{
+        //         let newPromise = db.Data.get({MetricId: el.Id, Time: "2015-05-01T11:00:00.000Z"})
+        //         promises.push(newPromise)
+        //     })
 
-            this.setState({
-                tempGraphReady: true,
-                tempGraphData: arr
-            })
-        })
+        //     Promise.all(promises).then(values =>{
+    
+        //         let validData = []
+
+        //         for(let i = 0; i < values.length; i++){
+        //             try{
+        //                 if (values[i] !== undefined){         
+        //                     if (arr[i].Name === SetName) continue  //Skip the totals because they are often incorrect
+        //                     let x = values[i]
+        //                     x.Metric = arr[i].Name.replace(`${SetName}, `, "") //Strip away redundant text
+        //                     x.Date = new Date(x.Time)
+        //                     x.Value = Number.parseInt(x.Value)                        
+        //                     if (x.Metric !== undefined && x.Metric !== SetName) validData.push(x)
+        //                 }
+        //             }catch(e){
+        //                 //Probably empty
+        //             }
+    
+        //         }
+
+        //         //Sort Array
+        //         if (values[0].hasOwnProperty('RelativeOrder')) values.sort((a,b) =>{
+        //             return a.RelativeOrder - b.RelativeOrder
+        //         })
+
+        //         this.setState({
+        //             tempGraphReady: true,
+        //             tempGraphData: {
+        //                 name: SetName,
+        //                 data: validData
+        //             }
+        //         })
+                
+        //     })
+            
+        // })
+
     }
 
     fullSizeOrListChanged = (e) =>{
@@ -185,19 +269,24 @@ class Dashboard extends Component {
 
     renderGraphs = () => {
         return (
-            <List
-                itemLayout="vertical"
-                dataSource={graphExamples}
-                renderItem={(item, key) => (
-                    <List.Item >
-                        <List.Item.Meta
-                            title={item.title}
-                            description={item.location} />
-                        {this.createCollapseExpandButton(key)}
-                        <Visualizer type={item.type} show={this.state.graphOpenCloseState[key].open}></Visualizer>
-                    </List.Item>
-                )}>
-            </List>
+                <List
+                    itemLayout="vertical"
+                    dataSource = {graphExamples}
+                    renderItem = {(item, key) =>(
+                        <List.Item >
+                            <List.Item.Meta
+                            title = {item.Title}
+                            description = {item.LocationName}/>
+                            {this.createCollapseExpandButton(key)}
+
+                            <VisualizerManager
+                                {...item} //LocationId, Location, etc...
+                                show = {this.state.graphOpenCloseState[key].open}
+                            />
+
+                        </List.Item>
+                    )}>
+                </List>
         )
 
     }
@@ -205,9 +294,17 @@ class Dashboard extends Component {
     render() {
         return (
             <div className="center">
-                {this.state.tempGraphReady &&
-                    <Visualizer type = "metric" show = {true} data = {this.state.tempGraphData}></Visualizer>
-                }
+
+            {/* Example Visualizer Manager Use */}
+           {/* <VisualizerManager
+                locationId = "1215"
+                locationType = "Facility"
+                dataId = "11493"
+                dataType = "Metric"
+                startDate = {new Date("2015-01-01T00:00:00.000Z")}
+                endDate =   {new Date("2015-12-01T00:00:00.000Z")}
+            /> */}
+
                 <Row className={`rowVMarginSm rowVMarginTopSm`}>
                     <Col xs={{ span: 24, offset: 0 }} md={{ span: 12, offset: 6 }} lg={{ span: 8, offset: 8 }}>
                         <Radio.Group defaultValue="0" buttonStyle="solid" onChange={this.reportCardOrGraphsChanged}>
