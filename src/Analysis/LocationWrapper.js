@@ -14,16 +14,16 @@ import LocationSelector from "../LocationSelector/LocationSelector"
 class LocationWrapper extends Component {
 
     state = {
-        location: null
+        location: this.props.initialLocation
     }
-    componnentDidMount = ()=>{
+    componnentDidMount = () => {
         this.setState({
             location: this.props.initialLocation
         });
     }
     notifyParent = (save) => {
         if (this.props.parentHandler !== undefined && this.props.parentHandler !== null) {
-            this.props.parentHandler(this.location, save);
+            this.props.parentHandler(this.state.location, save);
         }
     }
     updateLocation = (location) => {
@@ -42,7 +42,6 @@ class LocationWrapper extends Component {
                 <Button onClick={this.saveLocation}>Save</Button>
                 <Button onClick={this.cancelLocation}>Cancel</Button>
                 <LocationSelector parentHandler={this.updateLocation} showLocation={false} initialLocation={this.state.location}></LocationSelector>
-
             </div>
         )
     }

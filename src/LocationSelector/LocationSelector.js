@@ -135,7 +135,6 @@ class LocationSelector extends Component {
          *  - initialLocation is within maxScope
          *  - maxScope must be higher or equal to initialLocation
          */
-
         let maxScope = {
             Type:  this.props.maxScope ? this.props.maxScope.Type : "National",
             Id:     this.props.maxScope ? this.props.maxScope.Id : "1",
