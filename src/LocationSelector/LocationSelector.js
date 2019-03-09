@@ -170,13 +170,11 @@ class LocationSelector extends Component {
     }
 
     getLocationHierarchyForInitLocation = async (currentIndex, currentLocationId,completionCallback, locations) =>{
-        console.log(locations)
         if (currentIndex === 0){
             completionCallback(locations)
             return
         }else{
             let location = await (this.findLocationByQuery(hierarchyLevels[currentIndex], {Id:currentLocationId}))
-        console.log(location)
             location = location[0]
             locations[hierarchyLevels[currentIndex]] = `${location.Id}|${location.Name}|${hierarchyLevels[currentIndex]}`
             this.getLocationHierarchyForInitLocation(currentIndex-1, location.parentId, completionCallback, locations)
@@ -185,24 +183,10 @@ class LocationSelector extends Component {
 
     setLocationState = (data) =>{
         this.setState({...data}, () =>{
+            this.notifyParent()
             //Then update lists for each level that is defined, plus the first undefined level
             for (let i = 0; i < hierarchyLevels.length; i++){
                 this.updateList(hierarchyLevels[i], i, () =>{})
-
-                //Set the selected location to the parent of the first undefined location
-                //or the facility level
-
-                let selectedLocation = undefined
-
-                if (selectedLocation !== undefined){
-                    let callback = () =>{
-                        this.notifyParent(this.parseData(this.state.selectedLocation))
-                    }
-                    this.setState({
-                        selectedLocation: selectedLocation
-                    }, callback)
-                    break
-                }
             }
             this.enableDisableLists()
         })
@@ -240,12 +224,12 @@ class LocationSelector extends Component {
         if (value === undefined || this.parseLocation(value).Id === "-1"){
             currentLevel = hierarchyLevels[currentLevelIndex - 1]  
             this.setState({[level]: undefined, selectedLocation:this.state[currentLevel]}, () =>{
-                this.notifyParent(this.parseLocation(this.state[currentLevel]))
+                this.notifyParent()
             })
         }else{
             //Update Select
             this.setState({[level]: value, selectedLocation:value},  () =>{
-                this.notifyParent(this.parseLocation(this.state[currentLevel]))
+                this.notifyParent()
             })
         }
         
@@ -316,9 +300,16 @@ class LocationSelector extends Component {
         }
     }
 
-    notifyParent = (locationObject) =>{
+    notifyParent = () =>{
         if (this.props.parentHandler !== undefined && this.props.parentHandler !== null){
-            this.props.parentHandler(locationObject)
+            let location = undefined
+            for (let i = hierarchyLevels.length-1; i >=0 ; i--){
+                if (this.state[hierarchyLevels[i]] !== undefined){
+                    location = this.state[hierarchyLevels[i]]
+                    break
+                }
+            }
+            this.props.parentHandler(this.parseLocation(location))
         }
     }
 

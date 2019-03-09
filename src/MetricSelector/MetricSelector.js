@@ -20,7 +20,7 @@ const style = {
  * Selects a loction in Nigeria
  * @param {parentHandler} - Function passed in by the parent that takes a LocationObject with props {Id, Name, Type} and updates the parent UI
  * @param {showData} - Boolean that shows or hides LocationSelector's built-in selected location text
- * @param {initialData}
+ * @param {initialData} = {GroupValue, SetValue, MetricValue}
  */
 class MetricSelector extends Component {
 
@@ -197,7 +197,7 @@ class MetricSelector extends Component {
         
         let typeID = type !== undefined ? split[0] : undefined
 
-        let totalOrDistribution = "Total" // Default to total
+        let totalOrDistribution = "total" // Default to total
 
         if (type !== "Metric"){
             //If this is not a metric and has a total or distribution, we need to find out which one it is
@@ -207,13 +207,13 @@ class MetricSelector extends Component {
                 let nextType = typeID.split("-")
                 typeID = nextType[2]            //Get the ID of the above Set or Group without the -# prefix
                 if (nextType[1] === "2"){
-                    totalOrDistribution = "Total"
+                    totalOrDistribution = "total"
                 }else{
-                    totalOrDistribution = "Distribution"
+                    totalOrDistribution = "distribution"
                 }
             }
         }else{
-            totalOrDistribution = "None"
+            totalOrDistribution = "none"
         }
 
         let result = {

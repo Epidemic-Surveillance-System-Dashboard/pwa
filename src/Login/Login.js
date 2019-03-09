@@ -24,14 +24,12 @@ class Login extends Component {
     }
 
     login = () => {
-        console.log(this.props.history);
         UserService.login(this.state.Email,this.state.Password).then((success) => {
             if(success){
                 //redirect
-                UserService.user().then((result) => {
-                    console.log(result);
+                this.props.updateDrawer().then((result) => {
                     this.props.history.push('/dashboard');
-                })
+                });
             }
             else{
                 //failed to login
@@ -40,7 +38,6 @@ class Login extends Component {
     }
 
     render(){
-        //console.log(history);
         return (
             <div>
                 <Row>

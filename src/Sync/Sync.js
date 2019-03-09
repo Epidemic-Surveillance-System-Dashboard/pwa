@@ -74,7 +74,7 @@ class Sync extends Component {
                     })
                 },
                 //TODO: Scope URL to user 
-                url: `${rootURL}/data/location?state=za Zamfara&lga=za Anka&ward=za Bagega&facility=za Bagega Primary Health Centre`
+                url: `${rootURL}/data/location?state=za Zamfara&lga=za Anka&ward=za Bagega`
             },
             {
                 dataName:"metric names",
@@ -113,17 +113,24 @@ class Sync extends Component {
 
 	render() {
 		return (
-            <div>
-                <Row>
-                    <Col>
-                        <p>Please Note: You must have an internet connection.</p>
+            <div class = "center">
+                <Row className="rowVMarginTopSm">
+                    <Col xs={24} sm={{span:22, offset:1}} md={{span:18, offset:2}} lg={{span:16, offset: 4}} xl={{span:16, offset: 4}}>
+                        <p>                  
+                            <Icon
+                                type = "wifi"/>&nbsp;
+                            Please note: you must have an internet connection.
+                        </p>
                         <Button type="primary" onClick = {this.startDownload}>Start Sync</Button>
                     </Col>
-                    <Col hidden = {!this.state.showProgress}>
-                        <Timeline>
+                </Row>
+                <Row>
+                    <Col hidden = {!this.state.showProgress} xs={{span:22, offset:1}} sm={{span:20, offset:2}} md={{span:12, offset:6}} lg={{span:10, offset: 7}} xl={{span:8, offset: 8}}>
+                        <Timeline className="rowVMarginTopSm">
                             {this.state.DataDownloads}
                         </Timeline>
                     </Col>
+
                 </Row>
             </div>
 		)
@@ -149,7 +156,7 @@ class DataProgress extends Component{
 
     pendingIcon = <Icon type="sync" spin/>
 
-    completeIcon = <Icon type="check-circle"/>
+    completeIcon = <Icon type="check-circle" className = "override-background"/>
 
     failedIcon = <Icon type = "close-circle"/>
 

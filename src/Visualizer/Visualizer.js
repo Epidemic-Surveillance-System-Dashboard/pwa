@@ -2,9 +2,8 @@ import React, { Component } from 'react';
 
 //react-vis for graphs
 import '../../node_modules/react-vis/dist/style.css';
-
-import { FlexibleWidthXYPlot, XAxis, YAxis, HorizontalGridLines, LineSeries, LineMarkSeries, DiscreteColorLegend, VerticalGridLines, HorizontalBarSeries } from 'react-vis';
-import { Card } from 'antd'
+import {Empty} from 'antd'
+import { FlexibleWidthXYPlot, XAxis, YAxis, HorizontalGridLines, LineSeries, LineMarkSeries, DiscreteColorLegend, VerticalGridLines, HorizontalBarSeries} from 'react-vis';
 
 const strokeColors = [
     "#2980b9",
@@ -224,6 +223,9 @@ class Visualizer extends Component {
 
     createHistogramData(){
         let rawData = this.props.data
+        if (rawData.length === 0){
+            return null
+        }
         let barSeriesData = this.createBarSeriesData(rawData)
         return {
             barSeries: barSeriesData.barSeries,
@@ -264,6 +266,14 @@ class Visualizer extends Component {
 
         let data = this.createHistogramData()
 
+        if (data === null){
+            return(
+                <div>
+                    empty
+                </div>
+            )
+        }
+
         return (
             <div className="center">
                 <FlexibleWidthXYPlot yType="ordinal" height={this.defaults.height} margin={{ left: this.defaults.barChartLeftMargin }}>
@@ -296,9 +306,10 @@ class Visualizer extends Component {
         let count = 0
 
         let data = this.props.data.data || this.mockMetric.data
-
+        
+        console.log(data)
+        if (data.length === 0) return null
         if (data[0].hasOwnProperty("Date") === false){
-            console.log('adding dates')
             data.forEach(el =>{
                 el.Date = new Date(el.Time)
                 el.Value = Number.parseInt(el.Value)
@@ -395,18 +406,30 @@ class Visualizer extends Component {
 
         let elements = this.createLineSeriesWithLegend()
 
-        return (
-            <div className="center">
-                <FlexibleWidthXYPlot xType="ordinal" height={this.defaults.height} >
-                    <HorizontalGridLines />
-                    <VerticalGridLines />
-                    <XAxis />
-                    <YAxis />
-                    {elements.series}
-                </FlexibleWidthXYPlot>
-                {elements.legend}
-            </div>
-        )
+        if (elements === null){
+            return(
+                <div className="graphPlaceholder">
+                    <Empty
+                        description="Hmm.. we can't find any data"
+                    />
+                </div>
+            )
+        }else{
+            return (
+                <div className="center">
+                    <FlexibleWidthXYPlot xType="ordinal" height={this.defaults.height} >
+                        <HorizontalGridLines />
+                        <VerticalGridLines />
+                        <XAxis />
+                        <YAxis />
+                        {elements.series}
+                    </FlexibleWidthXYPlot>
+                    {elements.legend}
+                </div>
+            )
+        }
+
+
     }
 
     renderGraph = () => {

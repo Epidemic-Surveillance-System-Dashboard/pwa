@@ -17,6 +17,8 @@ import User from './Users/Users'
 import Sync from './Sync/Sync'
 import Analysis from './Analysis/Analysis'
 
+import userService from './Services/User'
+
 import './App.css';
 
 const {
@@ -41,7 +43,8 @@ class App extends Component {
 	}
 
 	state = {
-		drawerOpen: false
+		drawerOpen: false,
+		user: null
 	}
 
 	openDrawer = () => {
@@ -56,10 +59,35 @@ class App extends Component {
 		})
 	}
 
+	componentWillMount(){
+        userService.user().then((userObj) => {
+			this.setState({
+				user: userObj
+			})
+			//console.log(this.state.user.UserType);
+        });
+	}
+
+	updateDrawer = () => {
+		return userService.user().then((result) => {
+			this.setState({
+				user: result
+			})
+		});
+	}
+	
+	logout = async () =>{
+		this.setState({
+			user: null
+		});
+		await userService.logout();
+	}
+
 	render() {
 		return (
 			<Router>
 				<Layout>
+					{this.state.user == null? "" :
 					<Drawer
 						title="Menu"
 						placement="left"
@@ -88,18 +116,29 @@ class App extends Component {
 									<Icon type="user" />Account
 								</Link>
 							</Menu.Item>
+							{
+								this.state.user != null && this.state.user.UserType != "admin" ? "": 
+								<Menu.Item key="4">
+									<Link to="/users">
+										<Icon type="team" />Users
+									</Link>
+								</Menu.Item>
+							}
 							<Menu.Item key="5">
-								<Link to="/users">
-									<Icon type="team" />Users
-								</Link>
-							</Menu.Item>
-							<Menu.Item key="6">
 								<Link to="/sync">
 									<Icon type="sync" />Synchronize Data
 								</Link>
 							</Menu.Item>
+							{this.state.user == null? "":
+							<Menu.Item key="6" onClick={this.logout}>
+								<Link to="/">
+									<Icon type="logout" />Logout
+								</Link>
+							</Menu.Item>
+							}
 						</Menu>
 					</Drawer>
+					}
 					<Header style={{ padding: 0 }}>
 						<NavigationMenu
 							drawerOpen={this.state.drawerOpen}
@@ -108,7 +147,7 @@ class App extends Component {
 						</NavigationMenu>
 					</Header>
 					<Content>
-						<Route exact path="/" component={SampleHome} />
+						<Route exact path="/" render={(props) => <SampleHome {...props} updateDrawer={this.updateDrawer} />} />
 						<Route path="/dashboard" component={Dashboard} />
 						<Route path="/analysis" component={Analysis} />
 						<Route path="/account" component={Account} />

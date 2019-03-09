@@ -41,12 +41,14 @@ function login(email, password){
 
 function logout(){
     return new Promise ((resolve, reject) =>{
-        db.LocalUser.clear().then(
+        db.LocalUser.clear().then(() => {
             resolve (true)
-        ).catch((e) =>{
+        }).catch((e) =>{
             console.log(e)
             resolve(false)
         })
+
+
     })
 }
 
@@ -60,7 +62,7 @@ function user(){
             if (arr.length !== 1) resolve(null)
             else{
                 let result = arr[0]
-                result.userType = "Admin" //hard code for now
+                //result.UserType = "admin" //hard code for now
                 resolve(result)
             }
         })
@@ -88,4 +90,4 @@ function fetch(url, args){
     })
 }*/
 
-export default userService
+export default userService;

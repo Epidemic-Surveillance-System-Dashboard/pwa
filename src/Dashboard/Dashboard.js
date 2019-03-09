@@ -6,80 +6,96 @@ import '../../node_modules/react-vis/dist/style.css'
 import './Dashboard.css'
 
 import VisualizerManager from '../Visualizer/VisualizerManager';
+import CreateGraph from '../Graph/CreateGraph'
 
 let graphExamples = [
+    // {
+    //     Title: "Facility Attendance Female, 29d-11 months",
+    //     Location:{
+    //         Name: "za Bagega Primary Health Centre",
+    //         Id:  "1215",
+    //         Type: "Facility"
+    //     },
+    //     Data:{
+    //         Id: "11729",
+    //         Type: "Metric",
+    //     },
+    //     Dates:{
+    //         StartDate:new Date("2015-01-01T00:00:00.000Z"),
+    //         EndDate: new Date("2015-12-01T00:00:00.000Z"),
+    //     },
+    //     GraphId: 0
+    // },
+    // {
+    //     Title: "Facility Attendance Outpatient Value",
+    //     Location:{
+    //         Name: "za Bagega Primary Health Centre",
+    //         Id:  "1215",
+    //         Type: "Facility"
+    //     },
+    //     Data:{
+    //         Id: "11493",
+    //         Type: "Metric",
+    //     },
+    //     Dates:{
+    //         StartDate:new Date("2015-01-01T00:00:00.000Z"),
+    //         EndDate: new Date("2015-12-01T00:00:00.000Z"),
+    //     },
+    //     GraphId: 1
+    // },
+    // {
+    //     Title: "Facility Attendance Outpatient",
+    //     Location:{
+    //         Name: "za Bagega Ward",
+    //         Id:  "386",
+    //         Type: "Ward"
+    //     },
+    //     Data:{
+    //         Id: "2094",
+    //         Type: "Set",
+    //     },
+    //     Dates:{
+    //         StartDate:new Date("2015-01-01T00:00:00.000Z"),
+    //         EndDate: new Date("2015-12-01T00:00:00.000Z"),
+    //     },
+    //     GraphId: 2
+    // },
     {
-        Title: "Facility Attendance Female, 29d-11 months",
-        LocationName:"za Bagega Primary Health Centre",
-        LocationId: "1215",
-        LocationType : "Facility",
-        DataId : "11729",
-        DataType : "Metric",
-        StartDate : new Date("2015-01-01T00:00:00.000Z"),
-        EndDate :  new Date("2015-12-01T00:00:00.000Z"),
-        GraphId: 0
-    },
-    {
-        Title: "Facility Attendance Outpatient Value",
-        LocationName:"za Bagega Primary Health Centre",
-        LocationId: "1215",
-        LocationType : "Facility",
-        DataId : "11493",
-        DataType : "Metric",
-        StartDate : new Date("2015-01-01T00:00:00.000Z"),
-        EndDate :  new Date("2016-12-01T00:00:00.000Z"),
-        GraphId: 1
-    },
-    {
-        Title: "Facility Attendance Outpatient",
-        LocationName:"za Bagega Ward",
-        LocationId: "386",
-        LocationType : "Ward",
-        DataId : "2094",
-        DataType : "Set",
-        DataPresentation: "none", //none, total, or distribution
-        StartDate : new Date("2015-01-01T00:00:00.000Z"),
-        EndDate :  new Date("2015-12-01T00:00:00.000Z"),
-        GraphId: 2
-    },
-    {
-        Title: "Facility Attendance Outpatient",
-        LocationName:"za Bagega Ward",
-        LocationId: "386",
-        LocationType : "Ward",
-        DataId : "2094",
-        DataType : "Set",
-        DataPresentation: "total", //none, total, or distribution
-        StartDate : new Date("2015-01-01T00:00:00.000Z"),
-        EndDate :  new Date("2017-12-01T00:00:00.000Z"),
+        Title: "Facility Attendance Male",
+        Location:{
+            Name: "za Bagega Ward",
+            Id:  "386",
+            Type: "Ward"
+        },
+        Data:{
+            Id: "2094",
+            Type: "Set",
+            TotalOrDistribution: "distribution"
+        },
+        Dates:{
+            StartDate:new Date("2015-01-01T00:00:00.000Z"),
+            EndDate: new Date("2015-12-01T00:00:00.000Z"),
+        },
         GraphId: 3
     },
     {
-        Title: "Facility Attendance Outpatient",
-        LocationName:"za Bagega Ward",
-        LocationId: "386",
-        LocationType : "Ward",
-        DataId : "2094",
-        DataType : "Set",
-        DataPresentation: "none", //none, total, or distribution
-        StartDate : new Date("2015-01-01T00:00:00.000Z"),
-        EndDate :  new Date("2017-12-01T00:00:00.000Z"),
+        Title: "Facility Attendance Male",
+        Location:{
+            Name: "za Bagega Primary Health Centre",
+            Id:  "1215",
+            Type: "Facility"
+        },
+        Data:{
+            Id: "2094",
+            Type: "Set",
+            TotalOrDistribution: "distribution"
+        },
+        Dates:{
+            StartDate:new Date("2015-01-01T00:00:00.000Z"),
+            EndDate: new Date("2015-12-01T00:00:00.000Z"),
+        },
         GraphId: 4
     }
-    // ,
-    // {
-    //     title: "Set Ex | Malaria Vaccinations - Male",
-    //     location: "Ward 2",
-    //     type: "set",
-    //     graphId:1
-    // },
-    // {
-    //     title: "Group Ex | Malaria Vaccinations - Male and Female",
-    //     location: "Ward 3",
-    //     type: "group",
-    //     graphId:2
-    // },
-
 ]
 
 const metricTableColumns = [
@@ -130,6 +146,7 @@ class Dashboard extends Component {
     state = {
         fullSize: true,
         reportCard: false,
+        showGraphs: true,
         graphOpenCloseState: null,
     }
 
@@ -142,78 +159,6 @@ class Dashboard extends Component {
         }
         visiblity["collapseOrExpandText"] = { text: "Collapse All" }
         this.setState({ graphOpenCloseState: visiblity })
-    }
-
-    componentDidMount(){
-        //Test Cases
-
-        //Metric, Id = 7231
-
-        //Set, Id = 1247
-        let MetricId = "7231"
-        let SetId = "1247"
-        let SetName = "Facility Attendance Male" //Store the name with the ID so we can avoid a lookup
-
-        let GroupId = "691"
-
-        //Logic for Metrics:
-        // db.Data.where({MetricId: MetricId}).toArray((arr) =>{
-        //     this.setState({
-        //         tempGraphReady: true,
-        //         tempGraphData: arr
-        //     })
-        // })
-
-        // db.Metrics.where({parentId: SetId}).toArray(arr =>{
-        //     //Sort (using Key as proxy for order)
-        //     arr.sort((a,b) => {
-        //         return a.Key - b.Key
-        //     })
-            
-        //     let promises = []
-
-        //     arr.forEach(el =>{
-        //         let newPromise = db.Data.get({MetricId: el.Id, Time: "2015-05-01T11:00:00.000Z"})
-        //         promises.push(newPromise)
-        //     })
-
-        //     Promise.all(promises).then(values =>{
-    
-        //         let validData = []
-
-        //         for(let i = 0; i < values.length; i++){
-        //             try{
-        //                 if (values[i] !== undefined){         
-        //                     if (arr[i].Name === SetName) continue  //Skip the totals because they are often incorrect
-        //                     let x = values[i]
-        //                     x.Metric = arr[i].Name.replace(`${SetName}, `, "") //Strip away redundant text
-        //                     x.Date = new Date(x.Time)
-        //                     x.Value = Number.parseInt(x.Value)                        
-        //                     if (x.Metric !== undefined && x.Metric !== SetName) validData.push(x)
-        //                 }
-        //             }catch(e){
-        //                 //Probably empty
-        //             }
-    
-        //         }
-
-        //         //Sort Array
-        //         if (values[0].hasOwnProperty('RelativeOrder')) values.sort((a,b) =>{
-        //             return a.RelativeOrder - b.RelativeOrder
-        //         })
-
-        //         this.setState({
-        //             tempGraphReady: true,
-        //             tempGraphData: {
-        //                 name: SetName,
-        //                 data: validData
-        //             }
-        //         })
-                
-        //     })
-            
-        // })
-
     }
 
     fullSizeOrListChanged = (e) =>{
@@ -276,7 +221,7 @@ class Dashboard extends Component {
                         <List.Item >
                             <List.Item.Meta
                             title = {item.Title}
-                            description = {item.LocationName}/>
+                            description = {item.Location.Name}/>
                             {this.createCollapseExpandButton(key)}
 
                             <VisualizerManager
@@ -291,19 +236,19 @@ class Dashboard extends Component {
 
     }
 
+    showHideCreateGraphUI = () =>{
+        this.setState({
+            showGraphs: !this.state.showGraphs
+        }, () =>{
+            if (this.state.showGraphs){
+                window.dispatchEvent(new Event ('resize'));
+            }
+        })
+    }
+
     render() {
         return (
             <div className="center">
-
-            {/* Example Visualizer Manager Use */}
-           {/* <VisualizerManager
-                locationId = "1215"
-                locationType = "Facility"
-                dataId = "11493"
-                dataType = "Metric"
-                startDate = {new Date("2015-01-01T00:00:00.000Z")}
-                endDate =   {new Date("2015-12-01T00:00:00.000Z")}
-            /> */}
 
                 <Row className={`rowVMarginSm rowVMarginTopSm`}>
                     <Col xs={{ span: 24, offset: 0 }} md={{ span: 12, offset: 6 }} lg={{ span: 8, offset: 8 }}>
@@ -313,7 +258,7 @@ class Dashboard extends Component {
                         </Radio.Group>
                     </Col>
                 </Row>
-                <div className="gutterOverflowMask">
+                <div className = "gutterOverflowMask">
                     <div className={`${!this.state.reportCard ? "displayNone" : ""}`}>
                         <Row className={`rowVMarginSm`}>
                             <h3>Last Month's Performance</h3>
@@ -325,22 +270,42 @@ class Dashboard extends Component {
                                     dataSource={metricData}
                                     pagination={false} />
                             </Col>
-                        </Row>
-                    </div>
-                    <div className={`${this.state.reportCard ? "displayNone" : ""}`}>
-                        <Row className={`rowVMarginSm`}>
-                            <Col className="left" xs={{ span: 24, offset: 0 }} sm={{ span: 22, offset: 1 }} md={{ span: 18, offset: 3 }} lg={{ span: 16, offset: 4 }}>
-                                <Button onClick={this.toggleAllGraphs}>{this.state.graphOpenCloseState["collapseOrExpandText"].text}</Button>
-                            </Col>
-                        </Row>
-                        <Row className={`rowVMarginSm`} gutter={16}>
-                            <Col xs={{ span: 24, offset: 0 }} sm={{ span: 22, offset: 1 }} md={{ span: 18, offset: 3 }} lg={{ span: 16, offset: 4 }}>
-                                <Card className="left" size="small">
-                                    {this.renderGraphs()}
-                                </Card>
-                            </Col>
-                        </Row>
-                    </div>
+                        </Row>    
+                    </div>    
+                    <div className={`${this.state.reportCard? "displayNone" : ""}`}>
+
+                        {/* UI For Viewing Graphs */}
+                        <div className = {this.state.showGraphs ? "" : "displayNone"}>
+                            <Row className={`rowVMarginSm`}>
+                                <Col className = "left" xs={{ span: 12, offset: 0 }} sm = {{span: 11, offset:1}} md={{ span: 9, offset: 3 }} lg = {{span: 8, offset: 4}}>
+                                    <Button onClick = {this.toggleAllGraphs}>{this.state.graphOpenCloseState["collapseOrExpandText"].text}</Button>
+                                </Col>
+                                <Col className = "right" xs={{ span: 12, offset: 0 }} sm = {{span: 11, offset:0}} md={{ span: 9, offset: 0 }} lg = {{span: 8, offset: 0}}>
+                                    <Button icon="plus" type = "primary" onClick = {this.showHideCreateGraphUI}>Add Graph</Button>
+                                </Col>
+                            </Row>
+                            <Row className={`rowVMarginSm`} gutter= {16}>
+                                <Col xs={{ span: 24, offset: 0 }} sm = {{span: 22, offset:1}} md={{ span: 18, offset: 3 }} lg = {{span: 16, offset: 4}}>
+                                    <Card className = "left" size ="small">
+                                        {this.renderGraphs()}
+                                    </Card>
+                                </Col>
+                            </Row>     
+                        </div>
+                        
+                        {/* UI For Creating Graphs */}
+                        <div className = {this.state.showGraphs ? "displayNone" : ""}>
+                            <Row className = "rowVMarginSm">
+                                <Col><Button icon = "caret-left" onClick = {this.showHideCreateGraphUI}>Back</Button></Col>
+                                
+                            </Row>
+                            <Row className = "rowVMarginSm">
+                                <CreateGraph/>
+                            </Row>
+                            
+                            
+                        </div>
+                    </div>    
                 </div>
             </div>
         );
