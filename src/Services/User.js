@@ -62,7 +62,7 @@ function user(){
             if (arr.length !== 1) resolve(null)
             else{
                 let result = arr[0]
-                result.userType = "Admin" //hard code for now
+                //result.UserType = "admin" //hard code for now
                 resolve(result)
             }
         })
