@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 
 //react-vis for graphs
 import '../../node_modules/react-vis/dist/style.css';
+import {Empty} from 'antd'
 import { FlexibleWidthXYPlot, XAxis, YAxis, HorizontalGridLines, LineSeries, LineMarkSeries, DiscreteColorLegend, VerticalGridLines, HorizontalBarSeries} from 'react-vis';
 
 const strokeColors = [
@@ -309,7 +310,6 @@ class Visualizer extends Component {
         console.log(data)
         if (data.length === 0) return null
         if (data[0].hasOwnProperty("Date") === false){
-            console.log('adding dates')
             data.forEach(el =>{
                 el.Date = new Date(el.Time)
                 el.Value = Number.parseInt(el.Value)
@@ -408,8 +408,10 @@ class Visualizer extends Component {
 
         if (elements === null){
             return(
-                <div>
-                    Hmm... no data
+                <div className="graphPlaceholder">
+                    <Empty
+                        description="Hmm.. we can't find any data"
+                    />
                 </div>
             )
         }else{

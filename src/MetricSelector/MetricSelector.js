@@ -20,7 +20,7 @@ const style = {
  * Selects a loction in Nigeria
  * @param {parentHandler} - Function passed in by the parent that takes a LocationObject with props {Id, Name, Type} and updates the parent UI
  * @param {showData} - Boolean that shows or hides LocationSelector's built-in selected location text
- * @param {initialData}
+ * @param {initialData} = {GroupValue, SetValue, MetricValue}
  */
 class MetricSelector extends Component {
 

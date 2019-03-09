@@ -9,78 +9,93 @@ import VisualizerManager from '../Visualizer/VisualizerManager';
 import CreateGraph from '../Graph/CreateGraph'
 
 let graphExamples = [
+    // {
+    //     Title: "Facility Attendance Female, 29d-11 months",
+    //     Location:{
+    //         Name: "za Bagega Primary Health Centre",
+    //         Id:  "1215",
+    //         Type: "Facility"
+    //     },
+    //     Data:{
+    //         Id: "11729",
+    //         Type: "Metric",
+    //     },
+    //     Dates:{
+    //         StartDate:new Date("2015-01-01T00:00:00.000Z"),
+    //         EndDate: new Date("2015-12-01T00:00:00.000Z"),
+    //     },
+    //     GraphId: 0
+    // },
+    // {
+    //     Title: "Facility Attendance Outpatient Value",
+    //     Location:{
+    //         Name: "za Bagega Primary Health Centre",
+    //         Id:  "1215",
+    //         Type: "Facility"
+    //     },
+    //     Data:{
+    //         Id: "11493",
+    //         Type: "Metric",
+    //     },
+    //     Dates:{
+    //         StartDate:new Date("2015-01-01T00:00:00.000Z"),
+    //         EndDate: new Date("2015-12-01T00:00:00.000Z"),
+    //     },
+    //     GraphId: 1
+    // },
+    // {
+    //     Title: "Facility Attendance Outpatient",
+    //     Location:{
+    //         Name: "za Bagega Ward",
+    //         Id:  "386",
+    //         Type: "Ward"
+    //     },
+    //     Data:{
+    //         Id: "2094",
+    //         Type: "Set",
+    //     },
+    //     Dates:{
+    //         StartDate:new Date("2015-01-01T00:00:00.000Z"),
+    //         EndDate: new Date("2015-12-01T00:00:00.000Z"),
+    //     },
+    //     GraphId: 2
+    // },
     {
-        Title: "Facility Attendance Female, 29d-11 months",
-        LocationName:"za Bagega Primary Health Centre",
-        LocationId: "1215",
-        LocationType : "Facility",
-        DataId : "11729",
-        DataType : "Metric",
-        StartDate : new Date("2015-01-01T00:00:00.000Z"),
-        EndDate :  new Date("2015-12-01T00:00:00.000Z"),
-        GraphId: 0
-    },
-    {
-        Title: "Facility Attendance Outpatient Value",
-        LocationName:"za Bagega Primary Health Centre",
-        LocationId: "1215",
-        LocationType : "Facility",
-        DataId : "11493",
-        DataType : "Metric",
-        StartDate : new Date("2015-01-01T00:00:00.000Z"),
-        EndDate :  new Date("2016-12-01T00:00:00.000Z"),
-        GraphId: 1
-    },
-    {
-        Title: "Facility Attendance Outpatient",
-        LocationName:"za Bagega Ward",
-        LocationId: "386",
-        LocationType : "Ward",
-        DataId : "2094",
-        DataType : "Set",
-        DataPresentation: "none", //none, total, or distribution
-        StartDate : new Date("2015-01-01T00:00:00.000Z"),
-        EndDate :  new Date("2015-12-01T00:00:00.000Z"),
-        GraphId: 2
-    },
-    {
-        Title: "Facility Attendance Outpatient",
-        LocationName:"za Bagega Ward",
-        LocationId: "386",
-        LocationType : "Ward",
-        DataId : "2094",
-        DataType : "Set",
-        DataPresentation: "total", //none, total, or distribution
-        StartDate : new Date("2015-01-01T00:00:00.000Z"),
-        EndDate :  new Date("2017-12-01T00:00:00.000Z"),
+        Title: "Facility Attendance Male",
+        Location:{
+            Name: "za Bagega Ward",
+            Id:  "386",
+            Type: "Ward"
+        },
+        Data:{
+            Id: "2094",
+            Type: "Set",
+            TotalOrDistribution: "distribution"
+        },
+        Dates:{
+            StartDate:new Date("2015-01-01T00:00:00.000Z"),
+            EndDate: new Date("2015-12-01T00:00:00.000Z"),
+        },
         GraphId: 3
     },
     {
-        Title: "Facility Attendance Outpatient",
-        LocationName:"za Bagega Ward",
-        LocationId: "386",
-        LocationType : "Ward",
-        DataId : "2094",
-        DataType : "Set",
-        DataPresentation: "none", //none, total, or distribution
-        StartDate : new Date("2015-01-01T00:00:00.000Z"),
-        EndDate :  new Date("2017-12-01T00:00:00.000Z"),
+        Title: "Facility Attendance Male",
+        Location:{
+            Name: "za Bagega Primary Health Centre",
+            Id:  "1215",
+            Type: "Facility"
+        },
+        Data:{
+            Id: "2094",
+            Type: "Set",
+            TotalOrDistribution: "distribution"
+        },
+        Dates:{
+            StartDate:new Date("2015-01-01T00:00:00.000Z"),
+            EndDate: new Date("2015-12-01T00:00:00.000Z"),
+        },
         GraphId: 4
     }
-    // ,
-    // {
-    //     title: "Set Ex | Malaria Vaccinations - Male",
-    //     location: "Ward 2",
-    //     type: "set",
-    //     graphId:1
-    // },
-    // {
-    //     title: "Group Ex | Malaria Vaccinations - Male and Female",
-    //     location: "Ward 3",
-    //     type: "group",
-    //     graphId:2
-    // },
-
 ]
 
 const metricTableColumns = [
@@ -206,7 +221,7 @@ class Dashboard extends Component {
                         <List.Item >
                             <List.Item.Meta
                             title = {item.Title}
-                            description = {item.LocationName}/>
+                            description = {item.Location.Name}/>
                             {this.createCollapseExpandButton(key)}
 
                             <VisualizerManager

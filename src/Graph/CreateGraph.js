@@ -13,31 +13,13 @@ class CreateGraph extends Component {
 
     updateLocation = (location) =>{
         console.log(location)
-        //Force refresh of the location because w
         this.setState({Location: location})
-        // this.setState({Location: undefined}, () =>{
-        //     this.setState({Location: location})
-        // })
     }
 
     updateData = (data) =>{
         console.log(data)
         this.setState({Data: data})
     }
-    
-// 
-
-// {
-//     Title: "Facility Attendance Female, 29d-11 months",
-//     LocationName:"za Bagega Primary Health Centre",
-//     LocationId: "1215",
-//     LocationType : "Facility",
-//     DataId : "11729",
-//     DataType : "Metric",
-//     StartDate : new Date("2015-01-01T00:00:00.000Z"),
-//     EndDate :  new Date("2015-12-01T00:00:00.000Z"),
-//     GraphId: 0
-// },
 
 
     render(){
@@ -58,17 +40,13 @@ class CreateGraph extends Component {
                 <h4>Select Data</h4>
                 <MetricSelector
                     parentHandler = {this.updateData}
+
                 />
                 <VisualizerManager
-                    Title="Hi"
-                    LocationName={this.state.Location? this.state.Location.Name : undefined}
-                    LocationId = {this.state.Location? this.state.Location.Id : undefined}
-                    LocationType={this.state.Location? this.state.Location.Type : undefined}
-                    DataId = {this.state.Data ? this.state.Data.Id : undefined}
-                    DataType = {this.state.Data ? this.state.Data.Type : undefined}
-                    StartDate = {new Date("2015-01-01T00:00:00.000Z")}
-                    EndDate = {new Date("2015-12-01T00:00:00.000Z")}
-                    DataPresentation = {this.state.Data? this.state.Data.TotalOrDistribution : undefined}
+                    Title={this.state.Data !== undefined && this.state.Data.Name !== undefined ? this.state.Data.Name.split("(")[0] : ""}
+                    Location = {this.state.Location} //{Name, Id, Type}
+                    Data = {this.state.Data} // {Id, Type, TotalOrDistribution="total|none|distribution"}
+                    Dates = {{StartDate: new Date("2015-01-01T00:00:00.000Z"), EndDate: new Date("2015-01-01T00:00:00.000Z")}}
                 />
             </div>
         )

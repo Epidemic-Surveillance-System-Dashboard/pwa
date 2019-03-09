@@ -62,14 +62,11 @@ class VisualizerManager extends Component {
         }
 
         for (var key in validInputs){
-            if (validInputs[key](this.props[key]) === false){
+            if (validInputs[key](this.state[key]) === false){
                 valid = false
-                console.log(key)
-                console.log(this.props[key])
                 break
             }
         }
-        if (valid) console.log('inputs passed')
         return valid
     }
 
@@ -88,10 +85,8 @@ class VisualizerManager extends Component {
     isSimpleData = () =>{
         //Simple data is only Facility, Metric 
         //All other data requires aggregation and therefore will be queried from the database.
-        console.log(this.props.LocationType)
-        console.log(this.props.DataType)
-        if (this.props.LocationType !== "Facility") return false
-        if (this.props.DataType !== "Metric") return false
+        if (this.state.LocationType !== "Facility") return false
+        if (this.state.DataType !== "Metric") return false
         return true
     }
 
@@ -113,8 +108,8 @@ class VisualizerManager extends Component {
         db.Data.where(
             ["FacilityId", "MetricId", 'Time']
         ).between(
-            [this.props.LocationId, this.props.DataId, this.formatDate(this.props.StartDate)],
-            [this.props.LocationId, this.props.DataId, this.formatDate(this.props.EndDate)],
+            [this.state.LocationId, this.state.DataId, this.formatDate(this.state.StartDate)],
+            [this.state.LocationId, this.state.DataId, this.formatDate(this.state.EndDate)],
             true,
             true
         )
@@ -137,7 +132,6 @@ class VisualizerManager extends Component {
      */
     getComplexData = () =>{
         db.DashboardData.toArray().then(arr =>{
-            
             //If doesn't exist, then get data from url
             if (arr.length === 0){
                 this.queryComplexData()
@@ -150,115 +144,115 @@ class VisualizerManager extends Component {
     }
 
     queryComplexData = () =>{
-        return new Promise (resolve =>{
+    
+        //Build Query URL
+        let period = "month"
+        
+        if (this.state.StartDate.getUTCFullYear() !== this.state.EndDate.getUTCFullYear()) period = "year"
+        let rootURL = `https://essd-backend-dev.azurewebsites.net/api/data/query?`
+        let url = rootURL + 
+                "LocationId=" + this.state.LocationId
+            +   "&LocationType=" + this.state.LocationType
+            +   "&DataId=" + this.state.DataId
+            +   "&DataType=" + this.state.DataType
+            +   "&StartDate=" + this.formatDateForRemoteQuery(this.state.StartDate)
+            +   "&EndDate=" + this.formatDateForRemoteQuery(this.state.EndDate)
+            +   "&Period=" + period
+            +   "&Distribution=" + this.state.DataPresentation
 
-            //Build Query URL
-            let period = "month"
-            
-            if (this.props.StartDate.getUTCFullYear() !== this.props.EndDate.getUTCFullYear()) period = "year"
-            let rootURL = `https://essd-backend-dev.azurewebsites.net/api/data/query?`
-            let url = rootURL + 
-                    "LocationId=" + this.props.LocationId
-                +   "&LocationType=" + this.props.LocationType
-                +   "&DataId=" + this.props.DataId
-                +   "&DataType=" + this.props.DataType
-                +   "&StartDate=" + this.formatDateForRemoteQuery(this.props.StartDate)
-                +   "&EndDate=" + this.formatDateForRemoteQuery(this.props.EndDate)
-                +   "&Period=" + period
-                +   "&Distribution=" + this.props.DataPresentation
+        console.log(url)
 
-            console.log(url)
+        //Data comes back as an array
+        fetch(url,{}).then(stream => stream.json().then(result =>{
 
-            //Data comes back as an array
-            fetch(url,{}).then(stream => stream.json().then(result =>{
+            if (period === "year"){
 
-                if (period === "year"){
-                    console.log('Year')
-                    //TODO: Switch to vertical bar graph in the future
-                    result.forEach(el =>{
-                        el.Value = Number.parseFloat(el.Total)
-                        el.Metric = el.Yr
-                    })
+                //TODO: Switch to vertical bar graph in the future
+                result.forEach(el =>{
+                    el.Value = Number.parseFloat(el.Total)
+                    el.Metric = el.Yr
+                })
 
-                    result.sort((a,b) =>{
-                        return a.Yr - b.Yr
-                    })
+                result.sort((a,b) =>{
+                    return a.Yr - b.Yr
+                })
 
-                    if (this.props.DataPresentation === "none" || this.props.DataPresentation === "total"){ //== total
-                        this.setState({
-                            ready: true,
-                            data: {
-                                data: result,
-                                name: this.props.Title
-                            },
-                            graphType: "Set",
-
-                        })
-                    }else{
-
-                    }
-                }else{
-                    console.log('Month')
-                    //Period === month
-
-                    result.forEach(el => {
-                        let d = new Date(this.props.StartDate)
-                        d.setUTCMonth(el.Month - 1)
-                        el.Date = d
-                        el.Value = Number.parseInt(el.Total)
-                        el.Metric = el.MetricName
-                    })
-
-                    let graphType = this.props.DataPresentation === "distribution" ? "Set" : "Metric"
-
-                    console.log(graphType)
-                    
+                if (this.state.DataPresentation === "none" || this.state.DataPresentation === "total"){ //== total
                     this.setState({
                         ready: true,
-                        graphType: graphType,
                         data: {
                             data: result,
-                            name: this.props.Title
-                        }
+                            name: this.state.Title
+                        },
+                        graphType: "Set",
+
                     })
+                }else{
 
                 }
+            }else{
+                //Period === month
+                let graphType = this.state.DataPresentation === "distribution" ? "Set" : "Metric"
 
-                //TODO: store data locally
-            }))
+                let groupName = "MetricName"
+                if (result.length > 0) groupName = result[0].hasOwnProperty("MetricName") ? "MetricName" : "SetName"
+
+                let titleIndex = undefined
+
+                for (let i = 0; i < result.length; i++){
+                    let d = new Date(this.state.StartDate)
+                    d.setUTCMonth(result[i].Month - 1)
+                    result[i].Date = d
+                    result[i].Value = Number.parseInt(result[i].Total)
+                    if (graphType === "Set"){
+                        if (result[i][groupName] === this.state.Title) titleIndex = i
+                        result[i].Metric = result[i][groupName].replace(`${this.state.Title}, `, "")
+                    }else{
+                        result[i].Metric = result[i][groupName]
+                    }
+                }
+
+                if (titleIndex !== undefined){
+                    result.splice(titleIndex,1)
+                }
+                
+                this.setState({
+                    ready: true,
+                    graphType: graphType,
+                    data: {
+                        data: result,
+                        name: this.state.Title
+                    }
+                })
+
+            }
+
+            //TODO: store data locally
+        }))
+    
+    }
+
+    componentDidUpdate(prevProps){
+        if (prevProps.Location !== this.props.Location || prevProps.Data !== this.props.Data || prevProps.Dates !== this.props.Dates){
+            this.setStateFromProps(this.run)
+        }
+    }
+
+    setStateFromProps = (callback) =>{
+        this.setState({
+            Title: this.props.Title,
+            LocationName: this.props.Location ? this.props.Location.Name : undefined,
+            LocationId: this.props.Location ? this.props.Location.Id : undefined,
+            LocationType: this.props.Location ? this.props.Location.Type : undefined,
+            DataId: this.props.Data ? this.props.Data.Id : undefined,
+            DataType: this.props.Data ? this.props.Data.Type : undefined,
+            DataPresentation: this.props.Data ? this.props.Data.TotalOrDistribution : undefined,
+            StartDate: this.props.Dates ? this.props.Dates.StartDate : undefined,
+            EndDate: this.props.Dates ? this.props.Dates.EndDate : undefined,
+        }, () =>{
+            if (callback) callback()
         })
     }
-
-    componentDidMount = () =>{
-        this.run()
-    }
-
-    componentDidUpdate(){
-        console.log('did update')
-        console.log(this.props)
-        // <VisualizerManager
-        // Title="Hi"
-        // LocationName={this.state.Location? this.state.Location.Name : undefined}
-        // LocationId = {this.state.Location? this.state.Location.Id : undefined}
-        // LocationType={this.state.Location? this.state.Location.Type : undefined}
-        // DataId = {this.state.Data ? this.state.Data.Id : undefined}
-        // DataType = {this.state.Data ? this.state.Data.Type : undefined}
-        // StartDate = {new Date("2015-01-01T00:00:00.000Z")}
-        // EndDate = {new Date("2015-12-01T00:00:00.000Z")}
-        // DataPresentation = {this.state.Data? this.state.Data.TotalOrDistribution : undefined}
-    }
-
-
-
-    // componentWillReceiveProps(nextProps) {
-    //     // You don't have to do this check first, but it can help prevent an unneeded render
-    //     this.run()
-    // }
-
-    // componentDidUpdate(prevState, nextState){
-    //     this.run()
-    //     console.log(nextState)
-    // }
 
     run = () => {
         if (this.checkInputs()){
@@ -266,14 +260,17 @@ class VisualizerManager extends Component {
                 console.log('simple data')
                 this.getSimpleData()
             }else{
-                console.log('complex data')
                 this.getComplexData()
             }
         }
+    }   
+
+    componentDidMount(){
+        this.setStateFromProps(this.run)
     }
 
-    render() {
 
+    render() {
         if (this.checkInputs()){
             return (
                 <div>
@@ -298,7 +295,7 @@ class VisualizerManager extends Component {
             return(
                 <div className="graphPlaceholder">
                     <Empty
-                        description="Something went wrong. Please check your VisualizerManager inputs."
+                        description="We can't display a graph with these inputs."
                     />
                 </div>)
         }
