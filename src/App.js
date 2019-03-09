@@ -16,6 +16,8 @@ import Account from './Account/Account'
 import User from './Users/Users'
 import Sync from './Sync/Sync'
 
+import userService from './Services/User'
+
 import './App.css';
 
 const {
@@ -39,7 +41,8 @@ class App extends Component {
 	}
 
 	state = {
-		drawerOpen: false
+		drawerOpen: false,
+		user: null
 	}
 
 	openDrawer = () => {
@@ -52,6 +55,29 @@ class App extends Component {
 		this.setState({
 			drawerOpen: false,
 		})
+	}
+
+	componentWillMount(){
+        userService.user().then((userObj) => {
+			this.setState({
+				user: userObj
+			})
+        });
+	}
+
+	updateDrawer = () => {
+		return userService.user().then((result) => {
+			this.setState({
+				user: result
+			})
+		});
+	}
+	
+	logout = async () =>{
+		this.setState({
+			user: null
+		});
+		await userService.logout();
 	}
 
 	render() {
@@ -91,6 +117,13 @@ class App extends Component {
 									<Icon type="sync" />Synchronize Data
 								</Link>
 							</Menu.Item>
+							{this.state.user == null? "":
+							<Menu.Item key="6" onClick={this.logout}>
+								<Link to="/">
+									<Icon type="logout" />Logout
+								</Link>
+							</Menu.Item>
+							}
 						</Menu>
 					</Drawer>
 					<Header style={{ padding: 0 }}>
@@ -101,7 +134,7 @@ class App extends Component {
 						</NavigationMenu>
 					</Header>
 					<Content>
-						<Route exact path="/" component={SampleHome} />
+						<Route exact path="/" render={(props) => <SampleHome {...props} updateDrawer={this.updateDrawer} />} />
 						<Route path="/dashboard" component={Dashboard} />
 						<Route path="/account" component={Account} />
 						<Route path="/users" component={User} />
