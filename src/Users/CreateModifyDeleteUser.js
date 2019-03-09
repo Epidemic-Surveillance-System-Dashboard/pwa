@@ -272,7 +272,7 @@ class CreateModifyDeleteUser extends Component {
         }else{
 
             //Update User
-            userObject.UserType = "user" //hardCode for now
+            //userObject.UserType = "user" //hardCode for now
             url = "https://essd-backend-dev.azurewebsites.net/api/users/updateUser"
             successMessage = "Successfully updated user."
             errorMessage = "Failed to update user. Please try again later."

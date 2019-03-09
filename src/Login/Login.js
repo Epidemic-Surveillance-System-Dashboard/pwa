@@ -48,11 +48,12 @@ class Login extends Component {
                                 this.handleInput(e.target.value, "Email")
                             }}/>
 
-                        <Input 
+                        <Input.Password
                             addonBefore={this.preTab("Password")}
                             onChange = {(e) =>{
                                 this.handleInput(e.target.value, "Password")
-                            }}/>
+                            }}
+                            placeholder="Password"/>
                             
                         <Button type="primary"
                             onClick = {this.login}>
