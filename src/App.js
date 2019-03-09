@@ -62,6 +62,7 @@ class App extends Component {
 			this.setState({
 				user: userObj
 			})
+			//console.log(this.state.user.UserType);
         });
 	}
 
@@ -84,6 +85,7 @@ class App extends Component {
 		return (
 			<Router>
 				<Layout>
+					{this.state.user == null? "" :
 					<Drawer
 						title="Menu"
 						placement="left"
@@ -107,11 +109,14 @@ class App extends Component {
 									<Icon type="user" />Account
 								</Link>
 							</Menu.Item>
-							<Menu.Item key="4">
-								<Link to="/users">
-									<Icon type="team" />Users
-								</Link>
-							</Menu.Item>
+							{
+								this.state.user != null && this.state.user.UserType != "admin" ? "": 
+								<Menu.Item key="4">
+									<Link to="/users">
+										<Icon type="team" />Users
+									</Link>
+								</Menu.Item>
+							}
 							<Menu.Item key="5">
 								<Link to="/sync">
 									<Icon type="sync" />Synchronize Data
@@ -126,6 +131,7 @@ class App extends Component {
 							}
 						</Menu>
 					</Drawer>
+					}
 					<Header style={{ padding: 0 }}>
 						<NavigationMenu
 							drawerOpen={this.state.drawerOpen}
