@@ -250,16 +250,6 @@ class Dashboard extends Component {
         return (
             <div className="center">
 
-            {/* Example Visualizer Manager Use */}
-           {/* <VisualizerManager
-                locationId = "1215"
-                locationType = "Facility"
-                dataId = "11493"
-                dataType = "Metric"
-                startDate = {new Date("2015-01-01T00:00:00.000Z")}
-                endDate =   {new Date("2015-12-01T00:00:00.000Z")}
-            /> */}
-
                 <Row className={`rowVMarginSm rowVMarginTopSm`}>
                     <Col xs={{ span: 24, offset: 0 }} md={{ span: 12, offset: 6 }} lg = {{span: 8, offset: 8}}>
                         <Radio.Group defaultValue="0" buttonStyle="solid" onChange = {this.reportCardOrGraphsChanged}>
