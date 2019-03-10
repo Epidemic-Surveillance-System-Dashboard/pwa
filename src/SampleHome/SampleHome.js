@@ -22,8 +22,6 @@ class App extends Component {
 
     componentWillMount(){
         userService.user().then((userObj) => {
-            console.log("hello123");
-            console.log(userObj);
             this.setState({user: userObj});
         });
     }
@@ -63,9 +61,9 @@ class App extends Component {
                             </Col>
                         </Row>
                     </React.Fragment>
-                } */}
+                }
 
-                {/* <CreateGraph/> */}
+                <CreateGraph/>
             </div>
         );
     }
