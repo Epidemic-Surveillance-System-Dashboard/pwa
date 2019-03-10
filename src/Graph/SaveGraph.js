@@ -18,10 +18,13 @@ class SaveGraph extends Component{
 
     saveGraph = () =>{
         //Get Number of Dashboards Currently
-        db.Dashboard.count().then(key =>{
-
+        db.Dashboard.toCollection().last().then(object =>{
+            let key = 0
+            if (object){
+                key = object.Id + 1
+            }
             //Prepare Save Object
-            let object = {
+            let newGraph = {
                 Id:key,
                 Title: this.props.Title,
                 
@@ -32,7 +35,7 @@ class SaveGraph extends Component{
                 
             }
 
-            db.Dashboard.put(object).then(() =>{
+            db.Dashboard.put(newGraph).then(() =>{
                 message.success("Successfully saved to dashboard.")
                 if (this.props.ParentHandler) this.props.ParentHandler()
             })

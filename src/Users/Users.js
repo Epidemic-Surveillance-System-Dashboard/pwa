@@ -16,7 +16,7 @@ class User extends Component {
                 //Create additional properties as required
                 element.key = element.Id
                 element.name = `${element.FirstName} ${element.LastName}`
-                element.permissionLevel = "National"
+                element.permissionLevel = element.LocationType
             })
 
             dataSource = array.sort((a,b) =>{
@@ -53,6 +53,8 @@ class User extends Component {
         title: 'Name',
         dataIndex: 'name',
         key: 'name',
+        defaultSortOrder: 'descend',
+        sorter:(a,b) =>{return a.localeCompare(b,'en')}
     },  {
         title: 'Scope',
         dataIndex: 'permissionLevel',
@@ -78,8 +80,10 @@ class User extends Component {
         key: 'permissionLevel',
     }, {
         title: "Location",
-        dataIndex: "location",
-        key: "location"
+        dataIndex: "LocationName",
+        key: "LocationName",
+        defaultSortOrder: 'descend',
+        sorter:(a,b) =>{return a.localeCompare(b,'en')}
     },  {
         title:"Action",
         key: "action",
