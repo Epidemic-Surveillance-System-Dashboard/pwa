@@ -16,6 +16,7 @@ import Account from './Account/Account'
 import User from './Users/Users'
 import Sync from './Sync/Sync'
 import Analysis from './Analysis/Analysis'
+import DataQuality from './DataQuality/DataQuality'
 
 import userService from './Services/User'
 
@@ -30,8 +31,9 @@ const pathNamesAndTitles = {
 	"/account": "Account",
 	"/dashboard": "Dashboard",
 	"/analysis": "Analysis",
-	"/users"	: "Users",
-	"/sync"		: "Synchronize Data"
+	"/users": "Users",
+	"/sync": "Synchronize Data",
+	"/health": "Data Health"
 }
 
 class App extends Component {
@@ -59,13 +61,13 @@ class App extends Component {
 		})
 	}
 
-	componentWillMount(){
-        userService.user().then((userObj) => {
+	componentWillMount() {
+		userService.user().then((userObj) => {
 			this.setState({
 				user: userObj
 			})
 			//console.log(this.state.user.UserType);
-        });
+		});
 	}
 
 	updateDrawer = () => {
@@ -75,8 +77,8 @@ class App extends Component {
 			})
 		});
 	}
-	
-	logout = async () =>{
+
+	logout = async () => {
 		this.setState({
 			user: null
 		});
@@ -87,57 +89,62 @@ class App extends Component {
 		return (
 			<Router>
 				<Layout>
-					{this.state.user == null? "" :
-					<Drawer
-						title="Menu"
-						placement="left"
-						closable={true}
-						onClose={this.closerDrawer}
-						visible={this.state.drawerOpen}>
-						<Menu
-							onClick={this.closerDrawer}>
-							<Menu.Item key="1">
-								<Link to="/">
-									<Icon type="home" />Home
+					{this.state.user == null ? "" :
+						<Drawer
+							title="Menu"
+							placement="left"
+							closable={true}
+							onClose={this.closerDrawer}
+							visible={this.state.drawerOpen}>
+							<Menu
+								onClick={this.closerDrawer}>
+								<Menu.Item key="1">
+									<Link to="/">
+										<Icon type="home" />Home
 								</Link>
-							</Menu.Item>
-							<Menu.Item key="2">
-								<Link to="/dashboard">
-									<Icon type="area-chart" />Dashboard
+								</Menu.Item>
+								<Menu.Item key="2">
+									<Link to="/dashboard">
+										<Icon type="area-chart" />Dashboard
 								</Link>
-							</Menu.Item>
-							<Menu.Item key="3">
-								<Link to="/analysis">
-									<Icon type="stock" />Analysis
-								</Link>
-							</Menu.Item>
-							<Menu.Item key="4">
-								<Link to="/account">
-									<Icon type="user" />Account
-								</Link>
-							</Menu.Item>
-							{
-								this.state.user != null && this.state.user.UserType != "admin" ? "": 
+								</Menu.Item>
+								<Menu.Item key="3">
+									<Link to="/analysis">
+										<Icon type="stock" />Analysis
+										</Link>
+								</Menu.Item>
 								<Menu.Item key="4">
-									<Link to="/users">
-										<Icon type="team" />Users
+									<Link to="/health">
+										<Icon type="heart" />Data Health
 									</Link>
 								</Menu.Item>
-							}
-							<Menu.Item key="5">
-								<Link to="/sync">
-									<Icon type="sync" />Synchronize Data
+								<Menu.Item key="5">
+									<Link to="/account">
+										<Icon type="user" />Account
 								</Link>
-							</Menu.Item>
-							{this.state.user == null? "":
-							<Menu.Item key="6" onClick={this.logout}>
-								<Link to="/">
-									<Icon type="logout" />Logout
+								</Menu.Item>
+								{
+									this.state.user !== null && this.state.user.UserType !== "admin" ? "" :
+										<Menu.Item key="6">
+											<Link to="/users">
+												<Icon type="team" />Users
+									</Link>
+										</Menu.Item>
+								}
+								<Menu.Item key="7">
+									<Link to="/sync">
+										<Icon type="sync" />Synchronize Data
 								</Link>
-							</Menu.Item>
-							}
-						</Menu>
-					</Drawer>
+								</Menu.Item>
+								{this.state.user == null ? "" :
+									<Menu.Item key="8" onClick={this.logout}>
+										<Link to="/">
+											<Icon type="poweroff" />Logout
+								</Link>
+									</Menu.Item>
+								}
+							</Menu>
+						</Drawer>
 					}
 					<Header style={{ padding: 0 }}>
 						<NavigationMenu
@@ -153,6 +160,7 @@ class App extends Component {
 						<Route path="/account" component={Account} />
 						<Route path="/users" component={User} />
 						<Route path="/sync" component={Sync} />
+						<Route path="/health" component={DataQuality} />
 					</Content>
 					<Footer>Footer goes here. Open source project. Credits. React. Ant Design. Capstone.</Footer>
 				</Layout>
