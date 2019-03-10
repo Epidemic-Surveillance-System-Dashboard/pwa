@@ -31,7 +31,7 @@ const pathNamesAndTitles = {
 	"/dashboard": "Dashboard",
 	"/users"	: "Users",
 	"/sync"		: "Synchronize Data",
-	"/quality"	: "Quality of Data"
+	"/health"	: "Data Health"
 }
 
 class App extends Component {
@@ -107,8 +107,8 @@ class App extends Component {
 								</Link>
 							</Menu.Item>
 							<Menu.Item key="3">
-								<Link to="/quality">
-									<Icon type="trophy" />Quality of Data
+								<Link to="/health">
+									<Icon type="heart" />Data Health
 								</Link>
 							</Menu.Item>
 							<Menu.Item key="4">
@@ -152,7 +152,7 @@ class App extends Component {
 						<Route path="/account" component={Account} />
 						<Route path="/users" component={User} />
 						<Route path="/sync" component={Sync} />
-						<Route path="/quality" component={DataQuality} />
+						<Route path="/health" component={DataQuality} />
 					</Content>
 					<Footer>Footer goes here. Open source project. Credits. React. Ant Design. Capstone.</Footer>
 				</Layout>
