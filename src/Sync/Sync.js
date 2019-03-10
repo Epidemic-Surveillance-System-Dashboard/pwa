@@ -106,6 +106,48 @@ class Sync extends Component {
                 <DataProgress key = {i} dataName = {dl_i.dataName} url = {dl_i.url }callback = {dl_i.callback}></DataProgress>
             )
         }
+        
+        //Download or upload dashboard data
+        if (!this.state.downloadDashboard){
+            let url =  `${rootURL}/dashboard/updateDashboard`
+            let params = {
+                method:"PUT",
+                // body:JSON.stringify({
+                //     UserId: this.state.user.Id,
+                //     DashboardJson: this.state.dashboardData
+                // })
+                body:JSON.stringify({
+                    UserId: this.state.user.Id,
+                    DashboardJson: JSON.stringify(this.state.dashboardData)
+                })
+            }
+            console.log(params.body)
+            let callback = (info) => {
+                return new Promise(resolve =>{
+                    console.log(info)
+                    resolve(true)
+                })
+            }
+            dl.push(
+                <DataProgress key = {dl.length} dataName = "dashboard information" url = {url} callback = {callback} params = {params}/>
+            )
+        }else{
+            let url =  `${rootURL}/dashboard/${this.state.user.Id}`
+            let callback = (dashboard) => {
+                return new Promise (resolve =>{
+                    db.Dashboard.clear().then(() =>{
+                        console.log(dashboard)
+                        // db.Dashboard.put(dashboard)
+                        resolve(true)
+                    })
+                })
+
+            }
+            dl.push(
+                <DataProgress key = {dl.length} dataName = "dashboard information" url = {url} callback = {callback}/>
+            )
+        }
+
         this.setState({
             DataDownloads: dl,
             showProgress: true
@@ -113,15 +155,28 @@ class Sync extends Component {
     }
 
     componentDidMount(){
-        user.user().then( u =>{
-            console.log(u)
-            this.setState({
-                user: u,
-                ready: true
-            }, () =>{
-                console.log(`/users/getAllUsers/${this.state.user.Id}`)
-            })
+        db.Dashboard.toArray().then(dashboards =>{
+            if (dashboards.length ===0) {
+                user.user().then( u =>{
+                    this.setState({
+                        user: u,
+                        ready: true,
+                        downloadDashboard: true
+                    })
+                })
+            }else{
+                user.user().then( u =>{
+                    this.setState({
+                        user: u,
+                        ready: true,
+                        downloadDashboard:false,
+                        dashboardData: dashboards[0]
+                    })
+                })
+            }
+            
         })
+
     }
 
 	render() {
@@ -190,11 +245,16 @@ class DataProgress extends Component{
     completeMessage = `Successfully updated ${this.props.dataName} data`
 
     componentDidMount(){
-        this.get(this.props.url, this.props.callback)
+        if (this.props.params){
+            this.get(this.props.url, this.props.callback, this.props.params)
+        }else{
+            this.get(this.props.url, this.props.callback)
+        }
+        
     }
 
-    get = async (url, callback) =>{
-        let promise = await fetch(url)
+    get = async (url, callback, params) =>{
+        let promise = await fetch(url,params)
         promise.json().then(data =>{
             callback(data).then((result =>{
                 if (result){
