@@ -8,7 +8,7 @@ import { FlexibleWidthXYPlot, XAxis, YAxis, HorizontalGridLines, LineSeries, Lin
 const strokeColors = [
     "#2980b9",
     "#27ae60",
-    "#34495e",
+    "#ef8717",
     "#7f8c8d"
 ]
 
@@ -96,122 +96,72 @@ class Visualizer extends Component {
     }
 
     mockGroup = {
-        name: "Vaccinations",
-        startDate: "",
-        endDate: "",
-        location: {
-            state: "Ex",
-            lga: "Ex",
-            ward: "Ex",
-            facility: "Ex",
-        },
-        data: [
+        data:[
             [
-                { Value: Math.floor(Math.random() * 10), Metric: "Male Vaccinations 0-10" },
-                { Value: Math.floor(Math.random() * 10), Metric: "Male Vaccinations 10-40" },
-                { Value: Math.floor(Math.random() * 10), Metric: "Male Vaccinations 40-80" },
-                { Value: Math.floor(Math.random() * 10), Metric: "Male Vaccinations 80+" },
+                { Value: 1, Metric: "Metric1" },
+                { Value: 2, Metric: "Metric2" },
+                { Value: 3, Metric: "Metric3" },
+                { Value: 4, Metric: "Metric4" },
             ],
             [
-                { Value: Math.floor(Math.random() * 10), Metric: "Female Vaccinations 0-10" },
-                { Value: Math.floor(Math.random() * 10), Metric: "Female Vaccinations 10-40" },
-                { Value: Math.floor(Math.random() * 10), Metric: "Female Vaccinations 40-80" },
-                { Value: Math.floor(Math.random() * 10), Metric: "Female Vaccinations 80+" },
+                { Value: 2, Metric: "Metric1" },
+                { Value: 3, Metric: "Metric2" },
+                { Value: 4, Metric: "Metric3" },
+                { Value: 5, Metric: "Metric4" },
             ],
             [
-                { Value: Math.floor(Math.random() * 10), Metric: "All Vaccinations 0-10" },
-                { Value: Math.floor(Math.random() * 10), Metric: "All Vaccinations 10-40" },
-                { Value: Math.floor(Math.random() * 10), Metric: "All Vaccinations 40-80" },
-                { Value: Math.floor(Math.random() * 10), Metric: "All Vaccinations 80+" },
-            ]
+                { Value: 3, Metric: "Metric1" },
+                { Value: 4, Metric: "Metric2" },
+                { Value: 5, Metric: "Metric3" },
+                { Value: 6, Metric: "Metric4" },
+            ],
+        ],
+        legendTitles:[
+            "Location 1",
+            "Location 2",
+            "Location 3"
         ]
     }
 
-    /**
-     * Return the generated series of BarSeries for a doubleBarSeries
-     */
     createMultipleBarSeries() {
-        let data = this.mockGroup.data
+        let dataset = this.mockGroup
         let result = {
             barSeries: [],
             legend: null,
             lineData: null
         }
 
-        //Create Common and Uncommon keys
-        /**
-         * Basically we are trying to identify "Male" and "Female" as the uncommon keys
-         * from "Male Vaccinations ..." and "Female Vaccinations ..."
-         */
-        let commonKeys = []
-        let uncommonKeys = []
-
-        for (let i = 0; i < data[0].length; i++) {
-            //Assumes all strings have been trimmed
-            //Assumes data.length >=2
-            let set1 = data[0][i].Metric.split(" ")
-            let set2 = data[1][i].Metric.split(" ")
-
-            let wordBounds = Math.min(set1.length, set2.length)
-            let matchingWords = 0
-
-            let commonKey = []
-            while ((matchingWords < wordBounds) && (set1[set1.length - matchingWords] === set2[set2.length - matchingWords])) {
-                commonKey.unshift(set1[set1.length - matchingWords])
-                matchingWords++
-            }
-
-            commonKey = commonKey.join(" ").trim()
-            commonKeys.push(commonKey)
-
-            if (i === 0) {
-                for (let j = 0; j < data.length; j++) {
-                    let word = data[j][i].Metric
-                    //Create Legend based on extracted "uncommon" words
-                    uncommonKeys.push({ title: word.replace(commonKey, ""), color: this.getNextColor() })
-                }
-            }
-        }
-
-        //Generate Bar Series using Common Keys
-        this.resetColor()
-
-        let sum = 0
-        let count = 0
-
-        for (let i = 0; i < data.length; i++) {
-            let formattedData = []
-            for (let j = 0; j < data[i].length; j++) {
-                formattedData.push({ y: commonKeys[j], x: data[i][j].Value })
-                sum += data[i][j].Value
-                count++
-            }
+        for (let i = 0; i < dataset.data.length; i++){
+            //For each Location:
             
-            result.barSeries.push(<HorizontalBarSeries key={i} data={formattedData} color={this.getNextColor()} />)
-            console.log(result.barSeries)
+            //Create the bars in each of the same metric
+            let group = []
+            for (let j = 0; j < dataset.data[i].length; j++){
+
+                group.push({
+                    y: dataset.data[0][j].Metric, x: dataset.data[i][j].Value
+                })
+            }
+
+            result.barSeries.push(
+                <HorizontalBarSeries key={i} data={group} color={this.getNextColor()} />
+            )
+
         }
 
-        //Create Average Line 
-        let average = count > 0 ? sum / count : 0
-        let averageLineData = []
-        for (let i = 0; i < commonKeys.length; i++) {
-            averageLineData.push({
-                y: commonKeys[i],
-                x: average
-            })
+        //Push all the legend names in
+        this.resetColor()
+        let legendTitles = []
+        for (let i = 0; i < dataset.legendTitles.length; i++){
+            legendTitles.push({ title: dataset.legendTitles[i], color: this.getNextColor() })
         }
 
-        //Add Average to legend
-        uncommonKeys.push({ title: "Average", color: averageColor })
-
-        result.averageLine = <LineSeries data={averageLineData} strokeDasharray={[7, 5]} color={averageColor} />
-        result.legend = <DiscreteColorLegend orientation="horizontal" items={uncommonKeys} />
-
+        result.legend = <DiscreteColorLegend orientation="horizontal" items={legendTitles} />
         return result
+
     }
 
     MultipleBar() {
-
         let data = this.createMultipleBarSeries()
 
         return (
@@ -221,7 +171,6 @@ class Visualizer extends Component {
                     <XAxis />
                     <YAxis />
                     {data.barSeries}
-                    {data.averageLine}
                 </FlexibleWidthXYPlot>
                 {data.legend}
             </div>
