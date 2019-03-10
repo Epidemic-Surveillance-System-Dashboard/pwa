@@ -61,42 +61,81 @@ let graphExamples = [
     //     },
     //     GraphId: 2
     // },
-    {
-        Title: "Facility Attendance Male",
-        Location:{
-            Name: "za Bagega Ward",
-            Id:  "386",
-            Type: "Ward"
-        },
-        Data:{
-            Id: "2094",
-            Type: "Set",
-            TotalOrDistribution: "distribution"
-        },
-        Dates:{
-            StartDate:new Date("2015-01-01T00:00:00.000Z"),
-            EndDate: new Date("2015-12-01T00:00:00.000Z"),
-        },
-        GraphId: 3
-    },
-    {
-        Title: "Facility Attendance Male",
-        Location:{
-            Name: "za Bagega Primary Health Centre",
-            Id:  "1215",
-            Type: "Facility"
-        },
-        Data:{
-            Id: "2094",
-            Type: "Set",
-            TotalOrDistribution: "distribution"
-        },
-        Dates:{
-            StartDate:new Date("2015-01-01T00:00:00.000Z"),
-            EndDate: new Date("2015-12-01T00:00:00.000Z"),
-        },
-        GraphId: 4
-    }
+
+    // {
+    //     Title: "Facility Attendance Male",
+    //     Location:{
+    //         Name: "za Bagega Ward",
+    //         Id:  "386",
+    //         Type: "Ward"
+    //     },
+    //     Data:{
+    //         Id: "2094",
+    //         Type: "Set",
+    //         TotalOrDistribution: "distribution"
+    //     },
+    //     Dates:{
+    //         StartDate:new Date("2015-01-01T00:00:00.000Z"),
+    //         EndDate: new Date("2015-12-01T00:00:00.000Z"),
+    //     },
+    //     GraphId: 3
+    // },
+    // {
+    //     Title: "Facility Attendance Male",
+    //     Location:{
+    //         Name: "za Bagega Primary Health Centre",
+    //         Id:  "1215",
+    //         Type: "Facility"
+    //     },
+    //     Data:{
+    //         Id: "2094",
+    //         Type: "Set",
+    //         TotalOrDistribution: "distribution"
+    //     },
+    //     Dates:{
+    //         StartDate:new Date("2015-01-01T00:00:00.000Z"),
+    //         EndDate: new Date("2015-12-01T00:00:00.000Z"),
+    //     },
+    //     GraphId: 4
+    // },
+    // {
+    //     Title: "Facility Attendance Female, 20 years and above",
+    //     Location:{
+    //         Name: "za Bagega Primary Health Centre",
+    //         Id:  "1215",
+    //         Type: "Facility"
+    //     },
+    //     Data:{
+    //         Id: "11808",
+    //         Type: "Metric",
+    //         TotalOrDistribution: "distribution"
+    //     },
+    //     Dates:{
+    //         StartDate:new Date("2015-01-01T00:00:00.000Z"),
+    //         EndDate: new Date("2015-12-01T00:00:00.000Z"),
+    //     },
+    //     GraphId: 5
+
+    // },
+    // {
+    //     Title: "Pregnancy Outcomes Live Births Male",
+    //     Location:{
+    //         Name: "za Bagega Primary Health Centre",
+    //         Id:  "1215",
+    //         Type: "Facility"
+    //     },
+    //     Data:{
+    //         Id: "2100",
+    //         Type: "Set",
+    //         TotalOrDistribution: "distribution"
+    //     },
+    //     Dates:{
+    //         StartDate:new Date("2015-01-01T00:00:00.000Z"),
+    //         EndDate: new Date("2015-12-01T00:00:00.000Z"),
+    //     },
+    //     GraphId: 5
+
+    // }
 ]
 
 const metricTableColumns = [
@@ -278,21 +317,25 @@ class Dashboard extends Component {
             var relatedFound = await this.findRelatedGraphs(item);
             
             this.processFoundData(relatedFound, item)
+            
         }
     }
 
     processFoundData = (relatedFound, item) => {
         let processedRelatedData = []
+        console.table(item)
         relatedFound.forEach(function(data){
-            let temp = Object.assign(item)
+            var temp = JSON.parse(JSON.stringify(item))
             temp.Title = data.Name
             temp.Data.Id = data.Id
+            temp.Dates.StartDate = item.Dates.StartDate
+            temp.Dates.EndDate  = item.Dates.EndDate
+            console.table(temp)
             processedRelatedData.push(temp)
         })
         this.setState({
             relatedGraphs : processedRelatedData
         })
-        console.log(processedRelatedData)
     }    
 
     renderRelated = () => {          
@@ -373,7 +416,7 @@ class Dashboard extends Component {
                             <Row className={`rowVMarginSm`} gutter= {16}>
                                 <Col xs={{ span: 24, offset: 0 }} sm = {{span: 22, offset:1}} md={{ span: 18, offset: 3 }} lg = {{span: 16, offset: 4}}>
                                     <Card className = "left" size ="small">
-                                        {this.renderGraphs()}
+                                        {this.renderRelated()}
                                     </Card>
                                 </Col>
                             </Row>     
