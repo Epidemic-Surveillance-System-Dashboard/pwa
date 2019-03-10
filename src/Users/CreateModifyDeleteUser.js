@@ -13,20 +13,22 @@ const userFields = [
     "Phone",
     "Id",
     "LocationId",
-    "LocationType"
+    "LocationType",
+    "UserType"
 ]
 
 class CreateModifyDeleteUser extends Component {
 
     componentDidMount(){
-        if (this.props.mode === "new") this.enableEditing()
+        if (this.props.mode === "new") 
+            this.enableEditing()
     }
 
     componentWillMount(){
         this.setState({
             userInfo: this.computedState(this.props.user),
             passedUser: this.props.user
-        })
+        })      
     }
 
     componentDidUpdate(oldProps) {
@@ -37,6 +39,7 @@ class CreateModifyDeleteUser extends Component {
                 userInfo: this.computedState(newProps.user)
             })
         }
+        
     }
 
     inputLabelTab = (text) =>{
@@ -156,7 +159,7 @@ class CreateModifyDeleteUser extends Component {
             <Col>
                 <Divider/>
                 {array}
-                <Select style={{width: "100%"}} defaultvalue = {this.state.userInfo.UserType} placeholder="User Type" onChange={(e) =>{this.handleUserTypeSelect(e)}} disabled = {this.state.disabled}>
+                <Select style={{width: "100%"}} defaultValue={this.state.userInfo.UserType} placeholder="User Type" onChange={(e) =>{this.handleUserTypeSelect(e)}} disabled = {this.state.disabled}>
                     <Select.Option value="user">User</Select.Option>
                     <Select.Option value="admin">Admin</Select.Option>
                     <Select.Option value="superadmin">Super Admin</Select.Option>
