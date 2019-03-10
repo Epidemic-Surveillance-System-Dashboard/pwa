@@ -117,6 +117,12 @@ class Visualizer extends Component {
                 { Value: Math.floor(Math.random() * 10), Metric: "Female Vaccinations 10-40" },
                 { Value: Math.floor(Math.random() * 10), Metric: "Female Vaccinations 40-80" },
                 { Value: Math.floor(Math.random() * 10), Metric: "Female Vaccinations 80+" },
+            ],
+            [
+                { Value: Math.floor(Math.random() * 10), Metric: "All Vaccinations 0-10" },
+                { Value: Math.floor(Math.random() * 10), Metric: "All Vaccinations 10-40" },
+                { Value: Math.floor(Math.random() * 10), Metric: "All Vaccinations 40-80" },
+                { Value: Math.floor(Math.random() * 10), Metric: "All Vaccinations 80+" },
             ]
         ]
     }
@@ -180,7 +186,9 @@ class Visualizer extends Component {
                 sum += data[i][j].Value
                 count++
             }
+            
             result.barSeries.push(<HorizontalBarSeries key={i} data={formattedData} color={this.getNextColor()} />)
+            console.log(result.barSeries)
         }
 
         //Create Average Line 

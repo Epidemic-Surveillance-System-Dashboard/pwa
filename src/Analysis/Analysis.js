@@ -29,6 +29,7 @@ var initialMetric = {
     SetValue: "-3-1191|All Facility Attendance (Distribution)|Group",
     MetricValue: ""
 };
+var s ="Group";
 
 class Analysis extends Component {
 
@@ -155,6 +156,12 @@ class Analysis extends Component {
                         <Row className={``} gutter={16}>
                             <Col xs={{ span: 24, offset: 0 }} sm={{ span: 22, offset: 1 }} md={{ span: 18, offset: 3 }} lg={{ span: 16, offset: 4 }}>
                                 <Card className="left" size="medium" title="Select Metric">
+                                    <Visualizer
+                                        type={s}
+                                        show={true}
+                                        data={null}
+
+                                    />
                                     <MetricSelector parentHandler={this.updateData}
                                         initialData={{
                                             GroupValue: "1191|Facility Attendance|Group",
@@ -248,6 +255,7 @@ class Analysis extends Component {
                             {...item} //LocationId, Location, etc...
                             show={this.state.graphOpenCloseState[key].open}*/
                         />
+
                     </div>
                 }
             </div>
