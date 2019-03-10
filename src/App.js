@@ -15,6 +15,7 @@ import SampleHome from './SampleHome/SampleHome'
 import Account from './Account/Account'
 import User from './Users/Users'
 import Sync from './Sync/Sync'
+import DataQuality from './DataQuality/DataQuality'
 
 import userService from './Services/User'
 
@@ -29,7 +30,8 @@ const pathNamesAndTitles = {
 	"/account": "Account",
 	"/dashboard": "Dashboard",
 	"/users"	: "Users",
-	"/sync"		: "Synchronize Data"
+	"/sync"		: "Synchronize Data",
+	"/quality"	: "Quality of Data"
 }
 
 class App extends Component {
@@ -105,27 +107,32 @@ class App extends Component {
 								</Link>
 							</Menu.Item>
 							<Menu.Item key="3">
+								<Link to="/quality">
+									<Icon type="trophy" />Quality of Data
+								</Link>
+							</Menu.Item>
+							<Menu.Item key="4">
 								<Link to="/account">
 									<Icon type="user" />Account
 								</Link>
 							</Menu.Item>
 							{
-								this.state.user != null && this.state.user.UserType != "admin" ? "": 
-								<Menu.Item key="4">
+								this.state.user !== null && this.state.user.UserType !== "admin" ? "": 
+								<Menu.Item key="5">
 									<Link to="/users">
 										<Icon type="team" />Users
 									</Link>
 								</Menu.Item>
 							}
-							<Menu.Item key="5">
+							<Menu.Item key="6">
 								<Link to="/sync">
 									<Icon type="sync" />Synchronize Data
 								</Link>
 							</Menu.Item>
 							{this.state.user == null? "":
-							<Menu.Item key="6" onClick={this.logout}>
+							<Menu.Item key="7" onClick={this.logout}>
 								<Link to="/">
-									<Icon type="logout" />Logout
+									<Icon type="poweroff" />Logout
 								</Link>
 							</Menu.Item>
 							}
@@ -145,6 +152,7 @@ class App extends Component {
 						<Route path="/account" component={Account} />
 						<Route path="/users" component={User} />
 						<Route path="/sync" component={Sync} />
+						<Route path="/quality" component={DataQuality} />
 					</Content>
 					<Footer>Footer goes here. Open source project. Credits. React. Ant Design. Capstone.</Footer>
 				</Layout>
