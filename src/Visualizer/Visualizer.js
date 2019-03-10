@@ -450,17 +450,6 @@ class Visualizer extends Component {
         }
         return graph
     }
-    relatedGraphs = () => {
-        let otherGraphA = this.Histogram()
-        let otherGraphB = this.Line()
-
-        return (
-            <Card title="Related Graphs">
-                <Card.Grid className="related-graphs">{otherGraphA}</Card.Grid>
-                <Card.Grid className="related-graphs">{otherGraphB}</Card.Grid>
-            </Card>
-        )
-    }
 
     defaults = {
         width: 350,
@@ -480,9 +469,8 @@ class Visualizer extends Component {
         });
 
         let graph = this.renderGraph()
-        let related = this.relatedGraphs()
         if (graph !== null) {
-            return <div>{graph} <span></span>{related}</div>
+            return <div>{graph} <span></span></div>
 
         } else {
             return (

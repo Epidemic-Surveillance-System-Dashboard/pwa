@@ -5,6 +5,8 @@ import './Analysis.css';
 import LocationSelector from "../LocationSelector/LocationSelector"
 import LocationWrapper from "../Analysis/LocationWrapper"
 import MetricSelector from "../MetricSelector/MetricSelector"
+import Visualizer from '../Visualizer/Visualizer';
+import VisualizerManager from '../Visualizer/VisualizerManager'
 
 const Option = Select.Option
 var dataDict = {};
@@ -167,6 +169,14 @@ class Analysis extends Component {
                     null :
                     <div className="">
                         <LocationWrapper
+                            parentHandler={this.updateLocation} initialLocation={this.state.selectedLocation}
+                        />
+                    </div>
+                }
+                {this.state.currentView !== "graph" ?
+                    null :
+                    <div className="">
+                        <VisualizerManager
                             parentHandler={this.updateLocation} initialLocation={this.state.selectedLocation}
                         />
                     </div>

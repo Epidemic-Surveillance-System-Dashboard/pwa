@@ -249,7 +249,6 @@ class Dashboard extends Component {
     render() {
         return (
             <div className="center">
-
                 <Row className={`rowVMarginSm rowVMarginTopSm`}>
                     <Col xs={{ span: 24, offset: 0 }} md={{ span: 12, offset: 6 }} lg={{ span: 8, offset: 8 }}>
                         <Radio.Group defaultValue="0" buttonStyle="solid" onChange={this.reportCardOrGraphsChanged}>
