@@ -9,7 +9,7 @@ class CreateGraph extends Component {
     state = {
         Location: undefined,
         Data: undefined,
-        Dates:{StartDate: new Date("2015-01-01T00:00:00.000Z"), EndDate: new Date("2015-01-01T00:00:00.000Z")}
+        Dates:{StartDate: new Date("2015-01-01T00:00:00.000Z"), EndDate: new Date("2019-01-01T00:00:00.000Z")}
     }
 
     updateRawData = (rawData) =>{

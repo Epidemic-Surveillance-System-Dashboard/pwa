@@ -7,6 +7,7 @@ import LocationWrapper from "../Analysis/LocationWrapper"
 import MetricSelector from "../MetricSelector/MetricSelector"
 import Visualizer from '../Visualizer/Visualizer';
 import VisualizerManager from '../Visualizer/VisualizerManager'
+import db from '../Database/database';
 
 const Option = Select.Option
 var dataDict = {};
@@ -23,23 +24,59 @@ for (let i = 0; i < 20; i++) {
     var dataList = [];
     dataDict[dataPoint.facility + dataPoint.ward + dataPoint.LGA + dataPoint.state] = dataPoint;
 }
-
+var initialMetric = {
+    GroupValue: "1191|Facility Attendance|Group",
+    SetValue: "-3-1191|All Facility Attendance (Distribution)|Group",
+    MetricValue: ""
+};
 
 class Analysis extends Component {
 
     state = {
-        location: null,
         metricData: null,
         initLoading: false,
         loading: false,
-        data: {},//dataDict,
+        data: {
+        },//dataDict,
         showTable: true,
         selectedUser: null,
         dataLoaded: false,
         currentView: "table",
         selectedLocation: null,
         addingLocation: false,
+        Dates: { StartDate: new Date("2015-01-01T00:00:00.000Z"), EndDate: new Date("2019-01-01T00:00:00.000Z") }
+    }
+    generateGraph = () => {
+        console.log("--------------------");
+        console.log(this.state.metricData);
+        console.log(this.state.selectedLocation);
+        console.log(this.state.Dates);
+        console.log(this.state.metricData);
 
+
+        console.log("--------------------");
+        this.setState({
+            currentView: "graph"
+        })
+        /*
+        db.Data.toArray().then(arr => {
+            console.log(arr);
+            let dataDict = {};
+            arr.forEach(ele => {
+                dataDict[ele.Id] = ele;
+            });
+
+        })*/
+
+    }
+    saveGraph = () => {
+
+    }
+
+    updateRawData = (rawData) => {
+        this.setState({
+            RawData: rawData
+        })
     }
 
     updateData = (data) => {
@@ -52,7 +89,13 @@ class Analysis extends Component {
                 delete tempData[this.state.selectedLocation.Type + "-" + this.state.selectedLocation.Id];
             }
             tempData[location.Type + "-" + location.Id] = location;
+            /*
+            temp
+            */
+            this.setState({ selectedLocation: location });
+            console.log("location");
             console.log(location);
+
             message.success('Location Saved');
             this.setState({ data: tempData });
         } else {
@@ -112,13 +155,14 @@ class Analysis extends Component {
                         <Row className={``} gutter={16}>
                             <Col xs={{ span: 24, offset: 0 }} sm={{ span: 22, offset: 1 }} md={{ span: 18, offset: 3 }} lg={{ span: 16, offset: 4 }}>
                                 <Card className="left" size="medium" title="Select Metric">
-                                    <MetricSelector parentHandler={this.updateData} showData={true}></MetricSelector>
-                                    <Select defaultValue="lucy" style={{ width: 120 }} onChange={this.handleChange()}>
-                                        <Option value="jack">Jack</Option>
-                                        <Option value="lucy">Lucy</Option>
-                                        <Option value="disabled" disabled>Disabled</Option>
-                                        <Option value="Yiminghe">yiminghe</Option>
-                                    </Select>
+                                    <MetricSelector parentHandler={this.updateData}
+                                        initialData={{
+                                            GroupValue: "1191|Facility Attendance|Group",
+                                            SetValue: "-3-1191|All Facility Attendance (Distribution)|Group",
+                                            MetricValue: ""
+                                        }}
+                                    ></MetricSelector>
+
                                 </Card>
                             </Col>
                         </Row>
@@ -162,6 +206,21 @@ class Analysis extends Component {
                                 </Card>
                             </Col>
                         </Row>
+                        <Divider />
+
+                        <Row>
+                            <Col xs={{ span: 24, offset: 0 }} sm={{ span: 22, offset: 1 }} md={{ span: 18, offset: 3 }} lg={{ span: 16, offset: 4 }}>
+                                <div class="center" >
+                                    <Button type="primary" block onClick={this.generateGraph}>Generate Graph</Button>
+                                </div>
+                                <Card className="left" size="medium" title="Graph">
+                                    <Button onClick={this.saveGraph}>
+                                        Save Graph <Icon type="save" />
+                                    </Button>
+                                </Card>
+                            </Col>
+
+                        </Row>
                     </div>
                 }
 
@@ -176,8 +235,18 @@ class Analysis extends Component {
                 {this.state.currentView !== "graph" ?
                     null :
                     <div className="">
+                        <Button onClick={this.showTable}>
+                            Back
+                        </Button>
+
                         <VisualizerManager
-                            parentHandler={this.updateLocation} initialLocation={this.state.selectedLocation}
+                            Title={this.state.metricData !== undefined && this.state.metricData.Name !== undefined ? this.state.metricData.Name.split("(")[0] : ""}
+                            Location={this.state.selectedLocation} //{Name, Id, Type}
+                            Data={this.state.metricData} // {Id, Type, TotalOrDistribution="total|none|distribution"}
+                            Dates={this.state.Dates}
+                            ParentHandler={this.updateRawData} /*
+                            {...item} //LocationId, Location, etc...
+                            show={this.state.graphOpenCloseState[key].open}*/
                         />
                     </div>
                 }

@@ -41,7 +41,13 @@ class LocationWrapper extends Component {
             <div>
                 <Button onClick={this.saveLocation}>Save</Button>
                 <Button onClick={this.cancelLocation}>Cancel</Button>
-                <LocationSelector parentHandler={this.updateLocation} showLocation={false} initialLocation={this.state.location}></LocationSelector>
+                <LocationSelector parentHandler={this.updateLocation} showLocation={false} initialLocation={
+                        {
+                            Id: "1215",
+                            Type: "Facility"
+                        }
+                    }//this.state.location}>
+                ></LocationSelector>
             </div>
         )
     }
