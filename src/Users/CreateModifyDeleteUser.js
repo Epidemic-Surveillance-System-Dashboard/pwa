@@ -156,7 +156,7 @@ class CreateModifyDeleteUser extends Component {
             <Col>
                 <Divider/>
                 {array}
-                <Select style={{width: "100%"}} placeholder="User Type" onChange={(e) =>{this.handleUserTypeSelect(e)}}>
+                <Select style={{width: "100%"}} defaultvalue = {this.state.userInfo.UserType} placeholder="User Type" onChange={(e) =>{this.handleUserTypeSelect(e)}} disabled = {this.state.disabled}>
                     <Select.Option value="user">User</Select.Option>
                     <Select.Option value="admin">Admin</Select.Option>
                     <Select.Option value="superadmin">Super Admin</Select.Option>
@@ -210,7 +210,7 @@ class CreateModifyDeleteUser extends Component {
 
     enableEditing = () => {
         user.user().then(u =>{
-            if (u.userType === "Admin"){
+            if (u.userType === "admin"){
                 this.setState({
                     disabled:false,
                     locationDisabled:false,

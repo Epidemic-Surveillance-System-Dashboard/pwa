@@ -41,6 +41,9 @@ function login(email, password){
 
 function logout(){
     return new Promise ((resolve, reject) =>{
+        db.Dashboard.clear().then(()=>{
+            
+        })
         db.LocalUser.clear().then(() => {
             resolve (true)
         }).catch((e) =>{
