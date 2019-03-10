@@ -4,6 +4,7 @@ import {Table, Button,List, Card, Row, Col, Radio} from 'antd'
 
 import '../../node_modules/react-vis/dist/style.css'
 import './Dashboard.css'
+import db from '../Database/database'
 
 import VisualizerManager from '../Visualizer/VisualizerManager';
 import CreateGraph from '../Graph/CreateGraph'
@@ -149,7 +150,8 @@ class Dashboard extends Component {
         showGraphs: true,
         graphOpenCloseState: null,
         currentView: "",
-        related : null
+        related : null,
+        relatedGraphs : []
     }
 
     componentWillMount(){
@@ -214,54 +216,109 @@ class Dashboard extends Component {
         )
     }
 
-    findAllGraphs = () => {
+    findAllGraphs = (item) => {
         return new Promise((resolve) =>{
             let callback = (data) => {
                 resolve (data) 
             }
-            db.Metrics.toArray(callback)         
+
+            switch(item.Data.Type){
+                case "Metric":
+                    db.Metrics.toArray(callback) 
+                break
+                case "Set":
+                    db.Sets.toArray(callback) 
+                break
+                case "Group":
+                    db.Sets.toArray(callback) 
+                break
+                default:
+                    //
+                break; 
+            }                  
         })
     }
 
-    findRelatedGraphs = (setId) => {
-       return this.findAllGraphs().then((allData) => {
+    findRelatedGraphs = (item) => {
+       return this.findAllGraphs(item).then((allData) => {
             let relatedFound = [];
+            let parentId = ""
+            if (item.Data.Type === "Group") {
+                parentId = item.Data.Id
+            } else {
+                allData.forEach(function(metricData) {
+                    if (metricData.Id === item.Data.Id) {
+                        parentId = metricData.parentId
+                        return
+                    }
+                })
+            }
+
             allData.forEach(function(metricData) {
-                if (metricData.parentId === setId) {
-                    relatedFound.push(metricData);
+                if (metricData.parentId === parentId) {
+                    if (metricData.Id != item.Data.Id) {
+                        relatedFound.push(metricData)
+                    }
                 }
-            })
-            
+            })            
             return relatedFound;        
         })         
     }
 
-    toggleViewRelated = async (graphName) => {
+    toggleViewRelated = async (item) => {
         if (this.state.currentView === "related") {
             this.setState({
                 currentView : ""
-            })
-            
+            })            
         } else {
             this.setState({
                 currentView : "related"
-            })            
-            var relatedFound = await this.findRelatedGraphs("2147");   
-            this.setState({
-                related: relatedFound
             })
-            this.renderRelated()   
+
+            var relatedFound = await this.findRelatedGraphs(item);
+            
+            this.processFoundData(relatedFound, item)
         }
     }
 
-    renderRelated = () => {   
-       
+    processFoundData = (relatedFound, item) => {
+        let processedRelatedData = []
+        relatedFound.forEach(function(data){
+            let temp = Object.assign(item)
+            temp.Title = data.Name
+            temp.Data.Id = data.Id
+            processedRelatedData.push(temp)
+        })
+        this.setState({
+            relatedGraphs : processedRelatedData
+        })
+        console.log(processedRelatedData)
+    }    
 
+    renderRelated = () => {          
+        return (
+            <List
+                itemLayout="vertical"
+                dataSource = {this.state.relatedGraphs}
+                renderItem = {(item, key) =>(
+                    <List.Item >
+                        <List.Item.Meta
+                        title = {item.Title}
+                        description = {item.Location.Name}/>
+                        {this.createCollapseExpandButton(key)}
+                        <VisualizerManager
+                            {...item} //LocationId, Location, etc...
+                            show = {this.state.graphOpenCloseState[key].open}
+                        />
+                    </List.Item>
+                )}>
+            </List>
+        )
     }
 
-    createViewRelatedButton = (graphName) => {
+    createViewRelatedButton = (item) => {
         return(
-            <Button onClick = {() => {this.toggleViewRelated(graphName)}}>View Related</Button>
+            <Button onClick = {() => {this.toggleViewRelated(item)}}>View Related</Button>
         )
     }
 
@@ -280,7 +337,7 @@ class Dashboard extends Component {
                                 {...item} //LocationId, Location, etc...
                                 show = {this.state.graphOpenCloseState[key].open}
                             />
-                            {this.createViewRelatedButton(item.title)}
+                            {this.createViewRelatedButton(item)}
                         </List.Item>
                     )}>
                 </List>
@@ -303,14 +360,26 @@ class Dashboard extends Component {
             <div>
                 {
                     this.state.currentView === "related" &&
-                    <Row className="rowVMarginTopSm" gutter={-1}>
-                        <Col className = "left" xs={{span: 16, offset:0}} sm = {{span:14, offset:1}} md = {{span: 10, offset:3}} lg = {{span: 8, offset:4}}>
-                            <h3>Related Graphs</h3>
-                        </Col>
-                        <Col className = "right" span={8}>
-                        <Button onClick = {() => {this.toggleViewRelated()}}>Back</Button>
-                        </Col>
-                    </Row>
+                    <div>
+                        <Row className="rowVMarginTopSm" gutter={-1}>
+                            <Col className = "left" xs={{span: 16, offset:0}} sm = {{span:14, offset:1}} md = {{span: 10, offset:3}} lg = {{span: 8, offset:4}}>
+                                <h3>Related Graphs</h3>                            
+                            </Col>
+                            <Col className = "right" span={8}>
+                            <Button onClick = {() => {this.toggleViewRelated()}}>Back</Button>
+                            </Col>
+                        </Row>
+                        <div className = {this.state.showGraphs ? "" : "displayNone"}>                            
+                            <Row className={`rowVMarginSm`} gutter= {16}>
+                                <Col xs={{ span: 24, offset: 0 }} sm = {{span: 22, offset:1}} md={{ span: 18, offset: 3 }} lg = {{span: 16, offset: 4}}>
+                                    <Card className = "left" size ="small">
+                                        {this.renderGraphs()}
+                                    </Card>
+                                </Col>
+                            </Row>     
+                        </div>
+                    </div>
+                    
                 }
                 {
                 this.state.currentView != "related" &&
