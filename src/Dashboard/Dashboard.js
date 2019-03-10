@@ -7,6 +7,7 @@ import './Dashboard.css'
 
 import VisualizerManager from '../Visualizer/VisualizerManager';
 import CreateGraph from '../Graph/CreateGraph'
+import db from '../Database/database';
 
 let graphExamples = [
     // {
@@ -148,17 +149,7 @@ class Dashboard extends Component {
         reportCard: false,
         showGraphs: true,
         graphOpenCloseState: null,
-    }
-
-    componentWillMount() {
-
-        //Create a record of all open/close states for the graphs
-        let visiblity = {}
-        for (let i = 0; i < graphExamples.length; i++) {
-            visiblity[i] = { open: true, showInFilter: true }
-        }
-        visiblity["collapseOrExpandText"] = { text: "Collapse All" }
-        this.setState({ graphOpenCloseState: visiblity })
+        graphDataLoaded: false,
     }
 
     fullSizeOrListChanged = (e) =>{
@@ -212,26 +203,58 @@ class Dashboard extends Component {
         )
     }
 
-    renderGraphs = () => {
+    getFirstLocation = (object) =>{
+        let keys = Object.keys(object)
+        if (keys.length > 0){
+            return object[keys[0]]
+        }
+    }
+
+    loadGraphsFromDB = () =>{
+        db.Dashboard.toArray().then(arr =>{
+            //Create a record of all open/close states for the graphs
+            let visibility = {}
+            for (let i = 0; i < arr.length; i++){
+                visibility[i] = {open: true, showInFilter: true}
+            }
+
+            visibility["collapseOrExpandText"] = {text: "Collapse All"}
+
+            this.setState({
+                graphData: arr,
+                graphDataLoaded: true,
+                graphOpenCloseState: visibility
+            })
+        })
+    }
+
+    componentDidMount(){
+        this.loadGraphsFromDB()
+    }
+
+    renderGraphs = () =>{
+        if (this.state.graphDataLoaded !== true) return null
         return (
-                <List
-                    itemLayout="vertical"
-                    dataSource = {graphExamples}
-                    renderItem = {(item, key) =>(
-                        <List.Item >
-                            <List.Item.Meta
-                            title = {item.Title}
-                            description = {item.Location.Name}/>
-                            {this.createCollapseExpandButton(key)}
+            <List
+                itemLayout="vertical"
+                dataSource = {this.state.graphData}
+                renderItem = {(item, key) =>(
+                    <List.Item >
+                        <List.Item.Meta
+                        title = {item.Title}
+                        description = {this.getFirstLocation(item.Locations).Name}/>
+                        {this.createCollapseExpandButton(key)}
 
-                            <VisualizerManager
-                                {...item} //LocationId, Location, etc...
-                                show = {this.state.graphOpenCloseState[key].open}
-                            />
+                        <VisualizerManager
+                            {...item} //LocationId, Location, etc...
+                            Location = {this.getFirstLocation(item.Locations)}
 
-                        </List.Item>
-                    )}>
-                </List>
+                            show = {this.state.graphOpenCloseState[key].open}
+                        />
+
+                    </List.Item>
+                )}>
+            </List>
         )
 
     }
@@ -271,10 +294,12 @@ class Dashboard extends Component {
                             </Col>
                         </Row>    
                     </div>    
-                    <div className={`${this.state.reportCard? "displayNone" : ""}`}>
+                    <div className={`${this.state.reportCard ? "displayNone" : ""}`}>
 
                         {/* UI For Viewing Graphs */}
-                        <div className = {this.state.showGraphs ? "" : "displayNone"}>
+                        {
+                            this.state.graphDataLoaded &&
+                            <div className = {this.state.showGraphs ? "" : "displayNone"}>
                             <Row className={`rowVMarginSm`}>
                                 <Col className = "left" xs={{ span: 12, offset: 0 }} sm = {{span: 11, offset:1}} md={{ span: 9, offset: 3 }} lg = {{span: 8, offset: 4}}>
                                     <Button onClick = {this.toggleAllGraphs}>{this.state.graphOpenCloseState["collapseOrExpandText"].text}</Button>
@@ -291,6 +316,8 @@ class Dashboard extends Component {
                                 </Col>
                             </Row>     
                         </div>
+                        }
+                        
                         
                         {/* UI For Creating Graphs */}
                         <div className = {this.state.showGraphs ? "displayNone" : ""}>
@@ -299,9 +326,10 @@ class Dashboard extends Component {
                                 
                             </Row>
                             <Row className = "rowVMarginSm">
-                                <CreateGraph/>
+                                <CreateGraph
+                                ParentHandler = {this.loadGraphsFromDB}
+                                />
                             </Row>
-                            
                             
                         </div>
                     </div>    

@@ -10,8 +10,6 @@ class Account extends Component {
 
     componentDidMount = () =>{
         user.user().then((u) =>{
-            console.log('hi')
-            console.log(u)
             this.setState({
                 user: u
             })

@@ -47,7 +47,7 @@ class VisualizerManager extends Component {
 
     state = {
         ready: false,
-        data: null
+        data: null,
     }
 
     checkInputs = () => {
@@ -70,17 +70,15 @@ class VisualizerManager extends Component {
         return valid
     }
 
-    getData = () =>{
-        let data = []
-        if (this.isSimpleData()){
-            data = this.getSimpleData()
-        }else{
-            data = this.getComplexData()
-        }
-        if (data.length > 0){
-            // Good to go
-        }
-    }
+    // getData = () =>{
+
+    //     if (this.isSimpleData()){
+    //         this.getSimpleData()
+    //     }else{
+    //         this.getComplexData()
+    //     }
+
+    // }
 
     isSimpleData = () =>{
         //Simple data is only Facility, Metric 
@@ -131,12 +129,27 @@ class VisualizerManager extends Component {
      * 3. If not, some error message
      */
     getComplexData = () =>{
-        db.DashboardData.toArray().then(arr =>{
-            //If doesn't exist, then get data from url
-            if (arr.length === 0){
-                this.queryComplexData()
-            }
-        })
+        console.log(this.props.RawData)
+        if (this.props.RawData){
+            console.log(this.props.Data)
+
+            let graphType = "Metric"
+
+            if (this.props.Data.MetricValue !== undefined && this.props.Data.MetricValue.charAt(0)!== "-") graphType = "Metric" 
+            else if (this.props.Data.SetValue !== undefined) graphType = "Set"
+            else graphType = "Group"
+            
+            this.setState({
+                ready: true,
+                data:{
+                    data: this.props.RawData,
+                    name: this.props.Title
+                },
+                graphType: graphType
+            })
+        }else{
+            this.queryComplexData()
+        }
     }
 
     formatDateForRemoteQuery = (date) =>{
@@ -227,6 +240,8 @@ class VisualizerManager extends Component {
 
             }
 
+            if (this.props.ParentHandler) this.props.ParentHandler(result)
+
             //TODO: store data locally
         }))
     
@@ -283,11 +298,15 @@ class VisualizerManager extends Component {
                     }
                     {
                         this.state.ready === true && 
-                        <Visualizer 
-                            type = {this.state.graphType}
-                            show = {this.props.show}
-                            data = {this.state.data}
-                        />
+                        <div>
+                            <Visualizer 
+                                type = {this.state.graphType}
+                                show = {this.props.show}
+                                data = {this.state.data}
+                            />
+
+                        </div>
+
                     }
                 </div>
             )

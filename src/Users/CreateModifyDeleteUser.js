@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import {Button, Input, Row, Col, Divider, Popconfirm, message} from 'antd'
+import {Button, Input, Row, Col, Divider, Popconfirm, message, Select} from 'antd'
 
 import LocationSelector from "../LocationSelector/LocationSelector"
 
@@ -121,13 +121,21 @@ class CreateModifyDeleteUser extends Component {
         this.userInformationChanged()
     }
 
+    handleUserTypeSelect(value){
+        let user = this.state.userInfo
+        user["UserType"] = value
+        this.setState({userInfo: user})
+        //this.userInformationChanged()
+        console.log(this.state.userInfo);
+    }
+
     basicFeatures = () => {
 
         let basicFeatures = [
             "First Name",
             "Last Name",
             "Email",
-            "Phone",
+            "Phone"
         ]
 
         let array = []
@@ -148,6 +156,11 @@ class CreateModifyDeleteUser extends Component {
             <Col>
                 <Divider/>
                 {array}
+                <Select style={{width: "100%"}} defaultvalue = {this.state.userInfo.UserType} placeholder="User Type" onChange={(e) =>{this.handleUserTypeSelect(e)}} disabled = {this.state.disabled}>
+                    <Select.Option value="user">User</Select.Option>
+                    <Select.Option value="admin">Admin</Select.Option>
+                    <Select.Option value="superadmin">Super Admin</Select.Option>
+                </Select>
                 <Divider/>
                 {/* Location */}
                 <p>Location</p>
@@ -197,7 +210,7 @@ class CreateModifyDeleteUser extends Component {
 
     enableEditing = () => {
         user.user().then(u =>{
-            if (u.userType === "Admin"){
+            if (u.userType === "admin"){
                 this.setState({
                     disabled:false,
                     locationDisabled:false,
@@ -235,9 +248,9 @@ class CreateModifyDeleteUser extends Component {
 
         if (this.state.mode === "new"){
             //Create User
-            userObject.UserType = "user" //hardCode for now
+            //userObject.UserType = "user" //hardCode for now
             delete userObject.Id
-            url = "https://essd-backend-dev.azurewebsites.net/api/users/addUser"
+            url = "https://essd-backend-dev.azurewebsites.net/api/users/register"
             successMessage = "Successfully added user."
             errorMessage = "Failed to create user. Please try again later."
             method = "POST"
@@ -259,7 +272,7 @@ class CreateModifyDeleteUser extends Component {
         }else{
 
             //Update User
-            userObject.UserType = "user" //hardCode for now
+            //userObject.UserType = "user" //hardCode for now
             url = "https://essd-backend-dev.azurewebsites.net/api/users/updateUser"
             successMessage = "Successfully updated user."
             errorMessage = "Failed to update user. Please try again later."

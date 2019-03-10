@@ -432,7 +432,8 @@ class Visualizer extends Component {
 
     }
 
-    renderGraph = () => {
+    renderGraph = () =>{
+
         let graph = null
         switch (this.props.type) {
             case "Group":
@@ -460,6 +461,7 @@ class Visualizer extends Component {
 
     render() {
 
+        
         if (this.props.show === false) return null
 
         colorCounter = 0

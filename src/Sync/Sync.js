@@ -5,6 +5,7 @@ import { Button, Icon, Row, Col, Timeline} from 'antd'
 
 //db
 import db from '../Database/database'
+import user from '../Services/User'
 
 class Sync extends Component {
 
@@ -22,7 +23,7 @@ class Sync extends Component {
                 callback: (data) =>{
                     return new Promise ((resolve) =>{
                         db.User.clear().then(()=>{
-                            db.User.bulkAdd(data).then(() =>{
+                            db.User.bulkAdd(data.users).then(() =>{
                                 resolve(true)
                             }).catch((e) => {
                                 console.log(e)
@@ -31,7 +32,7 @@ class Sync extends Component {
                         })
                     })
                 },
-                url: `${rootURL}/users/temp/allUsers`
+                url: `${rootURL}/users/getAllUsers/${this.state.user.Id}`
             },
             {
                 //Todo: Scope the location request as per the user's authorized locations
@@ -111,9 +112,21 @@ class Sync extends Component {
         })
     }
 
+    componentDidMount(){
+        user.user().then( u =>{
+            console.log(u)
+            this.setState({
+                user: u,
+                ready: true
+            }, () =>{
+                console.log(`/users/getAllUsers/${this.state.user.Id}`)
+            })
+        })
+    }
+
 	render() {
 		return (
-            <div class = "center">
+            <div className = "center">
                 <Row className="rowVMarginTopSm">
                     <Col xs={24} sm={{span:22, offset:1}} md={{span:18, offset:2}} lg={{span:16, offset: 4}} xl={{span:16, offset: 4}}>
                         <p>                  
@@ -121,7 +134,11 @@ class Sync extends Component {
                                 type = "wifi"/>&nbsp;
                             Please note: you must have an internet connection.
                         </p>
-                        <Button type="primary" onClick = {this.startDownload}>Start Sync</Button>
+                        {
+                            this.state.ready &&
+                            <Button type="primary" onClick = {this.startDownload}>Start Sync</Button>
+                        }
+                        
                     </Col>
                 </Row>
                 <Row>
