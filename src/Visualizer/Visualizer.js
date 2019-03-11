@@ -144,14 +144,14 @@ class Visualizer extends Component {
             lineData: null
         }
 
-        for (let i = 0; i < dataset.data.length; i++){
+        for (let i = 0; i < data.length; i++){
             //For each Location:
             
             //Create the bars in each of the same metric
             let group = []
-            for (let j = 0; j < dataset.data[i].length; j++){
+            for (let j = 0; j < data[i].length; j++){
                 group.push({
-                    y: dataset.data[0][j].Metric, x: dataset.data[i][j].Value
+                    y: data[0][j].Metric, x: data[i][j].Value
                 })
             }
 
@@ -164,8 +164,8 @@ class Visualizer extends Component {
         //Push all the legend names in
         this.resetColor()
         let legendTitles = []
-        for (let i = 0; i < dataset.legendTitles.length; i++){
-            legendTitles.push({ title: dataset.legendTitles[i], color: this.getNextColor() })
+        for (let i = 0; i < legendTitles.length; i++){
+            legendTitles.push({ title: legendTitles[i], color: this.getNextColor() })
         }
 
         result.legend = <DiscreteColorLegend orientation="horizontal" items={legendTitles} />

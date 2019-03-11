@@ -100,7 +100,7 @@ class Analysis extends Component {
         return dateString
     }
 
-    getSimpleData = () => {
+    getData = () => {
         var tempData = [];
 
         for (var key in this.state.data) {
