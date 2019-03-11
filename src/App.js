@@ -146,7 +146,7 @@ class App extends Component {
 							title={this.getTitle()}>
 						</NavigationMenu>
 					</Header>
-					<Content>
+					<Content className="min-height-wrapper">
 						<Route exact path="/" render={(props) => <SampleHome {...props} updateDrawer={this.updateDrawer} />} />
 						<Route path="/dashboard" component={Dashboard} />
 						<Route path="/account" component={Account} />
@@ -155,7 +155,6 @@ class App extends Component {
 						<Route path="/health" component={DataQuality} />
 					</Content>
 					<Footer>
-						<Divider/>
 						<p>
 							ESSD is an <a href = "https://github.com/Epidemic-Surveillance-System-Dashboard/" target = "_blank" rel="noopener noreferrer">open source capstone project</a> by Aayush Bahendwar, Jackie Ngo, Laban Lin, and Patrick Lee.
 						</p>
