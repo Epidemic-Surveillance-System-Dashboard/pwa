@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 import { BrowserRouter as Router, Route, Link } from "react-router-dom"
 
 //antd for ui components
-import { Drawer, Icon, Layout, Menu } from 'antd'
+import { Drawer, Icon, Layout, Menu, Divider } from 'antd'
 
 //Nav Bar
 import NavigationMenu from './NavigationMenu/NavigationMenu'
@@ -153,7 +153,7 @@ class App extends Component {
 							title={this.getTitle()}>
 						</NavigationMenu>
 					</Header>
-					<Content>
+					<Content className="min-height-wrapper">
 						<Route exact path="/" render={(props) => <SampleHome {...props} updateDrawer={this.updateDrawer} />} />
 						<Route path="/dashboard" component={Dashboard} />
 						<Route path="/analysis" component={Analysis} />
@@ -162,7 +162,17 @@ class App extends Component {
 						<Route path="/sync" component={Sync} />
 						<Route path="/health" component={DataQuality} />
 					</Content>
-					<Footer>Footer goes here. Open source project. Credits. React. Ant Design. Capstone.</Footer>
+					<Footer>
+						<p>
+							ESSD is an <a href = "https://github.com/Epidemic-Surveillance-System-Dashboard/" target = "_blank" rel="noopener noreferrer">open source capstone project</a> by Aayush Bahendwar, Jackie Ngo, Laban Lin, and Patrick Lee.
+						</p>
+						<p>
+							It is built with components by 
+							<a href = "https://ant.design/" target = "_blank" rel="noopener noreferrer"> Ant Financial </a>
+							and powered by 
+							<a href = "https://reactjs.org/" target = "_blank" rel="noopener noreferrer"> React </a>.
+						</p>
+					</Footer>
 				</Layout>
 			</Router>
 		);

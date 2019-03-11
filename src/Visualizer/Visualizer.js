@@ -20,6 +20,9 @@ const monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN",
 "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"
 ]
 
+const averageCharacterWidth = 5.5
+const constantCharacterPadding = 20
+
 class Visualizer extends Component {
 
     getNextColor = () => {
@@ -124,7 +127,17 @@ class Visualizer extends Component {
     }
 
     createMultipleBarSeries() {
-        let dataset = this.props.data
+        let data = this.mockGroup.data
+
+        //Update Default Padding
+        let maxLength = 0
+        for (let i = 0; i < data.length; i++) {
+            for (let j = 0; j < data.length; j++) {
+                if (data[i][j].Metric.length > maxLength) maxLength = data[i][j].Metric.length
+            }
+        }
+        this.defaults.barChartLeftMargin = Math.round(maxLength * averageCharacterWidth + constantCharacterPadding, 0)
+
         let result = {
             barSeries: [],
             legend: null,
@@ -182,6 +195,14 @@ class Visualizer extends Component {
         if (rawData.length === 0){
             return null
         }
+
+        //Update Default Padding
+        let maxLength = 0
+        for (let i = 0; i < rawData.data.length; i++){
+            if (rawData.data[i].Metric.length > maxLength) maxLength = rawData.data[i].Metric.length
+        }
+        this.defaults.barChartLeftMargin = Math.round(maxLength * averageCharacterWidth + constantCharacterPadding,0)
+
         let barSeriesData = this.createBarSeriesData(rawData)
         return {
             barSeries: barSeriesData.barSeries,
@@ -263,7 +284,6 @@ class Visualizer extends Component {
 
         let data = this.props.data.data || this.mockMetric.data
         
-        console.log(data)
         if (data.length === 0) return null
         if (data[0].hasOwnProperty("Date") === false){
             data.forEach(el =>{
@@ -425,6 +445,7 @@ class Visualizer extends Component {
         Object.keys(this.defaults).forEach((key) => {
             if (this.props[key] !== undefined) this.defaults[key] = this.props[key]
         });
+
 
         let graph = this.renderGraph()
         if (graph !== null) {

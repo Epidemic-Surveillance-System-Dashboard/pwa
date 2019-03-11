@@ -78,3 +78,8 @@
 .ant-timeline-item-head{
   background-color: transparent !important;
 }
+
+.min-height-wrapper{
+  /*60px for the nav bar; 24px padding on the footer*/
+  min-height: calc(100vh - 84px);
+}

@@ -139,10 +139,10 @@ class LocationSelector extends Component {
             Type:  this.props.maxScope ? this.props.maxScope.Type : "National",
             Id:     this.props.maxScope ? this.props.maxScope.Id : "1",
         }
-
+        console.log(this.props.initialLocation);
         let initialLocation = {
-            Type:  this.props.initialLocation ? this.props.initialLocation.Type : maxScope.Type,
-            Id:     this.props.initialLocation ? this.props.initialLocation.Id : maxScope.Id,
+            Type:  this.props.initialLocation.Type ? this.props.initialLocation.Type : maxScope.Type,
+            Id:     this.props.initialLocation.Id ? this.props.initialLocation.Id : maxScope.Id,
         }
 
         this.setState({
@@ -150,7 +150,7 @@ class LocationSelector extends Component {
             initialLocation: initialLocation
 
         }, () =>{
-
+            console.log(this.state);
             let initLocationIndex = this.findIndexForLocationType(initialLocation.Type)
 
             //Work backwards to define all the locations that the initial location belongs to
@@ -174,7 +174,9 @@ class LocationSelector extends Component {
             completionCallback(locations)
             return
         }else{
+            console.log(currentLocationId)
             let location = await (this.findLocationByQuery(hierarchyLevels[currentIndex], {Id:currentLocationId}))
+            console.log(location)
             location = location[0]
             locations[hierarchyLevels[currentIndex]] = `${location.Id}|${location.Name}|${hierarchyLevels[currentIndex]}`
             this.getLocationHierarchyForInitLocation(currentIndex-1, location.parentId, completionCallback, locations)
