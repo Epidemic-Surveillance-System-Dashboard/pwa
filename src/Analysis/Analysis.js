@@ -103,34 +103,132 @@ class Analysis extends Component {
     getSimpleData = () => {
         var tempData = [];
 
-
         for (var key in this.state.data) {
+            //this.queryComplexData(this.state.data[key], this.state.metricData);
+
             console.log(this.state.data[key].Id);
             console.log(this.state.metricData.Id);
-            console.log(this.state.Dates.StartDate);
-
+            console.log(this.state.metricData.Type);
             console.log(this.formatDate(this.state.Dates.StartDate));
             console.log(this.formatDate(this.state.Dates.EndDate));
 
-            db.Data.where(
-                ["FacilityId", "MetricId", 'Time']
-            ).between(
-                [this.state.data[key].Id, this.state.metricData.Id, this.formatDate(this.state.Dates.StartDate)],
-                [this.state.data[key].Id, this.state.metricData.Id, this.formatDate(this.state.Dates.EndDate)],
-                true,
-                true
-            )
-                .toArray().then((arr) => {
-                    this.setState({
-                        arr: arr
-                    })
-                    tempData.push(arr);
-                    console.log(tempData);
+            if (this.state.metricData.Type == "Metric") {
+                //Normal Bar chart
+                db.Data.where(
+                    ["FacilityId", "MetricId", 'Time']
+                ).between(
+                    [this.state.data[key].Id, this.state.metricData.Id, this.formatDate(this.state.Dates.StartDate)],
+                    [this.state.data[key].Id, this.state.metricData.Id, this.formatDate(this.state.Dates.EndDate)],
+                    true,
+                    true
+                )
+                    .toArray().then((arr) => {
+                        this.setState({
+                            arr: arr
+                        })
+                        tempData.push(arr);
+                        console.log(tempData);
 
-                })
+                    })
+            } else if (this.state.metricData.Type == "Set") {
+
+            } else if (this.state.metricData.Type == "Group") {
+
+            }
+
+
         }
     }
+    /*
+    queryComplexData = (location,metric) => {
 
+        //Build Query URL
+        let period = "month"
+
+        if (this.state.Dates.StartDate.getUTCFullYear() !== this.state.Dates.EndDate.getUTCFullYear()) period = "year"
+        let rootURL = `https://essd-backend-dev.azurewebsites.net/api/data/query?`
+        let url = rootURL +
+            "LocationId=" + location.Id
+            + "&LocationType=" + location.Type
+            + "&DataId=" + metric.Id
+            + "&DataType=" + metric.Type
+            + "&StartDate=" + this.formatDateForRemoteQuery(this.state.Dates.StartDate)
+            + "&EndDate=" + this.formatDateForRemoteQuery(this.state.Dates.EndDate)
+            + "&Period=" + period
+            + "&Distribution=" + metric.TotalOrDistribution
+
+        //Data comes back as an array
+        fetch(url, {}).then(stream => stream.json().then(result => {
+
+            if (period === "year") {
+
+                //TODO: Switch to vertical bar graph in the future
+                result.forEach(el => {
+                    el.Value = Number.parseFloat(el.Total)
+                    el.Metric = el.Yr
+                })
+
+                result.sort((a, b) => {
+                    return a.Yr - b.Yr
+                })
+
+                if (metric.TotalOrDistribution === "none" || metric.TotalOrDistribution=== "total") { //== total
+                    this.setState({
+                        ready: true,
+                        data: {
+                            data: result,
+                            name: this.state.Title
+                        },
+                        graphType: "Set",
+
+                    })
+                } else {
+
+                }
+            } else {
+                //Period === month
+                let graphType = metric.TotalOrDistributionn === "distribution" ? "Set" : "Metric"
+
+                let groupName = "MetricName"
+                if (result.length > 0) groupName = result[0].hasOwnProperty("MetricName") ? "MetricName" : "SetName"
+
+                let titleIndex = undefined
+
+                for (let i = 0; i < result.length; i++) {
+                    let d = new Date(this.state.Dates.StartDate)
+                    d.setUTCMonth(result[i].Month - 1)
+                    result[i].Date = d
+                    result[i].Value = Number.parseInt(result[i].Total)
+                    if (graphType === "Set") {
+                        if (result[i][groupName] === this.state.Title) titleIndex = i
+                        result[i].Metric = result[i][groupName].replace(`${this.state.Title}, `, "")
+                    } else {
+                        result[i].Metric = result[i][groupName]
+                    }
+                }
+
+                if (titleIndex !== undefined) {
+                    result.splice(titleIndex, 1)
+                }
+
+                this.setState({
+                    ready: true,
+                    graphType: graphType,
+                    data: {
+                        data: result,
+                        name: this.state.Title
+                    }
+                })
+
+            }
+
+            if (this.props.ParentHandler) this.props.ParentHandler(result)
+
+            //TODO: store data locally
+        }))
+
+    }
+*/
     saveGraph = () => {
     }
 
