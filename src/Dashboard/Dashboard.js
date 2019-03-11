@@ -429,8 +429,6 @@ class Dashboard extends Component {
                 <Row className={`rowVMarginSm rowVMarginTopSm`}>
                     <Col xs={{ span: 24, offset: 0 }} md={{ span: 12, offset: 6 }} lg = {{span: 8, offset: 8}}>
                         <Radio.Group defaultValue="0" buttonStyle="solid" onChange = {this.reportCardOrGraphsChanged}>
-                            <Radio.Button value="0">Detailed Graphs</Radio.Button>
-                            <Radio.Button value="1">Report Card</Radio.Button>
                         </Radio.Group>
                     </Col>
                 </Row>
