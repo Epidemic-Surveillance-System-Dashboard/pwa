@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, List, Card, Row, Col, Select, Divider, Avatar, Menu, Icon, Dropdown, message } from 'antd'
+import { Button, List, Card, Row, Col, Select, Divider, Avatar, Menu, Icon, Dropdown, message, DatePicker } from 'antd'
 
 import './Analysis.css';
 import LocationSelector from "../LocationSelector/LocationSelector"
@@ -298,10 +298,28 @@ class Analysis extends Component {
     showHideTableClass = () => {
         return this.state.currentView === "table" ? "" : "displayNone"
     }
+
+    //        Dates: { StartDate: new Date("2015-01-01T00:00:00.000Z"), EndDate: new Date("2019-01-01T00:00:00.000Z") },
+
+
+    startDateOnChange(date, dateString){
+        var endDate = this.state.Dates.EndDate;
+        this.setState({
+            Dates: {StartDate: new Date(`${dateString}T00:00:00.000Z`), EndDate: endDate} 
+        }, () => {console.log(this.state)})
+    }
+
+    endDateOnChage(date, dateString){
+        var startDate = this.state.Dates.StartDate;
+        this.setState({
+            Dates: {StartDate: startDate, EndDate: new Date(`${dateString}T00:00:00.000Z`)} 
+        }, () => {console.log(this.state)})
+    }
+
     render() {
         const { initLoading, loading, list } = this.state;
         const loadMore = !initLoading && !loading ? (
-            <div class="center" >
+            <div className="center" >
                 <Button onClick={this.addLocation}>Add Location</Button>
             </div>
         ) : null;
@@ -333,8 +351,25 @@ class Analysis extends Component {
                         <Divider />
                         <Row className={``} gutter={16}>
                             <Col xs={{ span: 24, offset: 0 }} sm={{ span: 22, offset: 1 }} md={{ span: 18, offset: 3 }} lg={{ span: 16, offset: 4 }}>
+                                <Card className="left" size="medium" title="Select Date">
+                                    <div className="center" >
+                                        <Button type="primary" block onClick={this.addLocation}>Picker Date</Button>
+                                    </div>
+                                    {this.state.data &&
+                                       <div className = "center">
+                                           <DatePicker placeholder="Start Date" onChange={(date, dateString) => {this.startDateOnChange(date, dateString)}}/> 
+                                           <DatePicker placeholder="End Date" onChange={(date, dateString) => {this.endDateOnChage(date, dateString)}}/>
+                                       </div>
+                                    }
+                                </Card>
+                            </Col>
+                        </Row>
+
+                        <Divider />
+                        <Row className={``} gutter={16}>
+                            <Col xs={{ span: 24, offset: 0 }} sm={{ span: 22, offset: 1 }} md={{ span: 18, offset: 3 }} lg={{ span: 16, offset: 4 }}>
                                 <Card className="left" size="medium" title="Select Location">
-                                    <div class="center" >
+                                    <div className="center" >
                                         <Button type="primary" block onClick={this.addLocation}>Add Location</Button>
                                     </div>
                                     {this.state.data &&
@@ -374,11 +409,11 @@ class Analysis extends Component {
 
                         <Row>
                             <Col xs={{ span: 24, offset: 0 }} sm={{ span: 22, offset: 1 }} md={{ span: 18, offset: 3 }} lg={{ span: 16, offset: 4 }}>
-                                <div class="center" >
+                                <div className="center" >
                                     <Button type="primary" block onClick={this.generateGraph}>Generate Graph</Button>
                                 </div>
                                 <Card className="left" size="medium" title="Graph">
-                                    <Button onClick={this.getSimpleData}>
+                                    <Button onClick={this.getData}>
                                         Save Graph <Icon type="save" />
                                     </Button>
                                 </Card>
