@@ -76,7 +76,7 @@ class Sync extends Component {
                     })
                 },
                 //TODO: Scope URL to user 
-                url: `${rootURL}/data/location?state=za Zamfara&lga=za Anka&ward=za Bagega`
+                url: `${rootURL}/data/location?state=Zamfara&lga=Anka&ward=Bagega`
             },
             {
                 dataName:"metric names",
