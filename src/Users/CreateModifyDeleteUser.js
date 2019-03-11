@@ -143,7 +143,7 @@ class CreateModifyDeleteUser extends Component {
     }
 
     basicFeatures = () => {
-
+        console.log(this.state.mode);
         let basicFeatures = [
             "First Name",
             "Last Name",
@@ -170,22 +170,30 @@ class CreateModifyDeleteUser extends Component {
         switch (this.state.userInfo.UserType) {
             case "superadmin":
                 allUserTypeOptions = [
-                    <Select.Option value="superadmin">Super Admin</Select.Option>,
-                    <Select.Option value="admin">Admin</Select.Option>,
-                    <Select.Option value="user">User</Select.Option>
+                    <Select.Option key={1} value="superadmin">Super Admin</Select.Option>,
+                    <Select.Option key={2} value="admin">Admin</Select.Option>,
+                    <Select.Option key={3} value="user">User</Select.Option>
                 ];
                 break;
             case "admin":
                 allUserTypeOptions = [
-                    <Select.Option value="admin">Admin</Select.Option>,
-                    <Select.Option value="user">User</Select.Option>
+                    <Select.Option key={2} value="admin">Admin</Select.Option>,
+                    <Select.Option key={3} value="user">User</Select.Option>
                 ];
                 break;
             case "user":
                 allUserTypeOptions = [
-                    <Select.Option value="user">User</Select.Option>
+                    <Select.Option key={3} value="user">User</Select.Option>
                 ];
                 break;
+        }
+
+        if(this.state.mode == "new"){
+            allUserTypeOptions = [
+                <Select.Option key={1} value="superadmin">Super Admin</Select.Option>,
+                <Select.Option key={2} value="admin">Admin</Select.Option>,
+                <Select.Option key={3} value="user">User</Select.Option>
+            ];
         }
 
         //var loggedinUser = await user.user();
@@ -195,7 +203,7 @@ class CreateModifyDeleteUser extends Component {
             <Col>
                 <Divider />
                 {array}
-                <Select style={{ width: "100%" }} defaultValue={this.state.userInfo.UserType} placeholder="User Type" onChange={(e) => { this.handleUserTypeSelect(e) }} disabled={this.state.loggedInUser.Email == this.state.userInfo.Email ? true : this.state.disabled}>
+                <Select style={{ width: "100%" }} defaultValue={this.state.userInfo.UserType != null? this.state.userInfo.UserType : "user"} placeholder="User Type" onChange={(e) => { this.handleUserTypeSelect(e) }} disabled={this.state.loggedInUser.Email == this.state.userInfo.Email ? true : this.state.disabled}>
                     {allUserTypeOptions}
                 </Select>
                 <Divider />
