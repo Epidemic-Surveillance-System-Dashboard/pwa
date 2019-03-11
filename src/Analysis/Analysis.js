@@ -29,8 +29,34 @@ var initialMetric = {
     SetValue: "-3-1191|All Facility Attendance (Distribution)|Group",
     MetricValue: ""
 };
-var s ="Group";
-
+var s = "Group";
+var mockGroup = {
+    data: [
+        [
+            { Value: 1, Metric: "Metric1" },
+            { Value: 2, Metric: "Metric2" },
+            { Value: 3, Metric: "Metric3" },
+            { Value: 4, Metric: "Metric4" },
+        ],
+        [
+            { Value: 2, Metric: "Metric1" },
+            { Value: 3, Metric: "Metric2" },
+            { Value: 4, Metric: "Metric3" },
+            { Value: 5, Metric: "Metric4" },
+        ],
+        [
+            { Value: 3, Metric: "Metric1" },
+            { Value: 4, Metric: "Metric2" },
+            { Value: 5, Metric: "Metric3" },
+            { Value: 6, Metric: "Metric4" },
+        ],
+    ],
+    legendTitles: [
+        "Location 1",
+        "Location 2",
+        "Location 3"
+    ]
+}
 class Analysis extends Component {
 
     state = {
@@ -45,16 +71,14 @@ class Analysis extends Component {
         currentView: "table",
         selectedLocation: null,
         addingLocation: false,
-        Dates: { StartDate: new Date("2015-01-01T00:00:00.000Z"), EndDate: new Date("2019-01-01T00:00:00.000Z") }
+        Dates: { StartDate: new Date("2015-01-01T00:00:00.000Z"), EndDate: new Date("2019-01-01T00:00:00.000Z") },
+        arr: null
     }
     generateGraph = () => {
         console.log("--------------------");
         console.log(this.state.metricData);
         console.log(this.state.selectedLocation);
         console.log(this.state.Dates);
-        console.log(this.state.metricData);
-
-
         console.log("--------------------");
         this.setState({
             currentView: "graph"
@@ -70,8 +94,44 @@ class Analysis extends Component {
         })*/
 
     }
-    saveGraph = () => {
+    formatDate = (date) => {
+        //Format into YYYY-MM-DDT:00:00:00.000Z
+        let dateString = `${date.getUTCFullYear()}-${("0" + (date.getUTCMonth() + 1)).slice(-2)}-${("0" + date.getUTCDate()).slice(-2)}T00:00:00.000Z`
+        return dateString
+    }
 
+    getSimpleData = () => {
+        var tempData = [];
+
+
+        for (var key in this.state.data) {
+            console.log(this.state.data[key].Id);
+            console.log(this.state.metricData.Id);
+            console.log(this.state.Dates.StartDate);
+
+            console.log(this.formatDate(this.state.Dates.StartDate));
+            console.log(this.formatDate(this.state.Dates.EndDate));
+
+            db.Data.where(
+                ["FacilityId", "MetricId", 'Time']
+            ).between(
+                [this.state.data[key].Id, this.state.metricData.Id, this.formatDate(this.state.Dates.StartDate)],
+                [this.state.data[key].Id, this.state.metricData.Id, this.formatDate(this.state.Dates.EndDate)],
+                true,
+                true
+            )
+                .toArray().then((arr) => {
+                    this.setState({
+                        arr: arr
+                    })
+                    tempData.push(arr);
+                    console.log(tempData);
+
+                })
+        }
+    }
+
+    saveGraph = () => {
     }
 
     updateRawData = (rawData) => {
@@ -159,8 +219,7 @@ class Analysis extends Component {
                                     <Visualizer
                                         type={s}
                                         show={true}
-                                        data={null}
-
+                                        data={mockGroup}
                                     />
                                     <MetricSelector parentHandler={this.updateData}
                                         initialData={{
@@ -221,12 +280,17 @@ class Analysis extends Component {
                                     <Button type="primary" block onClick={this.generateGraph}>Generate Graph</Button>
                                 </div>
                                 <Card className="left" size="medium" title="Graph">
-                                    <Button onClick={this.saveGraph}>
+                                    <Button onClick={this.getSimpleData}>
                                         Save Graph <Icon type="save" />
                                     </Button>
                                 </Card>
                             </Col>
 
+                        </Row>
+                        <Row>
+                            {this.state.arr && this.state.arr.forEach((ele) => {
+                                return <h6>{ele.Value}</h6>
+                            })}
                         </Row>
                     </div>
                 }

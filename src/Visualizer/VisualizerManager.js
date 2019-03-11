@@ -103,6 +103,9 @@ class VisualizerManager extends Component {
      * dataType === "Metric"
      */
     getSimpleData = () =>{
+        console.log("**************");
+        console.log(this.state.Data);
+        console.log("**************");
         db.Data.where(
             ["FacilityId", "MetricId", 'Time']
         ).between(

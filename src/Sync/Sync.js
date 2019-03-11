@@ -15,8 +15,8 @@ class Sync extends Component {
     }
 
     startDownload = () =>{
-        //let rootURL = "https://essd-backend-dev.azurewebsites.net/api"
-        let rootURL = "http://localhost:9000/api"
+        let rootURL = "https://essd-backend-dev.azurewebsites.net/api"
+        //let rootURL = "http://localhost:9000/api"
         let downloads = [
             {
                 //Todo: scope the user requests as per the user's roles

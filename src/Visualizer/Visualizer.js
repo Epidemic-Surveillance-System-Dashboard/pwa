@@ -124,7 +124,7 @@ class Visualizer extends Component {
     }
 
     createMultipleBarSeries() {
-        let dataset = this.mockGroup
+        let dataset = this.props.data
         let result = {
             barSeries: [],
             legend: null,
@@ -137,7 +137,6 @@ class Visualizer extends Component {
             //Create the bars in each of the same metric
             let group = []
             for (let j = 0; j < dataset.data[i].length; j++){
-
                 group.push({
                     y: dataset.data[0][j].Metric, x: dataset.data[i][j].Value
                 })

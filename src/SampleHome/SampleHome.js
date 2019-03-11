@@ -63,7 +63,6 @@ class App extends Component {
                     </React.Fragment>
                 }
 
-                <CreateGraph/>
             </div>
         );
     }
