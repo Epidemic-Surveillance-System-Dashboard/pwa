@@ -189,18 +189,26 @@ class CreateModifyDeleteUser extends Component {
         }
 
         if(this.state.mode == "new"){
-            allUserTypeOptions = [
-                <Select.Option key={1} value="superadmin">Super Admin</Select.Option>,
-                <Select.Option key={2} value="admin">Admin</Select.Option>,
-                <Select.Option key={3} value="user">User</Select.Option>
-            ];
+            switch (this.state.loggedInUser.UserType) {
+                case "superadmin":
+                    allUserTypeOptions = [
+                        <Select.Option key={2} value="admin">Admin</Select.Option>,
+                        <Select.Option key={3} value="user">User</Select.Option>
+                    ];
+                    break;
+                case "admin":
+                    allUserTypeOptions = [
+                        <Select.Option key={3} value="user">User</Select.Option>
+                    ];
+                    break;
+            }
         }
 
         //var loggedinUser = await user.user();
         //console.log(loggedinUser);
 
         return (
-            <Col>
+            <div>{this.state.ready && <Col>
                 <Divider />
                 {array}
                 <Select style={{ width: "100%" }} defaultValue={this.state.userInfo.UserType != null? this.state.userInfo.UserType : "user"} placeholder="User Type" onChange={(e) => { this.handleUserTypeSelect(e) }} disabled={this.state.loggedInUser.Email == this.state.userInfo.Email ? true : this.state.disabled}>
@@ -214,8 +222,11 @@ class CreateModifyDeleteUser extends Component {
                     parentHandler={this.updateLocation}
                     showLocation={true}
                     initialLocation={{ Id: this.state.userInfo.LocationId, Type: this.state.userInfo.LocationType }}
-                    disabled={this.state.disabled} />
+                    disabled={this.state.loggedInUser.Email == this.state.userInfo.Email ? true : this.state.disabled}
+                    maxScope={{Type: this.state.loggedInUser.LocationType, Id: this.state.loggedInUser.LocationId}}/>
             </Col>
+            }
+            </div>
         )
 
     }
