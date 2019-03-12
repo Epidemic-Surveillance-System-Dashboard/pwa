@@ -358,7 +358,15 @@ class Dashboard extends Component {
             </List>
         )
     }
-
+    itemHasCompare = (item)=>{
+        for (let tag in item){
+            console.log(tag)
+            if (tag == "Compare"){
+                return true
+            } 
+        }
+        return false;
+    }
 
 
     renderGraphs = () => {
@@ -369,8 +377,7 @@ class Dashboard extends Component {
                 dataSource={this.state.graphData}
                 renderItem={(item, key) => (
                     <List.Item >
-
-                        {item.compare === true &&
+                        {!this.itemHasCompare(item)? (
                             <div>
                                 <List.Item.Meta
                                     title={item.Title}
@@ -384,19 +391,17 @@ class Dashboard extends Component {
                                     show={this.state.graphOpenCloseState[key].open}
                                 />
                                 {this.createViewRelatedButton(item)}
-                            </div>
-                        }
-                        {item.compare === false &&
-                            <div>
-                                <List.Item.Meta
-                                    title={item.Title} />
-                                <Visualizer>
-                                    type={item.graphType}
-                                    show={true}
-                                    data={item.data}
-                                </Visualizer>
-                            </div>
-                        }
+                            </div>) : (
+                                <div>
+                                    <List.Item.Meta
+                                        title={item.Title}
+                                        description={item.Dates.StartDate.toUTCString() + " - " + item.Dates.EndDate.toUTCString()} />
+                                    <Visualizer
+                                        type={item.GraphType}
+                                        show={true}
+                                        data={item.Data}>
+                                    </Visualizer>
+                                </div>)}
                     </List.Item>
                 )}>
             </List>

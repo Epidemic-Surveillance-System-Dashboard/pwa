@@ -48,6 +48,7 @@ class Analysis extends Component {
 
         } else if (this.state.metricData.Type == "Set") {
             this.createSetGraph(locationData);
+
         } else if (this.state.metricData.Type == "Group") {
 
         }
@@ -184,6 +185,29 @@ class Analysis extends Component {
         })
     }
     saveGraph = () => {
+        //Get Number of Dashboards Currently
+        db.Dashboard.toCollection().last().then(object => {
+            let key = 0
+            if (object) {
+                key = object.Id + 1
+            }
+            //Prepare Save Object
+            let newGraph = {
+                Id: key,
+                Title: "Compare - " + this.state.metricData.Name,
+                Locations: this.state.locationData,
+                Dates: this.state.Dates,
+                Data: this.state.data,
+                MetricData: this.state.metricData,
+                Compare: true,
+                GraphType: this.state.graphType
+            }
+
+            db.Dashboard.put(newGraph).then(() => {
+                console.log(newGraph);
+                message.success("Successfully saved to dashboard.")
+            })
+        })
     }
 
     updateRawData = (rawData) => {
@@ -286,10 +310,10 @@ class Analysis extends Component {
                         <Row className={``} gutter={16}>
                             <Col xs={{ span: 24, offset: 0 }} sm={{ span: 22, offset: 1 }} md={{ span: 18, offset: 3 }} lg={{ span: 16, offset: 4 }}>
                                 <Card className="left" size="medium" title="Select Date">
-                                       <div className = "center">
-                                           <DatePicker defaultValue={moment('2015-01-01', 'YYYY-MM-DD')}  placeholder="Start Date" onChange={(date, dateString) => {this.startDateOnChange(date, dateString)}}/> 
-                                           <DatePicker defaultValue={moment('2019-01-01', 'YYYY-MM-DD')}  placeholder="End Date" onChange={(date, dateString) => {this.endDateOnChage(date, dateString)}}/>
-                                       </div>                                    
+                                    <div className="center">
+                                        <DatePicker defaultValue={moment('2015-01-01', 'YYYY-MM-DD')} placeholder="Start Date" onChange={(date, dateString) => { this.startDateOnChange(date, dateString) }} />
+                                        <DatePicker defaultValue={moment('2019-01-01', 'YYYY-MM-DD')} placeholder="End Date" onChange={(date, dateString) => { this.endDateOnChage(date, dateString) }} />
+                                    </div>
                                 </Card>
                             </Col>
                         </Row>
@@ -363,7 +387,7 @@ class Analysis extends Component {
                                 Back
                             </Button>
                             <Divider />
-                            <Button onClick={this.getData}>
+                            <Button onClick={this.saveGraph}>
                                 Save Graph <Icon type="save" />
                             </Button>
 
