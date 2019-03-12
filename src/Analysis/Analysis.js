@@ -8,6 +8,7 @@ import MetricSelector from "../MetricSelector/MetricSelector"
 import Visualizer from '../Visualizer/Visualizer';
 import VisualizerManager from '../Visualizer/VisualizerManager'
 import db from '../Database/database';
+import moment from 'moment';
 
 const Option = Select.Option
 var dataDict = {};
@@ -352,13 +353,10 @@ class Analysis extends Component {
                         <Row className={``} gutter={16}>
                             <Col xs={{ span: 24, offset: 0 }} sm={{ span: 22, offset: 1 }} md={{ span: 18, offset: 3 }} lg={{ span: 16, offset: 4 }}>
                                 <Card className="left" size="medium" title="Select Date">
-                                    <div className="center" >
-                                        <Button type="primary" block onClick={this.addLocation}>Picker Date</Button>
-                                    </div>
                                     {this.state.data &&
                                        <div className = "center">
-                                           <DatePicker placeholder="Start Date" onChange={(date, dateString) => {this.startDateOnChange(date, dateString)}}/> 
-                                           <DatePicker placeholder="End Date" onChange={(date, dateString) => {this.endDateOnChage(date, dateString)}}/>
+                                           <DatePicker defaultValue={moment('2015-01-01', 'YYYY-MM-DD')}  placeholder="Start Date" onChange={(date, dateString) => {this.startDateOnChange(date, dateString)}}/> 
+                                           <DatePicker defaultValue={moment('2019-01-01', 'YYYY-MM-DD')}  placeholder="End Date" onChange={(date, dateString) => {this.endDateOnChage(date, dateString)}}/>
                                        </div>
                                     }
                                 </Card>
