@@ -164,12 +164,12 @@ class Visualizer extends Component {
         //Push all the legend names in
         this.resetColor()
         console.log(this.props.data.legendTitles);
-        let legendTitles = this.props.data.legendTitles;
-        for (let i = 0; i < legendTitles.length; i++){
-            legendTitles.push({ title: legendTitles[i], color: this.getNextColor() })
+        var legend = [];//this.props.data.legendTitles;
+        for (let i = 0; i < this.props.data.legendTitles.length; i++){
+            legend.push({ title: this.props.data.legendTitles[i], color: this.getNextColor() })
         }
 
-        result.legend = <DiscreteColorLegend orientation="horizontal" items={legendTitles} />
+        result.legend = <DiscreteColorLegend orientation="horizontal" items={legend} />
         return result
 
     }
