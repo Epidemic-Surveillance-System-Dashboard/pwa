@@ -63,8 +63,8 @@ class Analysis extends Component {
         metricData: null,
         initLoading: false,
         loading: false,
-        data: {
-        },//dataDict,
+        locationData: {
+        },//locationData,
         showTable: true,
         selectedUser: null,
         dataLoaded: false,
@@ -72,7 +72,9 @@ class Analysis extends Component {
         selectedLocation: null,
         addingLocation: false,
         Dates: { StartDate: new Date("2015-01-01T00:00:00.000Z"), EndDate: new Date("2019-01-01T00:00:00.000Z") },
-        arr: null
+        arr: null,
+        dataForSingleLocation: [],
+        dataForAllLocations: [],
     }
     generateGraph = () => {
         console.log("--------------------");
@@ -100,135 +102,196 @@ class Analysis extends Component {
         return dateString
     }
 
-    getData = () => {
-        var tempData = [];
 
-        for (var key in this.state.data) {
-            //this.queryComplexData(this.state.data[key], this.state.metricData);
-
-            console.log(this.state.data[key].Id);
-            console.log(this.state.metricData.Id);
-            console.log(this.state.metricData.Type);
-            console.log(this.formatDate(this.state.Dates.StartDate));
-            console.log(this.formatDate(this.state.Dates.EndDate));
-
-            if (this.state.metricData.Type == "Metric") {
-                //Normal Bar chart
-                db.Data.where(
-                    ["FacilityId", "MetricId", 'Time']
-                ).between(
-                    [this.state.data[key].Id, this.state.metricData.Id, this.formatDate(this.state.Dates.StartDate)],
-                    [this.state.data[key].Id, this.state.metricData.Id, this.formatDate(this.state.Dates.EndDate)],
-                    true,
-                    true
-                )
-                    .toArray().then((arr) => {
-                        this.setState({
-                            arr: arr
-                        })
-                        tempData.push(arr);
-                        console.log(tempData);
-
-                    })
-            } else if (this.state.metricData.Type == "Set") {
-
-            } else if (this.state.metricData.Type == "Group") {
-
-            }
-
-
-        }
-    }
     /*
-    queryComplexData = (location,metric) => {
-
-        //Build Query URL
-        let period = "month"
-
-        if (this.state.Dates.StartDate.getUTCFullYear() !== this.state.Dates.EndDate.getUTCFullYear()) period = "year"
-        let rootURL = `https://essd-backend-dev.azurewebsites.net/api/data/query?`
-        let url = rootURL +
-            "LocationId=" + location.Id
-            + "&LocationType=" + location.Type
-            + "&DataId=" + metric.Id
-            + "&DataType=" + metric.Type
-            + "&StartDate=" + this.formatDateForRemoteQuery(this.state.Dates.StartDate)
-            + "&EndDate=" + this.formatDateForRemoteQuery(this.state.Dates.EndDate)
-            + "&Period=" + period
-            + "&Distribution=" + metric.TotalOrDistribution
-
-        //Data comes back as an array
-        fetch(url, {}).then(stream => stream.json().then(result => {
-
-            if (period === "year") {
-
-                //TODO: Switch to vertical bar graph in the future
-                result.forEach(el => {
-                    el.Value = Number.parseFloat(el.Total)
-                    el.Metric = el.Yr
-                })
-
-                result.sort((a, b) => {
-                    return a.Yr - b.Yr
-                })
-
-                if (metric.TotalOrDistribution === "none" || metric.TotalOrDistribution=== "total") { //== total
-                    this.setState({
-                        ready: true,
-                        data: {
-                            data: result,
-                            name: this.state.Title
-                        },
-                        graphType: "Set",
-
+    dataPromises.push(this.getMetrics(this.state.metricData.Id)
+        .then((metrics) => {
+            metrics.forEach((metric) => {
+                this.getData(this.state.locationData[key].Id, metric.Id, this.formatDate(this.state.Dates.StartDate), this.formatDate(this.state.Dates.EndDate))
+                    .then((data) => {
+                        let sum = 0;
+                        data.forEach((point) => {
+                            sum += parseInt(point.Value);
+                        })
+                        dataForSingleLocation.push({
+                            Value: sum,
+                            Metric: metric.Name
+                        });
+                        console.log("Adding Data from current Metric: " + metric.Id);
                     })
-                } else {
+            })
+        }));
+        for (var key in this.state.locationData) {
+                console.log(this.state.locationData[key]);
+                console.log(this.formatDate(this.state.Dates.StartDate));
+                console.log(this.formatDate(this.state.Dates.EndDate));
+                legend.push(this.state.locationData[key].Name);
 
-                }
-            } else {
-                //Period === month
-                let graphType = metric.TotalOrDistributionn === "distribution" ? "Set" : "Metric"
-
-                let groupName = "MetricName"
-                if (result.length > 0) groupName = result[0].hasOwnProperty("MetricName") ? "MetricName" : "SetName"
-
-                let titleIndex = undefined
-
-                for (let i = 0; i < result.length; i++) {
-                    let d = new Date(this.state.Dates.StartDate)
-                    d.setUTCMonth(result[i].Month - 1)
-                    result[i].Date = d
-                    result[i].Value = Number.parseInt(result[i].Total)
-                    if (graphType === "Set") {
-                        if (result[i][groupName] === this.state.Title) titleIndex = i
-                        result[i].Metric = result[i][groupName].replace(`${this.state.Title}, `, "")
-                    } else {
-                        result[i].Metric = result[i][groupName]
+                if (this.state.metricData.Type == "Metric") {/*
+                    //Normal Bar chart
+                    db.Data.where(
+                        ["FacilityId", "MetricId", 'Time']
+                    ).between(
+                        [this.state.locationData[key].Id, this.state.metricData.Id, this.formatDate(this.state.Dates.StartDate)],
+                        [this.state.locationData[key].Id, this.state.metricData.Id, this.formatDate(this.state.Dates.EndDate)],
+                        true,
+                        true
+                    )
+                        .toArray().then((arr) => {
+                            this.setState({
+                                arr: arr
+                            })
+                            dataForAllLocations.push(arr);
+                            console.log(dataForAllLocations);
+    
+                        })
+                    } else if (this.state.metricData.Type == "Set") {
+                        dataPromises.push(this.getMetricsPromise(this.state.metricData.Id));
+                    } else if (this.state.metricData.Type == "Group") {
+    
                     }
+    
+    
                 }
+    db.Metrics.where("parentId").equalsIgnoreCase(this.state.metricData.Id)
+        .toArray().then((arr) => {
+            metricsForData = arr;
+ 
+            console.log("Metrics from given set: " + this.state.metricData.Id);
+            //Get data for each metric
+            metricsForData.forEach((metric) => {
+                dataPromises.push(new Promise((resolve, reject) => {
+                    db.Data.where(
+                        ["FacilityId", "MetricId", 'Time']
+                    ).between(
+                        [this.state.locationData[key].Id, metric.Id, this.formatDate(this.state.Dates.StartDate)],
+                        [this.state.locationData[key].Id, metric.Id, this.formatDate(this.state.Dates.EndDate)],
+                        true,
+                        true
+                    )
+                        .toArray().then((arr) => {
+                            let sum = 0;
+                            arr.forEach((point) => {
+                                sum += parseInt(point.Value);
+                            })
+                            dataForSingleLocation.push({
+                                Value: sum,
+                                Metric: metric.Name
+                            });
+                            console.log("Adding Data from current Metric: " + metric.Id);
+                            resolve(true);
+                        })
+                }));
+            })
+        })
+        
+        
+        Promise.all(dataPromises).then(function (values) {
+            dataForAllLocations.push(dataForSingleLocation);
+            console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+            console.log(values);
+            console.log(dataForAllLocations);
+            dataForSingleLocation = []; //empties data
+            dataPromises = []; //empties promises
+        });
+        */
 
-                if (titleIndex !== undefined) {
-                    result.splice(titleIndex, 1)
-                }
+    getData = () => {
+        var dataForAllLocations = [];
+        var dataPromises = []; //for Set
+        var dataForSingleLocation = [];
+        var metricsForData = [];
+        var legend = [];
+        var locationData = [];
+        //convert to array
+        for (var key in this.state.locationData) {
+            locationData.push(this.state.locationData[key]);
+        }
 
-                this.setState({
-                    ready: true,
-                    graphType: graphType,
-                    data: {
-                        data: result,
-                        name: this.state.Title
-                    }
-                })
-
-            }
-
-            if (this.props.ParentHandler) this.props.ParentHandler(result)
-
-            //TODO: store data locally
-        }))
+        this.getMetricsPromise(this.state.metricData.Id).then((metrics) => {
+            let context = {
+                dataForAllLocations: dataForAllLocations,
+                metrics: metrics
+            };
+            this.forEachPromise(locationData, this.getLocationPromise, context).then(() => {
+                console.log("donezo")
+            })
+        })
 
     }
-*/
+    logItem = (item) => {
+        return new Promise((resolve, reject) => {
+            process.nextTick(() => {
+                console.log(item);
+                resolve();
+            })
+        });
+    }
+
+
+    forEachPromise = (items, fn, context) => {
+        return items.reduce(function (promise, item) {
+            return promise.then(function () {
+                return fn(item, context);
+            });
+        }, Promise.resolve());
+    }
+
+    getLocationPromise = (location, context) => {
+        return new Promise((resolve, reject) => {
+            console.log("getLocationPromise------------------");
+            console.log("Metrics:");
+            console.log(context.metrics);
+            let context2 = {
+                locationId: location.Id,
+                dataForAllLocations: context.dataForAllLocations,
+                dataForSingleLocation: []
+            }
+            this.forEachPromise(context.metrics, this.getDataPromise, context2).then(() => {
+                console.log('done location');
+                context.dataForAllLocations.push(context2.dataForSingleLocation);
+                console.log(context.dataForAllLocations);
+            }).then(() => {
+                resolve(true);
+            });
+        })
+    }
+    getMetricsPromise = (setId) => {
+        console.log("getMetricPromise------------------");
+        return db.Metrics.where("parentId").equalsIgnoreCase(setId).toArray();
+    }
+    getDataPromise = (metric, context) => {
+        return new Promise((resolve, reject) => {
+            console.log("getDataPromise------------------");
+            console.log(metric);
+            console.log(context);
+            console.log(this.state.Dates.StartDate);
+            console.log(this.state.Dates.EndDate);
+
+            db.Data.where(
+                ["FacilityId", "MetricId", 'Time']
+            ).between(
+                [context.locationId, metric.Id, this.formatDate(this.state.Dates.StartDate)],
+                [context.locationId, metric.Id, this.formatDate(this.state.Dates.EndDate)],
+                true,
+                true
+            ).toArray().then((arr) => {
+                console.log(arr);
+
+                let sum = 0;
+                arr.forEach((point) => {
+                    sum += parseInt(point.Value);
+                })
+                context.dataForSingleLocation.push({
+                    Value: sum,
+                    Metric: metric.Name
+                });
+                console.log("Adding Data from current Metric: " + metric.Id +", value: " + sum);
+                resolve(true);
+            })
+
+        })
+    }
     saveGraph = () => {
     }
 
@@ -243,7 +306,7 @@ class Analysis extends Component {
     }
     updateLocation = (location, save) => {
         if (save) {
-            let tempData = this.state.data;
+            let tempData = this.state.locationData;
             if (!this.state.addingLocation) {
                 delete tempData[this.state.selectedLocation.Type + "-" + this.state.selectedLocation.Id];
             }
@@ -256,7 +319,7 @@ class Analysis extends Component {
             console.log(location);
 
             message.success('Location Saved');
-            this.setState({ data: tempData });
+            this.setState({ locationData: tempData });
         } else {
             message.warning('Location Not Saved');
         }
@@ -264,9 +327,9 @@ class Analysis extends Component {
             currentView: "table"
         })
         console.log(save)/*
-        for (var a in  this.state.data){
+        for (var a in  this.state.locationData){
             console.log(a);
-            console.log(this.state.data[a]);
+            console.log(this.state.locationData[a]);
         }*/
         console.log(location);
         //this.setState({ location: location })
@@ -317,7 +380,7 @@ class Analysis extends Component {
                                     <Visualizer
                                         type={s}
                                         show={true}
-                                        data={mockGroup}
+                                        locationData={mockGroup}
                                     />
                                     <MetricSelector parentHandler={this.updateData}
                                         initialData={{
@@ -337,7 +400,7 @@ class Analysis extends Component {
                                     <div class="center" >
                                         <Button type="primary" block onClick={this.addLocation}>Add Location</Button>
                                     </div>
-                                    {this.state.data &&
+                                    {this.state.locationData &&
                                         <List
                                             itemLayout="horizontal"
                                             size="large"
@@ -347,7 +410,7 @@ class Analysis extends Component {
                                                 },
                                                 pageSize: 4,
                                             }}
-                                            dataSource={Object.values(this.state.data)}
+                                            dataSource={Object.values(this.state.locationData)}
                                             renderItem={item => (
                                                 <List.Item
                                                     key={item.facility}
@@ -378,7 +441,7 @@ class Analysis extends Component {
                                     <Button type="primary" block onClick={this.generateGraph}>Generate Graph</Button>
                                 </div>
                                 <Card className="left" size="medium" title="Graph">
-                                    <Button onClick={this.getSimpleData}>
+                                    <Button onClick={this.getData}>
                                         Save Graph <Icon type="save" />
                                     </Button>
                                 </Card>
