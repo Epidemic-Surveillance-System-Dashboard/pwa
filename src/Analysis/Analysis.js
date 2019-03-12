@@ -29,34 +29,6 @@ var initialMetric = {
     SetValue: "-3-1191|All Facility Attendance (Distribution)|Group",
     MetricValue: ""
 };
-var s = "Group";
-var mockGroup = {
-    data: [
-        [
-            { Value: 1, Metric: "Metric1" },
-            { Value: 2, Metric: "Metric2" },
-            { Value: 3, Metric: "Metric3" },
-            { Value: 4, Metric: "Metric4" },
-        ],
-        [
-            { Value: 2, Metric: "Metric1" },
-            { Value: 3, Metric: "Metric2" },
-            { Value: 4, Metric: "Metric3" },
-            { Value: 5, Metric: "Metric4" },
-        ],
-        [
-            { Value: 3, Metric: "Metric1" },
-            { Value: 4, Metric: "Metric2" },
-            { Value: 5, Metric: "Metric3" },
-            { Value: 6, Metric: "Metric4" },
-        ],
-    ],
-    legendTitles: [
-        "Location 1",
-        "Location 2",
-        "Location 3"
-    ]
-}
 class Analysis extends Component {
 
     state = {
@@ -75,6 +47,9 @@ class Analysis extends Component {
         arr: null,
         dataForSingleLocation: [],
         dataForAllLocations: [],
+        showGraph : false,
+        graphType : "Group",
+        data :null
     }
     generateGraph = () => {
         console.log("--------------------");
@@ -85,16 +60,6 @@ class Analysis extends Component {
         this.setState({
             currentView: "graph"
         })
-        /*
-        db.Data.toArray().then(arr => {
-            console.log(arr);
-            let dataDict = {};
-            arr.forEach(ele => {
-                dataDict[ele.Id] = ele;
-            });
-
-        })*/
-
     }
     formatDate = (date) => {
         //Format into YYYY-MM-DDT:00:00:00.000Z
@@ -211,23 +176,25 @@ class Analysis extends Component {
         this.getMetricsPromise(this.state.metricData.Id).then((metrics) => {
             let context = {
                 dataForAllLocations: dataForAllLocations,
-                metrics: metrics
+                metrics: metrics,
+                locations: legend
             };
             this.forEachPromise(locationData, this.getLocationPromise, context).then(() => {
-                console.log("donezo")
+                console.log(context.locations);
+                console.log(context.dataForAllLocations);
+                this.setState({
+                    showGraph : true,
+                    currentView :"graph",
+                    data: {
+                        data: context.dataForAllLocations,
+                        legendTitles: context.locations
+                    }
+                });
+                console.log("donezo");
             })
         })
 
     }
-    logItem = (item) => {
-        return new Promise((resolve, reject) => {
-            process.nextTick(() => {
-                console.log(item);
-                resolve();
-            })
-        });
-    }
-
 
     forEachPromise = (items, fn, context) => {
         return items.reduce(function (promise, item) {
@@ -243,14 +210,14 @@ class Analysis extends Component {
             console.log("Metrics:");
             console.log(context.metrics);
             let context2 = {
-                locationId: location.Id,
+                location: location,
                 dataForAllLocations: context.dataForAllLocations,
                 dataForSingleLocation: []
             }
             this.forEachPromise(context.metrics, this.getDataPromise, context2).then(() => {
                 console.log('done location');
                 context.dataForAllLocations.push(context2.dataForSingleLocation);
-                console.log(context.dataForAllLocations);
+                context.locations.push(context2.location.Name)
             }).then(() => {
                 resolve(true);
             });
@@ -271,8 +238,8 @@ class Analysis extends Component {
             db.Data.where(
                 ["FacilityId", "MetricId", 'Time']
             ).between(
-                [context.locationId, metric.Id, this.formatDate(this.state.Dates.StartDate)],
-                [context.locationId, metric.Id, this.formatDate(this.state.Dates.EndDate)],
+                [context.location.Id, metric.Id, this.formatDate(this.state.Dates.StartDate)],
+                [context.location.Id, metric.Id, this.formatDate(this.state.Dates.EndDate)],
                 true,
                 true
             ).toArray().then((arr) => {
@@ -395,11 +362,6 @@ class Analysis extends Component {
                         <Row className={``} gutter={16}>
                             <Col xs={{ span: 24, offset: 0 }} sm={{ span: 22, offset: 1 }} md={{ span: 18, offset: 3 }} lg={{ span: 16, offset: 4 }}>
                                 <Card className="left" size="medium" title="Select Metric">
-                                    <Visualizer
-                                        type={s}
-                                        show={true}
-                                        locationData={mockGroup}
-                                    />
                                     <MetricSelector parentHandler={this.updateData}
                                         initialData={{
                                             GroupValue: "1191|Facility Attendance|Group",
@@ -505,17 +467,11 @@ class Analysis extends Component {
                         <Button onClick={this.showTable}>
                             Back
                         </Button>
-
-                        <VisualizerManager
-                            Title={this.state.metricData !== undefined && this.state.metricData.Name !== undefined ? this.state.metricData.Name.split("(")[0] : ""}
-                            Location={this.state.selectedLocation} //{Name, Id, Type}
-                            Data={this.state.metricData} // {Id, Type, TotalOrDistribution="total|none|distribution"}
-                            Dates={this.state.Dates}
-                            ParentHandler={this.updateRawData} /*
-                            {...item} //LocationId, Location, etc...
-                            show={this.state.graphOpenCloseState[key].open}*/
-                        />
-
+                        <Visualizer 
+                                type = {this.state.graphType}
+                                show = {this.state.showGraph}
+                                data = {this.state.data}
+                            />
                     </div>
                 }
             </div>
