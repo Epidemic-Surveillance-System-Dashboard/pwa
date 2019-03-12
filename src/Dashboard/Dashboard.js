@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 
-import {Table, Button,List, Card, Row, Col, Radio} from 'antd'
+import { Table, Button, List, Card, Row, Col, Radio } from 'antd'
 
 import '../../node_modules/react-vis/dist/style.css'
 import './Dashboard.css'
@@ -8,6 +8,7 @@ import './Dashboard.css'
 import VisualizerManager from '../Visualizer/VisualizerManager';
 import CreateGraph from '../Graph/CreateGraph'
 import db from '../Database/database';
+import Visualizer from '../Visualizer/Visualizer';
 
 let graphExamples = [
     // {
@@ -150,12 +151,12 @@ class Dashboard extends Component {
         showGraphs: true,
         graphOpenCloseState: null,
         graphDataLoaded: false,
-        related : null,
-        relatedGraphs : []
+        related: null,
+        relatedGraphs: []
     }
 
-    fullSizeOrListChanged = (e) =>{
-        this.setState({fullSize: e.target.value === "0" ? false: true})
+    fullSizeOrListChanged = (e) => {
+        this.setState({ fullSize: e.target.value === "0" ? false : true })
     }
 
     reportCardOrGraphsChanged = (e) => {
@@ -205,22 +206,22 @@ class Dashboard extends Component {
         )
     }
 
-    getFirstLocation = (object) =>{
+    getFirstLocation = (object) => {
         let keys = Object.keys(object)
-        if (keys.length > 0){
+        if (keys.length > 0) {
             return object[keys[0]]
         }
     }
 
-    loadGraphsFromDB = () =>{
-        db.Dashboard.toArray().then(arr =>{
+    loadGraphsFromDB = () => {
+        db.Dashboard.toArray().then(arr => {
             //Create a record of all open/close states for the graphs
             let visibility = {}
-            for (let i = 0; i < arr.length; i++){
-                visibility[i] = {open: true, showInFilter: true}
+            for (let i = 0; i < arr.length; i++) {
+                visibility[i] = { open: true, showInFilter: true }
             }
 
-            visibility["collapseOrExpandText"] = {text: "Collapse All"}
+            visibility["collapseOrExpandText"] = { text: "Collapse All" }
 
             this.setState({
                 graphData: arr,
@@ -230,42 +231,42 @@ class Dashboard extends Component {
         })
     }
 
-    componentDidMount(){
+    componentDidMount() {
         this.loadGraphsFromDB()
     }
 
 
     findAllGraphs = (item) => {
-        return new Promise((resolve) =>{
+        return new Promise((resolve) => {
             let callback = (data) => {
-                resolve (data) 
+                resolve(data)
             }
 
-            switch(item.Data.Type){
+            switch (item.Data.Type) {
                 case "Metric":
-                    db.Metrics.toArray(callback) 
-                break
+                    db.Metrics.toArray(callback)
+                    break
                 case "Set":
-                    db.Sets.toArray(callback) 
-                break
+                    db.Sets.toArray(callback)
+                    break
                 case "Group":
-                    db.Sets.toArray(callback) 
-                break
+                    db.Sets.toArray(callback)
+                    break
                 default:
                     //
-                break; 
-            }                  
+                    break;
+            }
         })
     }
 
     findRelatedGraphs = (item) => {
-       return this.findAllGraphs(item).then((allData) => {
+        return this.findAllGraphs(item).then((allData) => {
             let relatedFound = [];
             let parentId = ""
             if (item.Data.Type === "Group") {
                 parentId = item.Data.Id
             } else {
-                allData.forEach(function(metricData) {
+                allData.forEach(function (metricData) {
                     if (metricData.Id === item.Data.Id) {
                         parentId = metricData.parentId
                         return
@@ -273,37 +274,37 @@ class Dashboard extends Component {
                 })
             }
 
-            allData.forEach(function(metricData) {
+            allData.forEach(function (metricData) {
                 if (metricData.parentId === parentId) {
                     if (metricData.Id != item.Data.Id) {
                         relatedFound.push(metricData)
                     }
                 }
-            })            
-            return relatedFound;        
-        })         
+            })
+            return relatedFound;
+        })
     }
 
     toggleViewRelated = async (item) => {
         if (this.state.currentView === "related") {
             this.setState({
-                currentView : ""
-            })            
+                currentView: ""
+            })
         } else {
             this.setState({
-                currentView : "related"
+                currentView: "related"
             })
 
             var relatedFound = await this.findRelatedGraphs(item);
-            
+
             this.processFoundData(relatedFound, item)
-            
+
         }
     }
 
     createViewRelatedButton = (item) => {
-        return(
-            <Button onClick = {() => {this.toggleViewRelated(item)}}>View Related</Button>
+        return (
+            <Button onClick={() => { this.toggleViewRelated(item) }}>View Related</Button>
         )
     }
 
@@ -311,7 +312,7 @@ class Dashboard extends Component {
         let processedRelatedData = []
         console.log(item)
         console.log(relatedFound)
-        relatedFound.forEach(function(data){
+        relatedFound.forEach(function (data) {
             var temp = JSON.parse(JSON.stringify(item))
             temp.Title = data.Name
             if (item.Data.Type === "Set" || item.Data.Type === "Group") {
@@ -326,31 +327,31 @@ class Dashboard extends Component {
             }
             temp.Data.Id = data.Id
             temp.Dates.StartDate = item.Dates.StartDate
-            temp.Dates.EndDate  = item.Dates.EndDate
+            temp.Dates.EndDate = item.Dates.EndDate
             temp.RawData = null
             console.log("temp")
             console.log(temp)
             processedRelatedData.push(temp)
         })
         this.setState({
-            relatedGraphs : processedRelatedData
-        },()=> {console.log(this.state.relatedGraphs)})
-    }    
+            relatedGraphs: processedRelatedData
+        }, () => { console.log(this.state.relatedGraphs) })
+    }
 
-    renderRelated = () => {          
+    renderRelated = () => {
         return (
             <List
                 itemLayout="vertical"
-                dataSource = {this.state.relatedGraphs}
-                renderItem = {(item1, key) =>(
+                dataSource={this.state.relatedGraphs}
+                renderItem={(item1, key) => (
                     <List.Item >
                         <List.Item.Meta
-                        title = {item1.Title}
-                        description = {item1.Locations.Name}/>
+                            title={item1.Title}
+                            description={item1.Locations.Name} />
                         <VisualizerManager
                             {...item1} //LocationId, Location, etc...
-                            Location = {this.getFirstLocation(item1.Locations)}
-                            // show = {true}
+                            Location={this.getFirstLocation(item1.Locations)}
+                        // show = {true}
                         />
                     </List.Item>
                 )}>
@@ -360,26 +361,42 @@ class Dashboard extends Component {
 
 
 
-    renderGraphs = () =>{
+    renderGraphs = () => {
         if (this.state.graphDataLoaded !== true) return null
         return (
             <List
                 itemLayout="vertical"
-                dataSource = {this.state.graphData}
-                renderItem = {(item, key) =>(
+                dataSource={this.state.graphData}
+                renderItem={(item, key) => (
                     <List.Item >
-                        <List.Item.Meta
-                        title = {item.Title}
-                        description = {this.getFirstLocation(item.Locations).Name}/>
-                        {this.createCollapseExpandButton(key)}
 
-                        <VisualizerManager
-                            {...item} //LocationId, Location, etc...
-                            Location = {this.getFirstLocation(item.Locations)}
+                        {item.compare === true &&
+                            <div>
+                                <List.Item.Meta
+                                    title={item.Title}
+                                    description={this.getFirstLocation(item.Locations).Name} />
+                                {this.createCollapseExpandButton(key)}
 
-                            show = {this.state.graphOpenCloseState[key].open}
-                        />
-                        {this.createViewRelatedButton(item)}
+                                <VisualizerManager
+                                    {...item} //LocationId, Location, etc...
+                                    Location={this.getFirstLocation(item.Locations)}
+
+                                    show={this.state.graphOpenCloseState[key].open}
+                                />
+                                {this.createViewRelatedButton(item)}
+                            </div>
+                        }
+                        {item.compare === false &&
+                            <div>
+                                <List.Item.Meta
+                                    title={item.Title} />
+                                <Visualizer>
+                                    type={item.graphType}
+                                    show={true}
+                                    data={item.data}
+                                </Visualizer>
+                            </div>
+                        }
                     </List.Item>
                 )}>
             </List>
@@ -387,12 +404,12 @@ class Dashboard extends Component {
 
     }
 
-    showHideCreateGraphUI = () =>{
+    showHideCreateGraphUI = () => {
         this.setState({
             showGraphs: !this.state.showGraphs
-        }, () =>{
-            if (this.state.showGraphs){
-                window.dispatchEvent(new Event ('resize'));
+        }, () => {
+            if (this.state.showGraphs) {
+                window.dispatchEvent(new Event('resize'));
             }
         })
     }
@@ -404,89 +421,89 @@ class Dashboard extends Component {
                     this.state.currentView === "related" &&
                     <div>
                         <Row className="rowVMarginTopSm" gutter={-1}>
-                            <Col className = "left" xs={{span: 16, offset:0}} sm = {{span:14, offset:1}} md = {{span: 10, offset:3}} lg = {{span: 8, offset:4}}>
-                                <h3>Related Graphs</h3>                            
+                            <Col className="left" xs={{ span: 16, offset: 0 }} sm={{ span: 14, offset: 1 }} md={{ span: 10, offset: 3 }} lg={{ span: 8, offset: 4 }}>
+                                <h3>Related Graphs</h3>
                             </Col>
-                            <Col className = "right" span={8}>
-                            <Button onClick = {() => {this.toggleViewRelated()}}>Back</Button>
+                            <Col className="right" span={8}>
+                                <Button onClick={() => { this.toggleViewRelated() }}>Back</Button>
                             </Col>
                         </Row>
-                        <div className = {this.state.showGraphs ? "" : "displayNone"}>                            
-                            <Row className={`rowVMarginSm`} gutter= {16}>
-                                <Col xs={{ span: 24, offset: 0 }} sm = {{span: 22, offset:1}} md={{ span: 18, offset: 3 }} lg = {{span: 16, offset: 4}}>
-                                    <Card className = "left" size ="small">
+                        <div className={this.state.showGraphs ? "" : "displayNone"}>
+                            <Row className={`rowVMarginSm`} gutter={16}>
+                                <Col xs={{ span: 24, offset: 0 }} sm={{ span: 22, offset: 1 }} md={{ span: 18, offset: 3 }} lg={{ span: 16, offset: 4 }}>
+                                    <Card className="left" size="small">
                                         {this.renderRelated()}
                                     </Card>
                                 </Col>
-                            </Row>     
+                            </Row>
                         </div>
                     </div>
-                    
+
                 }
                 {
-            this.state.currentView != "related" &&
-            <div className="center">
-                <Row className={`rowVMarginSm rowVMarginTopSm`}>
-                    <Col xs={{ span: 24, offset: 0 }} md={{ span: 12, offset: 6 }} lg = {{span: 8, offset: 8}}>
-                        <Radio.Group defaultValue="0" buttonStyle="solid" onChange = {this.reportCardOrGraphsChanged}>
-                        </Radio.Group>
-                    </Col>
-                </Row>
-                <div className = "gutterOverflowMask">
-                    <div className={`${!this.state.reportCard ? "displayNone" : ""}`}>
-                        <Row className={`rowVMarginSm`}>
-                            <h3>Last Month's Performance</h3>
-                        </Row>
-                        <Row className={`rowVMarginSm`}>
-                            <Col xs={{ span: 24, offset: 0 }} md={{ span: 18, offset: 3 }} lg={{ span: 12, offset: 6 }}>
-                                <Table
-                                    columns={metricTableColumns}
-                                    dataSource={metricData}
-                                    pagination={false} />
+                    this.state.currentView != "related" &&
+                    <div className="center">
+                        <Row className={`rowVMarginSm rowVMarginTopSm`}>
+                            <Col xs={{ span: 24, offset: 0 }} md={{ span: 12, offset: 6 }} lg={{ span: 8, offset: 8 }}>
+                                <Radio.Group defaultValue="0" buttonStyle="solid" onChange={this.reportCardOrGraphsChanged}>
+                                </Radio.Group>
                             </Col>
-                        </Row>    
-                    </div>    
-                    <div className={`${this.state.reportCard ? "displayNone" : ""}`}>
+                        </Row>
+                        <div className="gutterOverflowMask">
+                            <div className={`${!this.state.reportCard ? "displayNone" : ""}`}>
+                                <Row className={`rowVMarginSm`}>
+                                    <h3>Last Month's Performance</h3>
+                                </Row>
+                                <Row className={`rowVMarginSm`}>
+                                    <Col xs={{ span: 24, offset: 0 }} md={{ span: 18, offset: 3 }} lg={{ span: 12, offset: 6 }}>
+                                        <Table
+                                            columns={metricTableColumns}
+                                            dataSource={metricData}
+                                            pagination={false} />
+                                    </Col>
+                                </Row>
+                            </div>
+                            <div className={`${this.state.reportCard ? "displayNone" : ""}`}>
 
-                        {/* UI For Viewing Graphs */}
-                        {
-                            this.state.graphDataLoaded &&
-                            <div className = {this.state.showGraphs ? "" : "displayNone"}>
-                            <Row className={`rowVMarginSm`}>
-                                <Col className = "left" xs={{ span: 12, offset: 0 }} sm = {{span: 11, offset:1}} md={{ span: 9, offset: 3 }} lg = {{span: 8, offset: 4}}>
-                                    <Button onClick = {this.toggleAllGraphs}>{this.state.graphOpenCloseState["collapseOrExpandText"].text}</Button>
-                                </Col>
-                                <Col className = "right" xs={{ span: 12, offset: 0 }} sm = {{span: 11, offset:0}} md={{ span: 9, offset: 0 }} lg = {{span: 8, offset: 0}}>
-                                    <Button icon="plus" type = "primary" onClick = {this.showHideCreateGraphUI}>Add Graph</Button>
-                                </Col>
-                            </Row>
-                            <Row className={`rowVMarginSm`} gutter= {16}>
-                                <Col xs={{ span: 24, offset: 0 }} sm = {{span: 22, offset:1}} md={{ span: 18, offset: 3 }} lg = {{span: 16, offset: 4}}>
-                                    <Card className = "left" size ="small">
-                                        {this.renderGraphs()}
-                                    </Card>
-                                </Col>
-                            </Row>     
+                                {/* UI For Viewing Graphs */}
+                                {
+                                    this.state.graphDataLoaded &&
+                                    <div className={this.state.showGraphs ? "" : "displayNone"}>
+                                        <Row className={`rowVMarginSm`}>
+                                            <Col className="left" xs={{ span: 12, offset: 0 }} sm={{ span: 11, offset: 1 }} md={{ span: 9, offset: 3 }} lg={{ span: 8, offset: 4 }}>
+                                                <Button onClick={this.toggleAllGraphs}>{this.state.graphOpenCloseState["collapseOrExpandText"].text}</Button>
+                                            </Col>
+                                            <Col className="right" xs={{ span: 12, offset: 0 }} sm={{ span: 11, offset: 0 }} md={{ span: 9, offset: 0 }} lg={{ span: 8, offset: 0 }}>
+                                                <Button icon="plus" type="primary" onClick={this.showHideCreateGraphUI}>Add Graph</Button>
+                                            </Col>
+                                        </Row>
+                                        <Row className={`rowVMarginSm`} gutter={16}>
+                                            <Col xs={{ span: 24, offset: 0 }} sm={{ span: 22, offset: 1 }} md={{ span: 18, offset: 3 }} lg={{ span: 16, offset: 4 }}>
+                                                <Card className="left" size="small">
+                                                    {this.renderGraphs()}
+                                                </Card>
+                                            </Col>
+                                        </Row>
+                                    </div>
+                                }
+
+
+                                {/* UI For Creating Graphs */}
+                                <div className={this.state.showGraphs ? "displayNone" : ""}>
+                                    <Row className="rowVMarginSm">
+                                        <Col><Button icon="caret-left" onClick={this.showHideCreateGraphUI}>Back</Button></Col>
+
+                                    </Row>
+                                    <Row className="rowVMarginSm">
+                                        <CreateGraph
+                                            ParentHandler={this.loadGraphsFromDB}
+                                        />
+                                    </Row>
+
+                                </div>
+                            </div>
                         </div>
-                        }
-                        
-                        
-                        {/* UI For Creating Graphs */}
-                        <div className = {this.state.showGraphs ? "displayNone" : ""}>
-                            <Row className = "rowVMarginSm">
-                                <Col><Button icon = "caret-left" onClick = {this.showHideCreateGraphUI}>Back</Button></Col>
-                                
-                            </Row>
-                            <Row className = "rowVMarginSm">
-                                <CreateGraph
-                                ParentHandler = {this.loadGraphsFromDB}
-                                />
-                            </Row>
-                            
-                        </div>
-                    </div>    
-                </div>
-            </div>
+                    </div>
                 }
             </div>
         );

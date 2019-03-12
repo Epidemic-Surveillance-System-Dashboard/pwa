@@ -127,7 +127,7 @@ class Visualizer extends Component {
     }
 
     createMultipleBarSeries() {
-        let data = this.mockGroup.data
+        let data = this.props.data.data || this.mockGroup.data 
 
         //Update Default Padding
         let maxLength = 0
@@ -163,12 +163,13 @@ class Visualizer extends Component {
 
         //Push all the legend names in
         this.resetColor()
-        let legendTitles = []
-        for (let i = 0; i < legendTitles.length; i++){
-            legendTitles.push({ title: legendTitles[i], color: this.getNextColor() })
+        console.log(this.props.data.legendTitles);
+        var legend = [];//this.props.data.legendTitles;
+        for (let i = 0; i < this.props.data.legendTitles.length; i++){
+            legend.push({ title: this.props.data.legendTitles[i], color: this.getNextColor() })
         }
 
-        result.legend = <DiscreteColorLegend orientation="horizontal" items={legendTitles} />
+        result.legend = <DiscreteColorLegend orientation="horizontal" items={legend} />
         return result
 
     }

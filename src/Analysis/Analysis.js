@@ -10,62 +10,19 @@ import VisualizerManager from '../Visualizer/VisualizerManager'
 import db from '../Database/database';
 import moment from 'moment';
 
-const Option = Select.Option
-var dataDict = {};
-for (let i = 0; i < 20; i++) {
-    var color = '#' + Math.floor(Math.random() * 16777215).toString(16);
-    var dataPoint = {
-        color: color,
-        facility: `facility ${i}`,
-        avatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-        state: `state ${i}`,
-        LGA: `LGA ${i}`,
-        ward: `Ward ${i}`
-    };
-    var dataList = [];
-    dataDict[dataPoint.facility + dataPoint.ward + dataPoint.LGA + dataPoint.state] = dataPoint;
-}
 var initialMetric = {
     GroupValue: "1191|Facility Attendance|Group",
     SetValue: "-3-1191|All Facility Attendance (Distribution)|Group",
     MetricValue: ""
 };
-var s = "Group";
-var mockGroup = {
-    data: [
-        [
-            { Value: 1, Metric: "Metric1" },
-            { Value: 2, Metric: "Metric2" },
-            { Value: 3, Metric: "Metric3" },
-            { Value: 4, Metric: "Metric4" },
-        ],
-        [
-            { Value: 2, Metric: "Metric1" },
-            { Value: 3, Metric: "Metric2" },
-            { Value: 4, Metric: "Metric3" },
-            { Value: 5, Metric: "Metric4" },
-        ],
-        [
-            { Value: 3, Metric: "Metric1" },
-            { Value: 4, Metric: "Metric2" },
-            { Value: 5, Metric: "Metric3" },
-            { Value: 6, Metric: "Metric4" },
-        ],
-    ],
-    legendTitles: [
-        "Location 1",
-        "Location 2",
-        "Location 3"
-    ]
-}
 class Analysis extends Component {
 
     state = {
         metricData: null,
         initLoading: false,
         loading: false,
-        data: {
-        },//dataDict,
+        locationData: {
+        },//locationData,
         showTable: true,
         selectedUser: null,
         dataLoaded: false,
@@ -73,163 +30,159 @@ class Analysis extends Component {
         selectedLocation: null,
         addingLocation: false,
         Dates: { StartDate: new Date("2015-01-01T00:00:00.000Z"), EndDate: new Date("2019-01-01T00:00:00.000Z") },
-        arr: null
+        arr: null,
+        dataForSingleLocation: [],
+        dataForAllLocations: [],
+        showGraph: false,
+        graphType: "Group",
+        data: null
     }
     generateGraph = () => {
-        console.log("--------------------");
-        console.log(this.state.metricData);
-        console.log(this.state.selectedLocation);
-        console.log(this.state.Dates);
-        console.log("--------------------");
+        var locationData = [];
+        //convert to array
+        for (var key in this.state.locationData) {
+            locationData.push(this.state.locationData[key]);
+        }
+        if (this.state.metricData.Type == "Metric") {
+            this.createMetricGraph(locationData);
+
+        } else if (this.state.metricData.Type == "Set") {
+            this.createSetGraph(locationData);
+        } else if (this.state.metricData.Type == "Group") {
+
+        }
+
         this.setState({
             currentView: "graph"
         })
-        /*
-        db.Data.toArray().then(arr => {
-            console.log(arr);
-            let dataDict = {};
-            arr.forEach(ele => {
-                dataDict[ele.Id] = ele;
-            });
-
-        })*/
-
     }
     formatDate = (date) => {
         //Format into YYYY-MM-DDT:00:00:00.000Z
         let dateString = `${date.getUTCFullYear()}-${("0" + (date.getUTCMonth() + 1)).slice(-2)}-${("0" + date.getUTCDate()).slice(-2)}T00:00:00.000Z`
         return dateString
     }
+    createMetricGraph = (locationData) => {
+        var dataForAllLocations = [];
 
-    getData = () => {
-        var tempData = [];
+        let context = {
+            dataForAllLocations: dataForAllLocations
+        };
 
-        for (var key in this.state.data) {
-            //this.queryComplexData(this.state.data[key], this.state.metricData);
-
-            console.log(this.state.data[key].Id);
-            console.log(this.state.metricData.Id);
-            console.log(this.state.metricData.Type);
-            console.log(this.formatDate(this.state.Dates.StartDate));
-            console.log(this.formatDate(this.state.Dates.EndDate));
-
-            if (this.state.metricData.Type == "Metric") {
-                //Normal Bar chart
-                db.Data.where(
-                    ["FacilityId", "MetricId", 'Time']
-                ).between(
-                    [this.state.data[key].Id, this.state.metricData.Id, this.formatDate(this.state.Dates.StartDate)],
-                    [this.state.data[key].Id, this.state.metricData.Id, this.formatDate(this.state.Dates.EndDate)],
-                    true,
-                    true
-                )
-                    .toArray().then((arr) => {
-                        this.setState({
-                            arr: arr
-                        })
-                        tempData.push(arr);
-                        console.log(tempData);
-
-                    })
-            } else if (this.state.metricData.Type == "Set") {
-
-            } else if (this.state.metricData.Type == "Group") {
-
-            }
-
-
-        }
+        this.forEachPromise(locationData, this.getDataPromiseByLocation, context).then(() => {
+            console.log(this.state.metricData.Name);
+            this.setState({
+                showGraph: true,
+                currentView: "graph",
+                graphType: "Set",
+                data: {
+                    name: this.state.metricData.Name,
+                    data: context.dataForAllLocations,
+                }
+            });
+        });
     }
-    /*
-    queryComplexData = (location,metric) => {
+    createSetGraph = (locationData) => {
+        var dataForAllLocations = [];
+        var legend = [];
 
-        //Build Query URL
-        let period = "month"
-
-        if (this.state.Dates.StartDate.getUTCFullYear() !== this.state.Dates.EndDate.getUTCFullYear()) period = "year"
-        let rootURL = `https://essd-backend-dev.azurewebsites.net/api/data/query?`
-        let url = rootURL +
-            "LocationId=" + location.Id
-            + "&LocationType=" + location.Type
-            + "&DataId=" + metric.Id
-            + "&DataType=" + metric.Type
-            + "&StartDate=" + this.formatDateForRemoteQuery(this.state.Dates.StartDate)
-            + "&EndDate=" + this.formatDateForRemoteQuery(this.state.Dates.EndDate)
-            + "&Period=" + period
-            + "&Distribution=" + metric.TotalOrDistribution
-
-        //Data comes back as an array
-        fetch(url, {}).then(stream => stream.json().then(result => {
-
-            if (period === "year") {
-
-                //TODO: Switch to vertical bar graph in the future
-                result.forEach(el => {
-                    el.Value = Number.parseFloat(el.Total)
-                    el.Metric = el.Yr
-                })
-
-                result.sort((a, b) => {
-                    return a.Yr - b.Yr
-                })
-
-                if (metric.TotalOrDistribution === "none" || metric.TotalOrDistribution=== "total") { //== total
-                    this.setState({
-                        ready: true,
-                        data: {
-                            data: result,
-                            name: this.state.Title
-                        },
-                        graphType: "Set",
-
-                    })
-                } else {
-
-                }
-            } else {
-                //Period === month
-                let graphType = metric.TotalOrDistributionn === "distribution" ? "Set" : "Metric"
-
-                let groupName = "MetricName"
-                if (result.length > 0) groupName = result[0].hasOwnProperty("MetricName") ? "MetricName" : "SetName"
-
-                let titleIndex = undefined
-
-                for (let i = 0; i < result.length; i++) {
-                    let d = new Date(this.state.Dates.StartDate)
-                    d.setUTCMonth(result[i].Month - 1)
-                    result[i].Date = d
-                    result[i].Value = Number.parseInt(result[i].Total)
-                    if (graphType === "Set") {
-                        if (result[i][groupName] === this.state.Title) titleIndex = i
-                        result[i].Metric = result[i][groupName].replace(`${this.state.Title}, `, "")
-                    } else {
-                        result[i].Metric = result[i][groupName]
-                    }
-                }
-
-                if (titleIndex !== undefined) {
-                    result.splice(titleIndex, 1)
-                }
-
+        this.getMetricsPromise(this.state.metricData.Id).then((metrics) => {
+            let context = {
+                dataForAllLocations: dataForAllLocations,
+                metrics: metrics,
+                locations: legend
+            };
+            this.forEachPromise(locationData, this.getLocationPromise, context).then(() => {
+                console.log(context.locations);
+                console.log(context.dataForAllLocations);
                 this.setState({
-                    ready: true,
-                    graphType: graphType,
+                    showGraph: true,
+                    currentView: "graph",
+                    graphType: "Group",
                     data: {
-                        data: result,
-                        name: this.state.Title
+                        data: context.dataForAllLocations,
+                        legendTitles: context.locations
                     }
-                })
-
-            }
-
-            if (this.props.ParentHandler) this.props.ParentHandler(result)
-
-            //TODO: store data locally
-        }))
+                });
+                console.log("donezo");
+            })
+        })
 
     }
-*/
+
+    forEachPromise = (items, fn, context) => {
+        return items.reduce(function (promise, item) {
+            return promise.then(function () {
+                return fn(item, context);
+            });
+        }, Promise.resolve());
+    }
+
+    getLocationPromise = (location, context) => {
+        return new Promise((resolve, reject) => {
+            let context2 = {
+                location: location,
+                dataForAllLocations: context.dataForAllLocations,
+                dataForSingleLocation: []
+            }
+            this.forEachPromise(context.metrics, this.getDataPromise, context2).then(() => {
+                context.dataForAllLocations.push(context2.dataForSingleLocation);
+                context.locations.push(context2.location.Name)
+            }).then(() => {
+                resolve(true);
+            });
+        })
+    }
+    getMetricsPromise = (setId) => {
+        return db.Metrics.where("parentId").equalsIgnoreCase(setId).toArray();
+    }
+    getDataPromise = (metric, context) => {
+        return new Promise((resolve, reject) => {
+            db.Data.where(
+                ["FacilityId", "MetricId", 'Time']
+            ).between(
+                [context.location.Id, metric.Id, this.formatDate(this.state.Dates.StartDate)],
+                [context.location.Id, metric.Id, this.formatDate(this.state.Dates.EndDate)],
+                true,
+                true
+            ).toArray().then((arr) => {
+                let sum = 0;
+                arr.forEach((point) => {
+                    sum += parseInt(point.Value);
+                })
+                context.dataForSingleLocation.push({
+                    Value: sum,
+                    Metric: metric.Name
+                });
+                console.log("Adding Data from current Metric: " + metric.Id + ", value: " + sum);
+                resolve(true);
+            })
+        })
+    }
+    getDataPromiseByLocation = (location, context) => {
+        return new Promise((resolve, reject) => {
+            db.Data.where(
+                ["FacilityId", "MetricId", 'Time']
+            ).between(
+                [location.Id, this.state.metricData.Id, this.formatDate(this.state.Dates.StartDate)],
+                [location.Id, this.state.metricData.Id, this.formatDate(this.state.Dates.EndDate)],
+                true,
+                true
+            ).toArray().then((arr) => {
+                let sum = 0;
+                arr.forEach((point) => {
+                    sum += parseInt(point.Value);
+                })
+                context.dataForAllLocations.push({
+                    Value: sum,
+                    Metric: location.Name
+                });
+
+                console.log("Adding Data from current Location: " + location.Id + ", value: " + sum);
+                resolve(true);
+            })
+
+        })
+    }
     saveGraph = () => {
     }
 
@@ -244,36 +197,21 @@ class Analysis extends Component {
     }
     updateLocation = (location, save) => {
         if (save) {
-            let tempData = this.state.data;
+            let tempData = this.state.locationData;
             if (!this.state.addingLocation) {
                 delete tempData[this.state.selectedLocation.Type + "-" + this.state.selectedLocation.Id];
             }
             tempData[location.Type + "-" + location.Id] = location;
-            /*
-            temp
-            */
             this.setState({ selectedLocation: location });
-            console.log("location");
-            console.log(location);
 
             message.success('Location Saved');
-            this.setState({ data: tempData });
+            this.setState({ locationData: tempData });
         } else {
             message.warning('Location Not Saved');
         }
         this.setState({
             currentView: "table"
         })
-        console.log(save)/*
-        for (var a in  this.state.data){
-            console.log(a);
-            console.log(this.state.data[a]);
-        }*/
-        console.log(location);
-        //this.setState({ location: location })
-    }
-    handleChange = (value) => {
-        console.log("boo" + value);
     }
     addLocation = () => {
         this.state.selectedLocation = null;
@@ -303,18 +241,18 @@ class Analysis extends Component {
     //        Dates: { StartDate: new Date("2015-01-01T00:00:00.000Z"), EndDate: new Date("2019-01-01T00:00:00.000Z") },
 
 
-    startDateOnChange(date, dateString){
+    startDateOnChange(date, dateString) {
         var endDate = this.state.Dates.EndDate;
         this.setState({
-            Dates: {StartDate: new Date(`${dateString}T00:00:00.000Z`), EndDate: endDate} 
-        }, () => {console.log(this.state)})
+            Dates: { StartDate: new Date(`${dateString}T00:00:00.000Z`), EndDate: endDate }
+        }, () => { console.log(this.state) })
     }
 
-    endDateOnChage(date, dateString){
+    endDateOnChage(date, dateString) {
         var startDate = this.state.Dates.StartDate;
         this.setState({
-            Dates: {StartDate: startDate, EndDate: new Date(`${dateString}T00:00:00.000Z`)} 
-        }, () => {console.log(this.state)})
+            Dates: { StartDate: startDate, EndDate: new Date(`${dateString}T00:00:00.000Z`) }
+        }, () => { console.log(this.state) })
     }
 
     render() {
@@ -333,11 +271,6 @@ class Analysis extends Component {
                         <Row className={``} gutter={16}>
                             <Col xs={{ span: 24, offset: 0 }} sm={{ span: 22, offset: 1 }} md={{ span: 18, offset: 3 }} lg={{ span: 16, offset: 4 }}>
                                 <Card className="left" size="medium" title="Select Metric">
-                                    <Visualizer
-                                        type={s}
-                                        show={true}
-                                        data={mockGroup}
-                                    />
                                     <MetricSelector parentHandler={this.updateData}
                                         initialData={{
                                             GroupValue: "1191|Facility Attendance|Group",
@@ -354,10 +287,17 @@ class Analysis extends Component {
                             <Col xs={{ span: 24, offset: 0 }} sm={{ span: 22, offset: 1 }} md={{ span: 18, offset: 3 }} lg={{ span: 16, offset: 4 }}>
                                 <Card className="left" size="medium" title="Select Date">
                                     {this.state.data &&
+<<<<<<< HEAD
                                        <div className = "center">
                                            <DatePicker defaultValue={moment('2015-01-01', 'YYYY-MM-DD')}  placeholder="Start Date" onChange={(date, dateString) => {this.startDateOnChange(date, dateString)}}/> 
                                            <DatePicker defaultValue={moment('2019-01-01', 'YYYY-MM-DD')}  placeholder="End Date" onChange={(date, dateString) => {this.endDateOnChage(date, dateString)}}/>
                                        </div>
+=======
+                                        <div className="center">
+                                            <DatePicker placeholder="Start Date" onChange={(date, dateString) => { this.startDateOnChange(date, dateString) }} />
+                                            <DatePicker placeholder="End Date" onChange={(date, dateString) => { this.endDateOnChage(date, dateString) }} />
+                                        </div>
+>>>>>>> 10571bf9a437a6302a815d1a1e96dda35b1e91d6
                                     }
                                 </Card>
                             </Col>
@@ -370,7 +310,7 @@ class Analysis extends Component {
                                     <div className="center" >
                                         <Button type="primary" block onClick={this.addLocation}>Add Location</Button>
                                     </div>
-                                    {this.state.data &&
+                                    {this.state.locationData &&
                                         <List
                                             itemLayout="horizontal"
                                             size="large"
@@ -380,7 +320,7 @@ class Analysis extends Component {
                                                 },
                                                 pageSize: 4,
                                             }}
-                                            dataSource={Object.values(this.state.data)}
+                                            dataSource={Object.values(this.state.locationData)}
                                             renderItem={item => (
                                                 <List.Item
                                                     key={item.facility}
@@ -390,7 +330,6 @@ class Analysis extends Component {
                                                         </Button>
                                                     ]}>
                                                     <List.Item.Meta
-                                                        avatar={<Avatar icon="environment" style={{ backgroundColor: item.color }} />}
                                                         title={<a href="https://ant.design">{item.Name}</a>}
                                                         description={
                                                             "Location Type: " + item.Type
@@ -404,25 +343,15 @@ class Analysis extends Component {
                             </Col>
                         </Row>
                         <Divider />
-
                         <Row>
                             <Col xs={{ span: 24, offset: 0 }} sm={{ span: 22, offset: 1 }} md={{ span: 18, offset: 3 }} lg={{ span: 16, offset: 4 }}>
                                 <div className="center" >
                                     <Button type="primary" block onClick={this.generateGraph}>Generate Graph</Button>
                                 </div>
-                                <Card className="left" size="medium" title="Graph">
-                                    <Button onClick={this.getData}>
-                                        Save Graph <Icon type="save" />
-                                    </Button>
-                                </Card>
                             </Col>
 
                         </Row>
-                        <Row>
-                            {this.state.arr && this.state.arr.forEach((ele) => {
-                                return <h6>{ele.Value}</h6>
-                            })}
-                        </Row>
+
                     </div>
                 }
 
@@ -437,19 +366,22 @@ class Analysis extends Component {
                 {this.state.currentView !== "graph" ?
                     null :
                     <div className="">
-                        <Button onClick={this.showTable}>
-                            Back
-                        </Button>
 
-                        <VisualizerManager
-                            Title={this.state.metricData !== undefined && this.state.metricData.Name !== undefined ? this.state.metricData.Name.split("(")[0] : ""}
-                            Location={this.state.selectedLocation} //{Name, Id, Type}
-                            Data={this.state.metricData} // {Id, Type, TotalOrDistribution="total|none|distribution"}
-                            Dates={this.state.Dates}
-                            ParentHandler={this.updateRawData} /*
-                            {...item} //LocationId, Location, etc...
-                            show={this.state.graphOpenCloseState[key].open}*/
-                        />
+                        <Card className="left" size="medium" title="Graph">
+                            <Button onClick={this.showTable}>
+                                Back
+                            </Button>
+                            <Divider />
+                            <Button onClick={this.getData}>
+                                Save Graph <Icon type="save" />
+                            </Button>
+
+                            <Visualizer
+                                type={this.state.graphType}
+                                show={this.state.showGraph}
+                                data={this.state.data}
+                            />
+                        </Card>
 
                     </div>
                 }
