@@ -357,7 +357,7 @@ class Dashboard extends Component {
                 this.setState({
                     graphData: arr
                 });
-                message.info("Graph successfully deleted.");
+                message.success("Graph successfully deleted.");
             });
         });
     }

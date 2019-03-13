@@ -181,20 +181,16 @@ class VisualizerManager extends Component {
                 result.sort((a,b) =>{
                     return a.Yr - b.Yr
                 })
-
-                if (this.state.DataPresentation === "none" || this.state.DataPresentation === "total"){ //== total
-                    this.setState({
-                        ready: true,
-                        data: {
-                            data: result,
-                            name: this.state.Title
-                        },
-                        graphType: "Set",
-
-                    })
-                }else{
-
-                }
+                
+                //If this spans multiple years, always display it as a bar chart
+                this.setState({
+                    ready: true,
+                    data: {
+                        data: result,
+                        name: this.state.Title
+                    },
+                    graphType: "Set",
+                })
             }else{
                 //Period === month
                 let graphType = this.state.DataPresentation === "distribution" ? "Set" : "Metric"
@@ -220,7 +216,7 @@ class VisualizerManager extends Component {
                 if (titleIndex !== undefined){
                     result.splice(titleIndex,1)
                 }
-                
+                console.log('fall')
                 this.setState({
                     ready: true,
                     graphType: graphType,
@@ -228,6 +224,8 @@ class VisualizerManager extends Component {
                         data: result,
                         name: this.state.Title
                     }
+                }, () =>{
+                    console.log('ready1')
                 })
 
             }

@@ -200,10 +200,9 @@ class Visualizer extends Component {
         //Update Default Padding
         let maxLength = 0
         for (let i = 0; i < rawData.data.length; i++){
-            if (rawData.data[i].Metric.length > maxLength) maxLength = rawData.data[i].Metric.length
+            if ((""+rawData.data[i].Metric).length > maxLength) maxLength = (""+rawData.data[i].Metric).length
         }
         this.defaults.barChartLeftMargin = Math.round(maxLength * averageCharacterWidth + constantCharacterPadding,0)
-
         let barSeriesData = this.createBarSeriesData(rawData)
         return {
             barSeries: barSeriesData.barSeries,
