@@ -135,16 +135,20 @@ class Sync extends Component {
             )
         } else {
             let url = `${rootURL}/dashboard/${this.state.user.Id}`
-            let callback = (dashboard) => {
+            let callback = (_dashboard) => {
                 return new Promise(resolve => {
+                    //The naming scheme needs to be cleaned up a bit here...
+                    let dashboard = _dashboard.dashboard
                     db.Dashboard.clear().then(() => {
-                        //The naming scheme needs to be cleaned up a bit here...
-                        let data = JSON.parse(dashboard.dashboard.DashboardJson)
-                        db.Dashboard.bulkAdd(data.dashboards).then(() => {
+                        if (! dashboard.hasOwnProperty("error")){
+                            let data = JSON.parse(dashboard.DashboardJson)
+                            db.Dashboard.bulkAdd(data.dashboards).then(() => {
+                                resolve(true)
+                            })
+                        }else{
+                            //User has no dashboard
                             resolve(true)
-                        })
-    
-                        console.log(data)
+                        }
                     })
                 })
 

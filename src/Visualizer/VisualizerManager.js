@@ -132,6 +132,7 @@ class VisualizerManager extends Component {
      * 3. If not, some error message
      */
     getComplexData = () =>{
+        console.log(this.props)
         console.log(this.props.RawData)
         if (this.props.RawData){
             console.log(this.props.Data)

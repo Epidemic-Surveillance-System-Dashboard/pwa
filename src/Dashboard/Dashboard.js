@@ -364,13 +364,14 @@ class Dashboard extends Component {
         )
     }
     itemHasCompare = (item) => {
-        for (let tag in item) {
-            console.log(tag)
-            if (tag == "Compare") {
-                return true
-            }
-        }
-        return false;
+        return Object.keys(item).includes("Compare")
+        // for (let tag in item) {
+        //     console.log(tag)
+        //     if (tag == "Compare") {
+        //         return true
+        //     }
+        // }
+        // return false;
     }
 
 
