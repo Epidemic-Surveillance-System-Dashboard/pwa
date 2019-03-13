@@ -340,8 +340,7 @@ class Dashboard extends Component {
         }, () => { console.log(this.state.relatedGraphs) })
     }
     deleteGraph = (item) => {
-
-        message.success("Location Deleted");
+        message.warn(`Graph Deleted ${item.Id}`);
     }
     renderRelated = () => {
         return (
@@ -363,15 +362,9 @@ class Dashboard extends Component {
             </List>
         )
     }
+
     itemHasCompare = (item) => {
         return Object.keys(item).includes("Compare")
-        // for (let tag in item) {
-        //     console.log(tag)
-        //     if (tag == "Compare") {
-        //         return true
-        //     }
-        // }
-        // return false;
     }
 
 
@@ -382,7 +375,9 @@ class Dashboard extends Component {
                 itemLayout="vertical"
                 dataSource={this.state.graphData}
                 renderItem={(item, key) => (
-                    <List.Item >
+                    <List.Item 
+                    
+                    actions = {["delete","collapse","view related"]}>
                         {!this.itemHasCompare(item) ? (
                             <div>
                                 <List.Item.Meta
@@ -458,68 +453,45 @@ class Dashboard extends Component {
 
                 }
                 {
-                    this.state.currentView != "related" &&
-                    <div className="center">
-                        <Row className={`rowVMarginSm rowVMarginTopSm`}>
-                            <Col xs={{ span: 24, offset: 0 }} md={{ span: 12, offset: 6 }} lg={{ span: 8, offset: 8 }}>
-                                <Radio.Group defaultValue="0" buttonStyle="solid" onChange={this.reportCardOrGraphsChanged}>
-                                </Radio.Group>
-                            </Col>
-                        </Row>
-                        <div className="gutterOverflowMask">
-                            <div className={`${!this.state.reportCard ? "displayNone" : ""}`}>
-                                <Row className={`rowVMarginSm`}>
-                                    <h3>Last Month's Performance</h3>
-                                </Row>
-                                <Row className={`rowVMarginSm`}>
-                                    <Col xs={{ span: 24, offset: 0 }} md={{ span: 18, offset: 3 }} lg={{ span: 12, offset: 6 }}>
-                                        <Table
-                                            columns={metricTableColumns}
-                                            dataSource={metricData}
-                                            pagination={false} />
-                                    </Col>
-                                </Row>
-                            </div>
-                            <div className={`${this.state.reportCard ? "displayNone" : ""}`}>
-
-                                {/* UI For Viewing Graphs */}
-                                {
-                                    this.state.graphDataLoaded &&
-                                    <div className={this.state.showGraphs ? "" : "displayNone"}>
-                                        <Row className={`rowVMarginSm`}>
-                                            <Col className="left" xs={{ span: 12, offset: 0 }} sm={{ span: 11, offset: 1 }} md={{ span: 9, offset: 3 }} lg={{ span: 8, offset: 4 }}>
-                                                <Button onClick={this.toggleAllGraphs}>{this.state.graphOpenCloseState["collapseOrExpandText"].text}</Button>
-                                            </Col>
-                                            <Col className="right" xs={{ span: 12, offset: 0 }} sm={{ span: 11, offset: 0 }} md={{ span: 9, offset: 0 }} lg={{ span: 8, offset: 0 }}>
-                                                <Button icon="plus" type="primary" onClick={this.showHideCreateGraphUI}>Add Graph</Button>
-                                            </Col>
-                                        </Row>
-                                        <Row className={`rowVMarginSm`} gutter={16}>
-                                            <Col xs={{ span: 24, offset: 0 }} sm={{ span: 22, offset: 1 }} md={{ span: 18, offset: 3 }} lg={{ span: 16, offset: 4 }}>
-                                                <Card className="left" size="small">
-                                                    {this.renderGraphs()}
-                                                </Card>
-                                            </Col>
-                                        </Row>
-                                    </div>
-                                }
-
-
-                                {/* UI For Creating Graphs */}
-                                <div className={this.state.showGraphs ? "displayNone" : ""}>
-                                    <Row className="rowVMarginSm">
-                                        <Col><Button icon="caret-left" onClick={this.showHideCreateGraphUI}>Back</Button></Col>
-
+                    this.state.currentView !== "related" &&
+                    <div className="center gutterOverflowMask">
+                           
+                            {/* UI For Viewing Graphs */}
+                            {
+                                this.state.graphDataLoaded &&
+                                <div className={this.state.showGraphs ? "" : "displayNone"}>
+                                    <Row className={`rowVMarginSm rowVMarginTopSm`}>
+                                        <Col className="left" xs={{ span: 12, offset: 0 }} sm={{ span: 11, offset: 1 }} md={{ span: 9, offset: 3 }} lg={{ span: 8, offset: 4 }}>
+                                            <Button onClick={this.toggleAllGraphs}>{this.state.graphOpenCloseState["collapseOrExpandText"].text}</Button>
+                                        </Col>
+                                        <Col className="right" xs={{ span: 12, offset: 0 }} sm={{ span: 11, offset: 0 }} md={{ span: 9, offset: 0 }} lg={{ span: 8, offset: 0 }}>
+                                            <Button icon="plus" type="primary" onClick={this.showHideCreateGraphUI}>Add Graph</Button>
+                                        </Col>
                                     </Row>
-                                    <Row className="rowVMarginSm">
-                                        <CreateGraph
-                                            ParentHandler={this.loadGraphsFromDB}
-                                        />
+                                    <Row className={`rowVMarginSm`} gutter={16}>
+                                        <Col xs={{ span: 24, offset: 0 }} sm={{ span: 22, offset: 1 }} md={{ span: 18, offset: 3 }} lg={{ span: 16, offset: 4 }}>
+                                            <Card className="left" size="small">
+                                                {this.renderGraphs()}
+                                            </Card>
+                                        </Col>
                                     </Row>
-
                                 </div>
+                            }
+
+                            {/* UI For Creating Graphs */}
+                            <div className={this.state.showGraphs ? "displayNone" : ""}>
+                                <Row className="rowVMarginSm">
+                                    <Col><Button icon="caret-left" onClick={this.showHideCreateGraphUI}>Back</Button></Col>
+
+                                </Row>
+                                <Row className="rowVMarginSm">
+                                    <CreateGraph
+                                        ParentHandler={this.loadGraphsFromDB}
+                                    />
+                                </Row>
+
                             </div>
-                        </div>
+    
                     </div>
                 }
             </div>
