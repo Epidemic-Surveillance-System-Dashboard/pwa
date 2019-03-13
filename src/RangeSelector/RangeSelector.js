@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { DatePicker } from 'antd';
+import { DatePicker} from 'antd';
 import moment from 'moment';
 
+const {MonthPicker} = DatePicker
 
 class RangeSelector extends Component {
 
@@ -50,8 +51,10 @@ class RangeSelector extends Component {
     render() {
         return (
             <div className="center">
-                <DatePicker defaultValue={moment(this.dateToString(this.state.Dates.StartDate), 'YYYY-MM-DD')} placeholder="Start Date" onChange={(date, dateString) => { this.startDateOnChange(date, dateString) }} />
-                <DatePicker defaultValue={moment(this.dateToString(this.state.Dates.EndDate), 'YYYY-MM-DD')} placeholder="End Date" onChange={(date, dateString) => { this.endDateOnChage(date, dateString) }} />
+                <MonthPicker defaultValue={moment(this.dateToString(this.state.Dates.StartDate), 'YYYY-MM-DD')} placeholder="Start Date" onChange={(date, dateString) => { this.startDateOnChange(date, dateString) }} />
+                <MonthPicker defaultValue={moment(this.dateToString(this.state.Dates.EndDate), 'YYYY-MM-DD')} placeholder="End Date" onChange={(date, dateString) => { this.endDateOnChage(date, dateString) }} />
+                {/* <DatePicker defaultValue={moment(this.dateToString(this.state.Dates.StartDate), 'YYYY-MM-DD')} placeholder="Start Date" onChange={(date, dateString) => { this.startDateOnChange(date, dateString) }} /> */}
+                {/* <DatePicker defaultValue={moment(this.dateToString(this.state.Dates.EndDate), 'YYYY-MM-DD')} placeholder="End Date" onChange={(date, dateString) => { this.endDateOnChage(date, dateString) }} /> */}
             </div>
         )
     };
