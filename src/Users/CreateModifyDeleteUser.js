@@ -300,7 +300,7 @@ class CreateModifyDeleteUser extends Component {
         let url, successMessage, errorMessage, method = ""
         let successHandler = () => { }
         let userObject = this.state.userInfo
-        
+
         if(userObject.UserType == null) 
             userObject.UserType = "user"
 
@@ -314,7 +314,8 @@ class CreateModifyDeleteUser extends Component {
             method = "POST"
             successHandler = (result) => {
                 if ("Id" in result) {
-                    userObject.Id = result.Id
+                    userObject.Id = result.Id;
+                    userObject.LocationName = result.LocationName;
                     db.User.add(userObject).then(() => {
                         message.success(successMessage)
                         this.props.refreshUsers()
