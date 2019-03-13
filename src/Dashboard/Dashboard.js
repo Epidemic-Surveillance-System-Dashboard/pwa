@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 
-import { Table, Button, List, Card, Row, Col, Radio } from 'antd'
+import { message, Icon, Table, Button, List, Card, Row, Col, Radio } from 'antd'
 
 import '../../node_modules/react-vis/dist/style.css'
 import './Dashboard.css'
@@ -337,7 +337,10 @@ class Dashboard extends Component {
             relatedGraphs: processedRelatedData
         }, () => { console.log(this.state.relatedGraphs) })
     }
+    deleteGraph = (item) => {
 
+        message.success("Location Deleted");
+    }
     renderRelated = () => {
         return (
             <List
@@ -358,12 +361,12 @@ class Dashboard extends Component {
             </List>
         )
     }
-    itemHasCompare = (item)=>{
-        for (let tag in item){
+    itemHasCompare = (item) => {
+        for (let tag in item) {
             console.log(tag)
-            if (tag == "Compare"){
+            if (tag == "Compare") {
                 return true
-            } 
+            }
         }
         return false;
     }
@@ -377,7 +380,7 @@ class Dashboard extends Component {
                 dataSource={this.state.graphData}
                 renderItem={(item, key) => (
                     <List.Item >
-                        {!this.itemHasCompare(item)? (
+                        {!this.itemHasCompare(item) ? (
                             <div>
                                 <List.Item.Meta
                                     title={item.Title}
@@ -391,6 +394,9 @@ class Dashboard extends Component {
                                     show={this.state.graphOpenCloseState[key].open}
                                 />
                                 {this.createViewRelatedButton(item)}
+                                <Button onClick={() => { this.deleteGraph(item) }} style={{ marginLeft: 8 }}>
+                                    Delete <Icon type="delete" />
+                                </Button>
                             </div>) : (
                                 <div>
                                     <List.Item.Meta
@@ -401,6 +407,9 @@ class Dashboard extends Component {
                                         show={true}
                                         data={item.Data}>
                                     </Visualizer>
+                                    <Button onClick={() => { this.deleteGraph(item) }} style={{ marginLeft: 8 }}>
+                                        Delete <Icon type="delete" />
+                                    </Button>
                                 </div>)}
                     </List.Item>
                 )}>
