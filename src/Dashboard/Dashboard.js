@@ -424,9 +424,7 @@ class Dashboard extends Component {
                                         show={true}
                                         data={item.Data}>
                                     </Visualizer>
-                                    <Button onClick={() => { this.deleteGraph(item) }} style={{ marginLeft: 8 }}>
-                                        Delete <Icon type="delete" />
-                                    </Button>
+                                   
                                 </div>)}
                     </List.Item>
                 )}>
