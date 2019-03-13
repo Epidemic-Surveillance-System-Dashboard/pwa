@@ -221,6 +221,8 @@ class Dashboard extends Component {
                 visibility[i] = { open: true, showInFilter: true }
             }
 
+            console.log(arr)
+
             visibility["collapseOrExpandText"] = { text: "Collapse All" }
 
             this.setState({
