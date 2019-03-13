@@ -340,8 +340,16 @@ class Dashboard extends Component {
         }, () => { console.log(this.state.relatedGraphs) })
     }
     deleteGraph = (item) => {
+        let arr = this.state.graphData;
 
-        message.success("Location Deleted");
+        db.Dashboard.delete(item.Id).then(() => {
+            db.Dashboard.toArray().then(arr => {
+                this.setState({
+                    graphData: arr
+                });
+                message.success("Location Deleted");
+            });
+        });
     }
     renderRelated = () => {
         return (
@@ -365,13 +373,6 @@ class Dashboard extends Component {
     }
     itemHasCompare = (item) => {
         return Object.keys(item).includes("Compare")
-        // for (let tag in item) {
-        //     console.log(tag)
-        //     if (tag == "Compare") {
-        //         return true
-        //     }
-        // }
-        // return false;
     }
 
 
