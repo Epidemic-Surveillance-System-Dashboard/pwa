@@ -98,11 +98,11 @@ class App extends Component {
 							visible={this.state.drawerOpen}>
 							<Menu
 								onClick={this.closerDrawer}>
-								<Menu.Item key="1">
+								{/* <Menu.Item key="1">
 									<Link to="/">
 										<Icon type="home" />Home
 								</Link>
-								</Menu.Item>
+								</Menu.Item> */}
 								<Menu.Item key="2">
 									<Link to="/dashboard">
 										<Icon type="area-chart" />Dashboard
