@@ -135,11 +135,16 @@ class CreateModifyDeleteUser extends Component {
     }
 
     handleUserTypeSelect(value) {
+        console.log("here");
         let user = this.state.userInfo
         user["UserType"] = value
-        this.setState({ userInfo: user })
+        this.setState({ userInfo: user },() => {console.log(this.state.userInfo)})
         //this.userInformationChanged()
         console.log(this.state.userInfo);
+    }
+
+    handleChange(value) {
+        console.log(`selected ${value}`);
     }
 
     basicFeatures = () => {
@@ -206,12 +211,13 @@ class CreateModifyDeleteUser extends Component {
 
         //var loggedinUser = await user.user();
         //console.log(loggedinUser);
+        
 
         return (
             <div>{this.state.ready && <Col>
                 <Divider />
                 {array}
-                <Select style={{ width: "100%" }} defaultValue={this.state.userInfo.UserType != null? this.state.userInfo.UserType : "user"} placeholder="User Type" onChange={(e) => { this.handleUserTypeSelect(e) }} disabled={this.state.loggedInUser.Email == this.state.userInfo.Email ? true : this.state.disabled}>
+                <Select style={{ width: "100%" }} defaultValue={this.state.userInfo.UserType != null? this.state.userInfo.UserType : "user"} placeholder="User Type" onChange={(e)=>{this.handleUserTypeSelect(e)}} disabled={this.state.loggedInUser.Email == this.state.userInfo.Email ? true : this.state.disabled}>
                     {allUserTypeOptions}
                 </Select>
                 <Divider />
@@ -294,6 +300,7 @@ class CreateModifyDeleteUser extends Component {
                 }
             }
         }
+        console.log(changed);
         this.setState({ userChanged: changed })
     }
 
@@ -305,6 +312,9 @@ class CreateModifyDeleteUser extends Component {
         if (this.state.mode === "new") {
             //Create User
             //userObject.UserType = "user" //hardCode for now
+            if(userObject.UserType == null) 
+                userObject.UserType = "user"
+
             delete userObject.Id
             url = "https://essd-backend-dev.azurewebsites.net/api/users/register"
             successMessage = "Successfully added user."
@@ -335,10 +345,17 @@ class CreateModifyDeleteUser extends Component {
             method = "PUT"
             successHandler = (result) => {
                 if (result.result === "Update successful") {
-                    db.User.put(userObject).then(() => {
+                    console.log("backend conplete");
+                    db.LocalUser.put(userObject).then(() => {
+                        console.log("local db complete");
                         message.success(successMessage)
                         this.props.refreshUsers()
-                        this.cancelEditing()
+                        //this.cancelEditing()
+                        this.setState({
+                            user: userObject,
+                            disabled: true,
+                            locationDisabled: true,
+                        })
                     })
                 }
             }

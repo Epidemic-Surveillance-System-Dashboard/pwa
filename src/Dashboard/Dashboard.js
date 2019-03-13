@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 
-import { message, Icon, Table, Button, List, Card, Row, Col, Radio } from 'antd'
+import { message, Icon, Table, Button, List, Card, Row, Col, Radio, Popconfirm } from 'antd'
 
 import '../../node_modules/react-vis/dist/style.css'
 import './Dashboard.css'
@@ -202,7 +202,7 @@ class Dashboard extends Component {
 
     createCollapseExpandButton = (key) => {
         return (
-            [<Button key={0} onClick={() => { this.toggleGraph(key) }}>{this.state.graphOpenCloseState[key].open ? "Collapse" : "Expand"}</Button>]
+            <Button key={0} onClick={() => { this.toggleGraph(key) }}>{this.state.graphOpenCloseState[key].open ? "Collapse" : "Expand"}</Button>
         )
     }
 
@@ -306,8 +306,19 @@ class Dashboard extends Component {
 
     createViewRelatedButton = (item) => {
         return (
-            <Button onClick={() => { this.toggleViewRelated(item) }}>View Related</Button>
+            <Button type = "primary" onClick={() => { this.toggleViewRelated(item) }}>View Related</Button>
         )
+    }
+
+    createDeleteButton = (item) =>{
+        return(
+            <Popconfirm placement="topRight" title = "Are you sure want to delete this graph?" okText="Delete" cancelText="Cancel"
+            onConfirm = {() => { this.deleteGraph(item) }}>
+                <Button type = "danger" icon = "delete">Delete</Button>
+            </Popconfirm>
+            
+        )
+
     }
 
     processFoundData = (relatedFound, item) => {
@@ -339,9 +350,18 @@ class Dashboard extends Component {
             relatedGraphs: processedRelatedData
         }, () => { console.log(this.state.relatedGraphs) })
     }
+
     deleteGraph = (item) => {
-        message.warn(`Graph Deleted ${item.Id}`);
+        db.Dashboard.delete(item.Id).then(() => {
+            db.Dashboard.toArray().then(arr => {
+                this.setState({
+                    graphData: arr
+                });
+                message.info("Graph successfully deleted.");
+            });
+        });
     }
+
     renderRelated = () => {
         return (
             <List
@@ -355,7 +375,7 @@ class Dashboard extends Component {
                         <VisualizerManager
                             {...item1} //LocationId, Location, etc...
                             Location={this.getFirstLocation(item1.Locations)}
-                        // show = {true}
+                            show = {true}
                         />
                     </List.Item>
                 )}>
@@ -377,24 +397,23 @@ class Dashboard extends Component {
                 renderItem={(item, key) => (
                     <List.Item 
                     
-                    actions = {["delete","collapse","view related"]}>
+                    actions = {[
+                        this.createCollapseExpandButton(key),
+                        this.createViewRelatedButton(item),
+                        this.createDeleteButton(item)
+                    ]}>
                         {!this.itemHasCompare(item) ? (
                             <div>
                                 <List.Item.Meta
                                     title={item.Title}
                                     description={this.getFirstLocation(item.Locations).Name} />
-                                {this.createCollapseExpandButton(key)}
-
+ 
                                 <VisualizerManager
                                     {...item} //LocationId, Location, etc...
                                     Location={this.getFirstLocation(item.Locations)}
-
                                     show={this.state.graphOpenCloseState[key].open}
                                 />
-                                {this.createViewRelatedButton(item)}
-                                <Button onClick={() => { this.deleteGraph(item) }} style={{ marginLeft: 8 }}>
-                                    Delete <Icon type="delete" />
-                                </Button>
+
                             </div>) : (
                                 <div>
                                     <List.Item.Meta
