@@ -108,13 +108,11 @@ class App extends Component {
 										<Icon type="area-chart" />Dashboard
 								</Link>
 								</Menu.Item>
-								{this.state.user.LocationType == "Facility"? "" :
 								<Menu.Item key="3">
 									<Link to="/analysis">
 										<Icon type="stock" />Analysis
 										</Link>
 								</Menu.Item>
-								}
 								<Menu.Item key="4">
 									<Link to="/health">
 										<Icon type="heart" />Data Health
