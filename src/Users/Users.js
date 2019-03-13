@@ -34,12 +34,15 @@ class User extends Component {
                 }
             })
             this.setState({dataLoaded:true})
+            console.log(dataSource) 
 
         })
+
+        
     }
 
     componentWillMount = () =>{ 
-        this.populateUsers()        
+        this.populateUsers()       
     }
 
     state = {

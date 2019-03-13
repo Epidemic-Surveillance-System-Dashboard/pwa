@@ -28,7 +28,7 @@ class Login extends Component {
             if(success){
                 //redirect
                 this.props.updateDrawer().then((result) => {
-                    this.props.history.push('/dashboard');
+                    this.props.history.push('/sync');
                 });
             }
             else{
