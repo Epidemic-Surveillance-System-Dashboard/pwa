@@ -9,6 +9,7 @@ import Visualizer from '../Visualizer/Visualizer';
 import VisualizerManager from '../Visualizer/VisualizerManager'
 import db from '../Database/database';
 import moment from 'moment';
+import RangeSelector from '../RangeSelector/RangeSelector'
 
 var initialMetric = {
     GroupValue: "1191|Facility Attendance|Group",
@@ -267,20 +268,6 @@ class Analysis extends Component {
         })
 
     }
-    plusOne = (num) => {
-        return num + 1;
-    }
-
-    dateToString = (date) => {
-        console.log(date.getFullYear());
-        console.log(date.getMonth());
-
-        console.log(date.getDay());
-        let str = date.getFullYear() + "-" +
-            this.plusOne(date.getMonth()) + "-" +
-            this.plusOne(date.getDay());
-        return str;
-    }
     showTable = () => {
         this.setState(
             { currentView: "table" }
@@ -290,23 +277,9 @@ class Analysis extends Component {
         return this.state.currentView === "table" ? "" : "displayNone"
     }
 
-    //        Dates: { StartDate: new Date("2015-01-01T00:00:00.000Z"), EndDate: new Date("2019-01-01T00:00:00.000Z") },
-
-
-    startDateOnChange(date, dateString) {
-        var endDate = this.state.Dates.EndDate;
-        this.setState({
-            Dates: { StartDate: new Date(`${dateString}T00:00:00.000Z`), EndDate: endDate }
-        }, () => { console.log(this.state) })
+    updateDates =(dates)=>{
+        this.setState({Dates: dates});
     }
-
-    endDateOnChage(date, dateString) {
-        var startDate = this.state.Dates.StartDate;
-        this.setState({
-            Dates: { StartDate: startDate, EndDate: new Date(`${dateString}T00:00:00.000Z`) }
-        }, () => { console.log(this.state) })
-    }
-
     render() {
         const { initLoading, loading, list } = this.state;
         const loadMore = !initLoading && !loading ? (
@@ -334,10 +307,13 @@ class Analysis extends Component {
                         <Row className={``} gutter={16}>
                             <Col xs={{ span: 24, offset: 0 }} sm={{ span: 22, offset: 1 }} md={{ span: 18, offset: 3 }} lg={{ span: 16, offset: 4 }}>
                                 <Card className="left" size="medium" title="Select Date">
-                                    <div className="center">
-                                        <DatePicker defaultValue={moment('2015-01-01', 'YYYY-MM-DD')} placeholder="Start Date" onChange={(date, dateString) => { this.startDateOnChange(date, dateString) }} />
-                                        <DatePicker defaultValue={moment("2019-01-01", 'YYYY-MM-DD')} placeholder="End Date" onChange={(date, dateString) => { this.endDateOnChage(date, dateString) }} />
-                                    </div>
+                                    <RangeSelector
+                                        parentHandler={this.updateDates}
+                                        initialData={
+                                            {
+                                                Dates: this.state.Dates
+                                            }
+                                        } />
                                 </Card>
                             </Col>
                         </Row>

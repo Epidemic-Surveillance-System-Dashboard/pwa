@@ -67,18 +67,9 @@ class VisualizerManager extends Component {
                 break
             }
         }
+
         return valid
     }
-
-    // getData = () =>{
-
-    //     if (this.isSimpleData()){
-    //         this.getSimpleData()
-    //     }else{
-    //         this.getComplexData()
-    //     }
-
-    // }
 
     isSimpleData = () =>{
         //Simple data is only Facility, Metric 
@@ -132,10 +123,8 @@ class VisualizerManager extends Component {
      * 3. If not, some error message
      */
     getComplexData = () =>{
-        console.log(this.props.RawData)
         if (this.props.RawData){
-            console.log(this.props.Data)
-
+    
             let graphType = "Metric"
 
             if (this.props.Data.MetricValue !== undefined && this.props.Data.MetricValue.charAt(0)!== "-") graphType = "Metric" 
@@ -278,6 +267,7 @@ class VisualizerManager extends Component {
                 console.log('simple data')
                 this.getSimpleData()
             }else{
+                console.log('complex data')
                 this.getComplexData()
             }
         }
