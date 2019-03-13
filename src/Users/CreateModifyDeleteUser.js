@@ -104,6 +104,7 @@ class CreateModifyDeleteUser extends Component {
             db.User.delete(this.state.passedUser.Id).then(() => {
                 message.success("Successfully deleted user.")
                 this.props.refreshUsers()
+                this.back();
             })
         })
             .catch((error) => {
@@ -319,7 +320,7 @@ class CreateModifyDeleteUser extends Component {
                     db.User.add(userObject).then(() => {
                         message.success(successMessage)
                         this.props.refreshUsers()
-                        this.cancelEditing()
+                        this.back();
                     })
                 } else {
                     console.log('throwing an error')
