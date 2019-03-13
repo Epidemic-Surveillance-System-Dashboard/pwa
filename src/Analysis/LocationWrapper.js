@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import { Select, Button } from 'antd'
+import { Select, Button, Divider } from 'antd'
 import LocationSelector from "../LocationSelector/LocationSelector"
 
 
@@ -39,15 +39,18 @@ class LocationWrapper extends Component {
     render() {
         return (
             <div>
+                <LocationSelector parentHandler={this.updateLocation} showLocation={false} initialLocation={
+                    {
+                        Id: "1215",
+                        Type: "Facility"
+                    }
+                }//this.state.location}>
+                ></LocationSelector>
+                <Divider />
+
                 <Button onClick={this.saveLocation}>Save</Button>
                 <Button onClick={this.cancelLocation}>Cancel</Button>
-                <LocationSelector parentHandler={this.updateLocation} showLocation={false} initialLocation={
-                        {
-                            Id: "1215",
-                            Type: "Facility"
-                        }
-                    }//this.state.location}>
-                ></LocationSelector>
+
             </div>
         )
     }

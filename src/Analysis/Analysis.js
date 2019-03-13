@@ -18,7 +18,11 @@ var initialMetric = {
 class Analysis extends Component {
 
     state = {
-        metricData: null,
+        metricData: {
+            GroupValue: "1191|Facility Attendance|Group",
+            SetValue: "-3-1191|All Facility Attendance (Distribution)|Group",
+            MetricValue: ""
+        },
         initLoading: false,
         loading: false,
         locationData: {
@@ -244,7 +248,17 @@ class Analysis extends Component {
             currentView: "existing"
         })
     }
+    deleteLocation = (location) => {
+        let locationData = this.state.locationData;
+        delete locationData[location.Type + "-" + location.Id]; //might have to edit
+        this.setState({
+            locationData: locationData,
+            selectedLocation: null,
+            currentView: "table"
+        });
 
+        message.success("Location Deleted");
+    }
     editLocation = (location) => {
         this.setState({
             addingLocation: false,
@@ -252,6 +266,20 @@ class Analysis extends Component {
             currentView: "existing"
         })
 
+    }
+    plusOne = (num) => {
+        return num + 1;
+    }
+
+    dateToString = (date) => {
+        console.log(date.getFullYear());
+        console.log(date.getMonth());
+
+        console.log(date.getDay());
+        let str = date.getFullYear() + "-" +
+            this.plusOne(date.getMonth()) + "-" +
+            this.plusOne(date.getDay());
+        return str;
     }
     showTable = () => {
         this.setState(
@@ -296,11 +324,7 @@ class Analysis extends Component {
                             <Col xs={{ span: 24, offset: 0 }} sm={{ span: 22, offset: 1 }} md={{ span: 18, offset: 3 }} lg={{ span: 16, offset: 4 }}>
                                 <Card className="left" size="medium" title="Select Metric">
                                     <MetricSelector parentHandler={this.updateData}
-                                        initialData={{
-                                            GroupValue: "1191|Facility Attendance|Group",
-                                            SetValue: "-3-1191|All Facility Attendance (Distribution)|Group",
-                                            MetricValue: ""
-                                        }}
+                                        initialData={this.state.metricData}
                                     ></MetricSelector>
 
                                 </Card>
@@ -312,7 +336,7 @@ class Analysis extends Component {
                                 <Card className="left" size="medium" title="Select Date">
                                     <div className="center">
                                         <DatePicker defaultValue={moment('2015-01-01', 'YYYY-MM-DD')} placeholder="Start Date" onChange={(date, dateString) => { this.startDateOnChange(date, dateString) }} />
-                                        <DatePicker defaultValue={moment('2019-01-01', 'YYYY-MM-DD')} placeholder="End Date" onChange={(date, dateString) => { this.endDateOnChage(date, dateString) }} />
+                                        <DatePicker defaultValue={moment("2019-01-01", 'YYYY-MM-DD')} placeholder="End Date" onChange={(date, dateString) => { this.endDateOnChage(date, dateString) }} />
                                     </div>
                                 </Card>
                             </Col>
@@ -339,9 +363,12 @@ class Analysis extends Component {
                                             renderItem={item => (
                                                 <List.Item
                                                     key={item.facility}
-                                                    actions={[,
+                                                    actions={[
                                                         <Button onClick={() => { this.editLocation(item) }} style={{ marginLeft: 8 }}>
                                                             Edit <Icon type="edit" />
+                                                        </Button>,
+                                                        <Button onClick={() => { this.deleteLocation(item) }} style={{ marginLeft: 8 }}>
+                                                            Delete <Icon type="delete" />
                                                         </Button>
                                                     ]}>
                                                     <List.Item.Meta
@@ -357,6 +384,7 @@ class Analysis extends Component {
                                 </Card>
                             </Col>
                         </Row>
+
                         <Divider />
                         <Row>
                             <Col xs={{ span: 24, offset: 0 }} sm={{ span: 22, offset: 1 }} md={{ span: 18, offset: 3 }} lg={{ span: 16, offset: 4 }}>
@@ -366,6 +394,8 @@ class Analysis extends Component {
                             </Col>
 
                         </Row>
+                        <Divider />
+
 
                     </div>
                 }
@@ -373,9 +403,16 @@ class Analysis extends Component {
                 {this.state.currentView !== "existing" ?
                     null :
                     <div className="">
-                        <LocationWrapper
-                            parentHandler={this.updateLocation} initialLocation={this.state.selectedLocation}
-                        />
+                        <Row className={``} gutter={16}>
+                            <Col xs={{ span: 24, offset: 0 }} sm={{ span: 22, offset: 1 }} md={{ span: 18, offset: 3 }} lg={{ span: 16, offset: 4 }}>
+                                <Card className="left" size="medium" title="Select Location">
+                                    <LocationWrapper
+                                        parentHandler={this.updateLocation} initialLocation={this.state.selectedLocation}
+                                    />
+                                </Card>
+                            </Col>
+                        </Row>
+
                     </div>
                 }
                 {this.state.currentView !== "graph" ?
