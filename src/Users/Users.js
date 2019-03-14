@@ -86,7 +86,7 @@ class User extends Component {
         dataIndex: "LocationName",
         key: "LocationName",
         defaultSortOrder: 'descend',
-        sorter: (a, b) => { return a.localeCompare(b, 'en') }
+        sorter: (a, b) => { return a.LocationName.localeCompare(b.LocationName, 'en') }
     }, {
         title: "Action",
         key: "action",
