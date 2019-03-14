@@ -418,7 +418,7 @@ class Dashboard extends Component {
                                 <div>
                                     <List.Item.Meta
                                         title={item.Title}
-                                        description={item.Dates.StartDate.toUTCString() + " - " + item.Dates.EndDate.toUTCString()} />
+                                        description={item.Dates.StartDate.toUTCString().substring(0, item.Dates.StartDate.toUTCString().length - 13) + " - " + item.Dates.EndDate.toUTCString().substring(0, item.Dates.EndDate.toUTCString().length - 13)} />
                                     <Visualizer
                                         type={item.GraphType}
                                         show={true}
