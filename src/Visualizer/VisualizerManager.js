@@ -175,11 +175,10 @@ class VisualizerManager extends Component {
                 //TODO: Switch to vertical bar graph in the future
                 result.forEach(el =>{
                     el.Value = Number.parseFloat(el.Total)
-                    el.Metric = el.Yr
                 })
 
                 result.sort((a,b) =>{
-                    return a.Yr - b.Yr
+                    return a.Metric - b.Metric
                 })
                 
                 //If this spans multiple years, always display it as a bar chart
@@ -195,8 +194,8 @@ class VisualizerManager extends Component {
                 //Period === month
                 let graphType = this.state.DataPresentation === "distribution" ? "Set" : "Metric"
 
-                let groupName = "MetricName"
-                if (result.length > 0) groupName = result[0].hasOwnProperty("MetricName") ? "MetricName" : "SetName"
+                let groupName = "Metric"
+                // if (result.length > 0) groupName = result[0].hasOwnProperty("MetricName") ? "MetricName" : "SetName"
 
                 let titleIndex = undefined
 
@@ -216,7 +215,7 @@ class VisualizerManager extends Component {
                 if (titleIndex !== undefined){
                     result.splice(titleIndex,1)
                 }
-                console.log('fall')
+ 
                 this.setState({
                     ready: true,
                     graphType: graphType,
@@ -224,8 +223,6 @@ class VisualizerManager extends Component {
                         data: result,
                         name: this.state.Title
                     }
-                }, () =>{
-                    console.log('ready1')
                 })
 
             }

@@ -193,6 +193,7 @@ class Visualizer extends Component {
 
     createHistogramData(){
         let rawData = this.props.data
+        console.log(rawData)
         if (rawData.length === 0){
             return null
         }
@@ -242,7 +243,7 @@ class Visualizer extends Component {
         // let data = this.createBarSeriesData(this.mockSet.data)
 
         let data = this.createHistogramData()
-
+        console.log(data)
         if (data === null){
             return(
                 <div>
