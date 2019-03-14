@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 //antd for ui components
-import { Button, Icon, Row, Col, Timeline } from 'antd'
+import { Card, Button, Icon, Row, Col, Timeline } from 'antd'
 
 //db
 import db from '../Database/database'
@@ -140,12 +140,12 @@ class Sync extends Component {
                     //The naming scheme needs to be cleaned up a bit here...
                     let dashboard = _dashboard.dashboard
                     db.Dashboard.clear().then(() => {
-                        if (! dashboard.hasOwnProperty("error")){
+                        if (!dashboard.hasOwnProperty("error")) {
                             let data = JSON.parse(dashboard.DashboardJson)
                             db.Dashboard.bulkAdd(data.dashboards).then(() => {
                                 resolve(true)
                             })
-                        }else{
+                        } else {
                             //User has no dashboard
                             resolve(true)
                         }
@@ -194,28 +194,31 @@ class Sync extends Component {
     render() {
         return (
             <div className="center">
-                <Row className="rowVMarginTopSm">
-                    <Col xs={24} sm={{ span: 22, offset: 1 }} md={{ span: 18, offset: 2 }} lg={{ span: 16, offset: 4 }} xl={{ span: 16, offset: 4 }}>
-                        <p>
-                            <Icon
-                                type="wifi" />&nbsp;
-                        Please note: you must have an internet connection.
+                <Card className="rowVMarginTopSm" >
+
+                    <Row className="rowVMarginTopSm">
+                        <Col xs={24} sm={{ span: 22, offset: 1 }} md={{ span: 18, offset: 2 }} lg={{ span: 16, offset: 4 }} xl={{ span: 16, offset: 4 }}>
+                            <p>
+                                <Icon
+                                    type="wifi" />&nbsp;
+                    Please note: you must have an internet connection.
                         </p>
-                        {
-                            this.state.ready &&
-                            <Button type="primary" onClick={this.startDownload}>Start Sync</Button>
-                        }
+                            {
+                                this.state.ready &&
+                                <Button type="primary" onClick={this.startDownload}>Start Sync</Button>
+                            }
 
-                    </Col>
-                </Row>
-                <Row>
-                    <Col hidden={!this.state.showProgress} xs={{ span: 22, offset: 1 }} sm={{ span: 20, offset: 2 }} md={{ span: 12, offset: 6 }} lg={{ span: 10, offset: 7 }} xl={{ span: 8, offset: 8 }}>
-                        <Timeline className="rowVMarginTopSm">
-                            {this.state.DataDownloads}
-                        </Timeline>
-                    </Col>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col hidden={!this.state.showProgress} xs={{ span: 22, offset: 1 }} sm={{ span: 20, offset: 2 }} md={{ span: 12, offset: 6 }} lg={{ span: 10, offset: 7 }} xl={{ span: 8, offset: 8 }}>
+                            <Timeline className="rowVMarginTopSm">
+                                {this.state.DataDownloads}
+                            </Timeline>
+                        </Col>
 
-                </Row>
+                    </Row>
+                </Card>
             </div>
         )
     }
