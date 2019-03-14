@@ -51,6 +51,9 @@ class VisualizerManager extends Component {
     }
 
     checkInputs = () => {
+
+        
+        console.log(this.state)
         let valid = true
         let validInputs = {
             "LocationId": value => {return value !== undefined && value !== null},
@@ -63,10 +66,13 @@ class VisualizerManager extends Component {
 
         for (var key in validInputs){
             if (validInputs[key](this.state[key]) === false){
+                console.log(key)
+                console.log(this.state[key])
                 valid = false
                 break
             }
         }
+        console.log(valid)
 
         return valid
     }
@@ -124,13 +130,10 @@ class VisualizerManager extends Component {
      */
     getComplexData = () =>{
         if (this.props.RawData){
-    
             let graphType = "Metric"
-
             if (this.props.Data.MetricValue !== undefined && this.props.Data.MetricValue.charAt(0)!== "-") graphType = "Metric" 
             else if (this.props.Data.SetValue !== undefined) graphType = "Set"
-            else graphType = "Group"
-            
+            else graphType = "Group"    
             this.setState({
                 ready: true,
                 data:{
@@ -241,19 +244,24 @@ class VisualizerManager extends Component {
     }
 
     setStateFromProps = (callback) =>{
-        this.setState({
-            Title: this.props.Title,
-            LocationName: this.props.Location ? this.props.Location.Name : undefined,
-            LocationId: this.props.Location ? this.props.Location.Id : undefined,
-            LocationType: this.props.Location ? this.props.Location.Type : undefined,
-            DataId: this.props.Data ? this.props.Data.Id : undefined,
-            DataType: this.props.Data ? this.props.Data.Type : undefined,
-            DataPresentation: this.props.Data ? this.props.Data.TotalOrDistribution : undefined,
-            StartDate: this.props.Dates ? this.props.Dates.StartDate : undefined,
-            EndDate: this.props.Dates ? this.props.Dates.EndDate : undefined,
-        }, () =>{
+        if (this.props.Title){
+            this.setState({
+                Title: this.props.Title,
+                LocationName: this.props.Location ? this.props.Location.Name : undefined,
+                LocationId: this.props.Location ? this.props.Location.Id : undefined,
+                LocationType: this.props.Location ? this.props.Location.Type : undefined,
+                DataId: this.props.Data ? this.props.Data.Id : undefined,
+                DataType: this.props.Data ? this.props.Data.Type : undefined,
+                DataPresentation: this.props.Data ? this.props.Data.TotalOrDistribution : undefined,
+                StartDate: this.props.Dates ? new Date(this.props.Dates.StartDate) : undefined,
+                EndDate: this.props.Dates ? new Date(this.props.Dates.EndDate) : undefined,
+            }, () =>{
+                if (callback) callback()
+            })
+        }else{
             if (callback) callback()
-        })
+        }
+
     }
 
     run = () => {
@@ -271,7 +279,6 @@ class VisualizerManager extends Component {
     componentDidMount(){
         this.setStateFromProps(this.run)
     }
-
 
     render() {
         if (this.checkInputs()){

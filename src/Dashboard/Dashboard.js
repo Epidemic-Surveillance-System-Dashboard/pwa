@@ -438,9 +438,6 @@ class Dashboard extends Component {
             showGraphs: !this.state.showGraphs
         }, () => {
             window.dispatchEvent(new Event('resize'));
-            // if (this.state.showGraphs) {
-            //     window.dispatchEvent(new Event('resize'));
-            // }
         })
     }
 
