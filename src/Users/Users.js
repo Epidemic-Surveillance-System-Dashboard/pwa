@@ -154,10 +154,10 @@ class User extends Component {
                 {/* Data loaded  */}
                 {
                     this.state.currentView === "table" &&
-                    <Card className="rowVMarginTopSm" >
-                        <Row className="rowVMarginTopSm" gutter={-1}>
+                    <div class="rowVMarginTopSm">
+
+                        <Row className="rowVMarginTopSm" gutter={16}>
                             <Col className="left" xs={{ span: 16, offset: 0 }} sm={{ span: 14, offset: 1 }} md={{ span: 10, offset: 3 }} lg={{ span: 8, offset: 4 }}>
-                                <h3>Users Summary</h3>
                             </Col>
                             <Col className="right" span={8}>
                                 <Button
@@ -169,13 +169,16 @@ class User extends Component {
                                     Add User
                             </Button>
                             </Col>
-                        </Row>
-                    </Card>
-                }
-                <Card className="rowVMarginTopSm" >
 
-                    <Row>
-                        <Col {...this.colStyle}>
+                        </Row>
+                    </div>
+
+                }
+
+                <Row className="rowVMarginTopSm" gutter={16}>
+                    <Col {...this.colStyle}>
+                        <Card className="rowVMarginTopSm" >
+
                             <div className="rowVMarginTopSm">
                                 <Table
                                     dataSource={dataSource}
@@ -210,10 +213,10 @@ class User extends Component {
                                     />
                                 </div>
                             }
+                        </Card>
 
-                        </Col>
-                    </Row>
-                </Card>
+                    </Col>
+                </Row>
 
             </div>
 
