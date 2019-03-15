@@ -30,3 +30,56 @@
     transform: rotate(360deg);
   }
 }
+
+/* Add margin-bottom to columns in this row*/
+.rowVMarginSm > div{
+	margin-bottom: 15px;
+}
+
+.rowVMarginTopSm {
+  margin-top: 15px;
+}
+
+.center {
+  text-align: center;
+}
+
+.left{
+  text-align: left;
+}
+
+.right{
+  text-align: right;
+}
+
+.displayNone{
+  display:none;
+}
+
+.gutterOverflowMask{
+  width:100%;
+  overflow-x: hidden;
+}
+
+.spacing{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height:60vh;
+}
+
+.graphPlaceholder{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 404px;/* 350px graph with legend runs about 404px high*/
+}
+
+.ant-timeline-item-head{
+  background-color: transparent !important;
+}
+
+.min-height-wrapper{
+  /*60px for the nav bar; 24px padding on the footer*/
+  min-height: calc(100vh - 84px);
+}

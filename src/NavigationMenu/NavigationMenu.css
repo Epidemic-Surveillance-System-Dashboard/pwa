@@ -1,0 +1,22 @@
+.navMenu * {
+    color: white;
+}
+
+.ghost-button, .ghost-button:focus, .ghost-button:hover{
+    background-color: transparent;
+    border: transparent;
+    color: white;
+}
+
+.trigger:hover{
+    cursor: pointer;
+}
+
+.hidden{
+    display:none;
+}
+
+.noWrap{
+    white-space: nowrap;
+    overflow-x: hidden;
+}
