@@ -230,7 +230,7 @@ class Visualizer extends Component {
         }).map(element => {
             return { y: element.Metric, x: element.Value }
         })
-        
+
         return ({
             barSeries: <HorizontalBarSeries data={map} color={color} />,
             legend: <DiscreteColorLegend orientation="horizontal" items={[{ title: rawData.name, color: color }, { title: "Average", color: averageColor }]} />
@@ -238,16 +238,20 @@ class Visualizer extends Component {
     }
 
     createBarSeriesAverage = (rawData) => {
+        let data = rawData.data.filter(element => {
+            return !(typeof element.Metric === 'string' && element.Metric.length === 0)
+        })
+
         let sum = 0
         let count = 0
-        for (let i = 0; i < rawData.data.length; i++) {
-            sum += rawData.data[i].Value
+
+        data.forEach(el => {
+            sum += el.Value
             count++
-        }
+        })
+       
         let average = count > 0 ? sum / count : 0
-        let lineData = rawData.data.filter(element => {
-            return !(typeof element.Metric === 'string' && element.Metric.length === 0)
-        }).map(element => {
+        let lineData = data.map(element => {
             return { y: element.Metric, x: average }
         })
         return (<LineSeries data={lineData} strokeDasharray={[7, 5]} color={averageColor} />)
