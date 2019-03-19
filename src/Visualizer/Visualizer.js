@@ -163,7 +163,7 @@ class Visualizer extends Component {
 
         //Push all the legend names in
         this.resetColor()
-        console.log(this.props.data.legendTitles);
+        
         var legend = [];//this.props.data.legendTitles;
         for (let i = 0; i < this.props.data.legendTitles.length; i++){
             legend.push({ title: this.props.data.legendTitles[i], color: this.getNextColor() })
@@ -193,10 +193,21 @@ class Visualizer extends Component {
 
     createHistogramData(){
         let rawData = this.props.data
-        console.log(rawData)
+        
         if (rawData.length === 0){
             return null
         }
+
+        let redundantTitle = rawData.name.replace("All ", "").trim()
+    
+        rawData.data.forEach(el => {
+            if (typeof el.Metric === 'string'){
+                //Remove 'Facility Attendance' from Facility Attendance Outpatient and Facility Attendance Male
+                el.Metric = el.Metric.replace(`${redundantTitle}, `,"")
+                //Remove 'Facility Attendance Male from 'Facility Attendance Male, 20 years and above'
+                el.Metric = el.Metric.replace(`${redundantTitle}`,"").trim()
+            }
+        })
 
         //Update Default Padding
         let maxLength = 0
@@ -214,10 +225,12 @@ class Visualizer extends Component {
 
     createBarSeriesData = (rawData) => {
         let color = this.getNextColor()
-        let map = rawData.data.map(element => {
+        let map = rawData.data.filter(element => {
+            return !(typeof element.Metric === 'string' && element.Metric.length === 0)
+        }).map(element => {
             return { y: element.Metric, x: element.Value }
         })
-
+        
         return ({
             barSeries: <HorizontalBarSeries data={map} color={color} />,
             legend: <DiscreteColorLegend orientation="horizontal" items={[{ title: rawData.name, color: color }, { title: "Average", color: averageColor }]} />
@@ -232,18 +245,16 @@ class Visualizer extends Component {
             count++
         }
         let average = count > 0 ? sum / count : 0
-        let lineData = rawData.data.map(element => {
+        let lineData = rawData.data.filter(element => {
+            return !(typeof element.Metric === 'string' && element.Metric.length === 0)
+        }).map(element => {
             return { y: element.Metric, x: average }
         })
         return (<LineSeries data={lineData} strokeDasharray={[7, 5]} color={averageColor} />)
     }
 
     Histogram() {
-
-        // let data = this.createBarSeriesData(this.mockSet.data)
-
         let data = this.createHistogramData()
-        console.log(data)
         if (data === null){
             return(
                 <div>

@@ -202,7 +202,7 @@ class Dashboard extends Component {
 
     createCollapseExpandButton = (key) => {
         return (
-            <Button key={0} onClick={() => { this.toggleGraph(key) }}>{this.state.graphOpenCloseState[key].open ? "Collapse" : "Expand"}</Button>
+            <Button key={0} className = "condensed" onClick={() => { this.toggleGraph(key) }}>{this.state.graphOpenCloseState[key].open ? "Collapse" : "Expand"}</Button>
         )
     }
 
@@ -314,7 +314,7 @@ class Dashboard extends Component {
         return(
             <Popconfirm placement="topRight" title = "Are you sure want to delete this graph?" okText="Delete" cancelText="Cancel"
             onConfirm = {() => { this.deleteGraph(item) }}>
-                <Button type = "danger" icon = "delete">Delete</Button>
+                <Button className="condensed" type = "danger" icon = "delete">Delete</Button>
             </Popconfirm>
             
         )
