@@ -312,7 +312,7 @@ class Dashboard extends Component {
 
     createDeleteButton = (item) =>{
         return(
-            <Popconfirm placement="topRight" title = "Are you sure want to delete this graph?" okText="Delete" cancelText="Cancel"
+            <Popconfirm placement="top" title = "Are you sure want to delete this graph?" okText="Delete" cancelText="Cancel"
             onConfirm = {() => { this.deleteGraph(item) }}>
                 <Button className="condensed" type = "danger" icon = "delete">Delete</Button>
             </Popconfirm>

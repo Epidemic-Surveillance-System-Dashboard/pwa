@@ -44,6 +44,7 @@ class Login extends Component {
                     <Col>
                         <Input 
                             addonBefore={this.preTab("Email")}
+                            type = "email"
                             onChange = {(e) =>{
                                 this.handleInput(e.target.value, "Email")
                             }}
