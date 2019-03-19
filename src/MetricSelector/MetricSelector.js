@@ -323,40 +323,40 @@ class MetricSelector extends Component {
         return (
            <div>
                 <Select
-                    showSearch
+                    // showSearch
                     style={style}
                     placeholder="Group"
                     optionFilterProp="children"
                     value = {this.state.Group}
                     onChange={(value) => {this.handleChange("Group", value)}}
                     disabled = {this.state.enabledDisabledLists.Group}
-                    filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                    // filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                 >
                     {this.state.GroupList}
                 </Select>
                 <br/>
                 <Select
-                    showSearch
+                    // showSearch
                     style={style}
                     placeholder="Set"
                     optionFilterProp="children"
                     value = {this.state.Set}
                     onChange={(value) => {this.handleChange("Set", value)}}
                     disabled = {this.state.enabledDisabledLists.Set}
-                    filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                    // filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                 >
                     {this.state.SetList}
                 </Select>
                 <br/>
                 <Select
-                    showSearch
+                    // showSearch
                     style={style}
                     placeholder="Metric"
                     optionFilterProp="children"
                     value = {this.state.Metric}
                     onChange={(value) => {this.handleChange("Metric", value)}}
                     disabled = {this.state.enabledDisabledLists.Metric}
-                    filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                    // filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                 >
                     {this.state.MetricList}
                 </Select>

@@ -336,46 +336,46 @@ class LocationSelector extends Component {
                     value = {this.state.State}
                     onChange={(value) => {this.handleChange("State", value)}}
                     disabled = {this.state.enabledDisabledLists.State}
-                    filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                    // filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                 >
                     {this.state.StateList}
                 </Select>
                 <br/>
                 <Select
-                    showSearch
+                    // showSearch
                     style={style}
                     placeholder="LGA"
                     optionFilterProp="children"
                     value = {this.state.LGA}
                     onChange={(value) => {this.handleChange("LGA", value)}}
                     disabled = {this.state.enabledDisabledLists.LGA}
-                    filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                    // filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                 >
                     {this.state.LGAList}
                 </Select>
                 <br/>
                 <Select
-                    showSearch
+                    // showSearch
                     style={style}
                     placeholder="Ward"
                     optionFilterProp="children"
                     value = {this.state.Ward}
                     onChange={(value) => {this.handleChange("Ward", value)}}
                     disabled = {this.state.enabledDisabledLists.Ward}
-                    filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                    // filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                 >
                     {this.state.WardList}
                 </Select>
                 <br/>
                 <Select
-                    showSearch
+                    // showSearch
                     style={style}
                     placeholder="Facility"
                     optionFilterProp="children"
                     value = {this.state.Facility}
                     onChange={(value) => {this.handleChange("Facility", value)}}
                     disabled = {this.state.enabledDisabledLists.Facility}
-                    filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                    // filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                 >
                     {this.state.FacilityList}
                 </Select>
