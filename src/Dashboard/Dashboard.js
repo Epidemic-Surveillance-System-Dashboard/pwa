@@ -306,7 +306,7 @@ class Dashboard extends Component {
 
     createViewRelatedButton = (item) => {
         return (
-            <Button type = "primary" onClick={() => { this.toggleViewRelated(item) }}>View Related</Button>
+            <Button type = "primary" className = "condensed" onClick={() => { this.toggleViewRelated(item) }}>View Related</Button>
         )
     }
 
