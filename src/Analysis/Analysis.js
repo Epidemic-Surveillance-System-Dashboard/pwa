@@ -8,11 +8,11 @@ import Visualizer from '../Visualizer/Visualizer';
 import db from '../Database/database';
 import RangeSelector from '../RangeSelector/RangeSelector'
 
-var initialMetric = {
-    GroupValue: "1191|Facility Attendance|Group",
-    SetValue: "-3-1191|All Facility Attendance (Distribution)|Group",
-    MetricValue: ""
-};
+// var initialMetric = {
+//     GroupValue: "1191|Facility Attendance|Group",
+//     SetValue: "-3-1191|All Facility Attendance (Distribution)|Group",
+//     MetricValue: ""
+// };
 class Analysis extends Component {
 
     state = {
@@ -45,13 +45,13 @@ class Analysis extends Component {
         for (var key in this.state.locationData) {
             locationData.push(this.state.locationData[key]);
         }
-        if (this.state.metricData.Type == "Metric") {
+        if (this.state.metricData.Type === "Metric") {
             this.createMetricGraph(locationData);
 
-        } else if (this.state.metricData.Type == "Set") {
+        } else if (this.state.metricData.Type === "Set") {
             this.createSetGraph(locationData);
 
-        } else if (this.state.metricData.Type == "Group") {
+        } else if (this.state.metricData.Type === "Group") {
 
         }
 
@@ -240,10 +240,10 @@ class Analysis extends Component {
         })
     }
     addLocation = () => {
-        this.state.selectedLocation = null;
         this.setState({
             addingLocation: true,
-            currentView: "existing"
+            currentView: "existing",
+            selectedLocation: null
         })
     }
     deleteLocation = (location) => {
@@ -278,12 +278,12 @@ class Analysis extends Component {
         this.setState({Dates: dates});
     }
     render() {
-        const { initLoading, loading, list } = this.state;
-        const loadMore = !initLoading && !loading ? (
-            <div className="center" >
-                <Button onClick={this.addLocation}>Add Location</Button>
-            </div>
-        ) : null;
+        // const { initLoading, loading } = this.state;
+        // const loadMore = !initLoading && !loading ? (
+        //     <div className="center" >
+        //         <Button onClick={this.addLocation}>Add Location</Button>
+        //     </div>
+        // ) : null;
 
         return (
             <div>

@@ -139,12 +139,11 @@ class CreateModifyDeleteUser extends Component {
     handleUserTypeSelect(value) {
         let user = this.state.userInfo
         user["UserType"] = value
-        this.setState({ userInfo: user },() => {console.log(this.state.userInfo)})
+        this.setState({ userInfo: user })
         //this.userInformationChanged()
     }
 
     basicFeatures = () => {
-        console.log(this.state.mode);
         let basicFeatures = [
             "First Name",
             "Last Name",
@@ -161,7 +160,7 @@ class CreateModifyDeleteUser extends Component {
             array.push(
                 <Input addonBefore={this.inputLabelTab(featureName)}
                     value={this.state.userInfo ? this.state.userInfo[featureNameKey] : ""}
-                    disabled={this.state.disabled || (featureName == "Email" && this.state.mode == "existing")}
+                    disabled={this.state.disabled || (featureName === "Email" && this.state.mode === "existing")}
                     key={i}
                     onChange={(e) => { this.inputChanged(featureNameKey, e) }} />
             )
@@ -221,7 +220,7 @@ class CreateModifyDeleteUser extends Component {
             <div>{this.state.ready && <Col>
                 <Divider />
                 {array}
-                <Select style={{ width: "100%" }} defaultValue={this.state.userInfo.UserType != null? this.state.userInfo.UserType : "user"} placeholder="User Type" onChange={(e)=>{this.handleUserTypeSelect(e)}} disabled={this.state.loggedInUser.Id == this.state.userInfo.Id ? true : this.state.disabled}>
+                <Select style={{ width: "100%" }} defaultValue={this.state.userInfo.UserType != null? this.state.userInfo.UserType : "user"} placeholder="User Type" onChange={(e)=>{this.handleUserTypeSelect(e)}} disabled={this.state.loggedInUser.Id === this.state.userInfo.Id ? true : this.state.disabled}>
                     {allUserTypeOptions}
                 </Select>
                 <Divider />
@@ -232,7 +231,7 @@ class CreateModifyDeleteUser extends Component {
                     parentHandler={this.updateLocation}
                     showLocation={true}
                     initialLocation={{ Id: this.state.userInfo.LocationId, Type: this.state.userInfo.LocationType }}
-                    disabled={this.state.loggedInUser.Id == this.state.userInfo.Id ? true : this.state.disabled}
+                    disabled={this.state.loggedInUser.Id === this.state.userInfo.Id ? true : this.state.disabled}
                     maxScope={{Type: this.state.loggedInUser.LocationType, Id: this.state.loggedInUser.LocationId}}/>
             </Col>
             }
@@ -348,7 +347,7 @@ class CreateModifyDeleteUser extends Component {
             method = "PUT"
             successHandler = (result) => {
                 if (result.result === "Update successful") {
-                    if(this.state.loggedInUser.Id == userObject.Id){
+                    if(this.state.loggedInUser.Id === userObject.Id){
                         db.LocalUser.put(userObject).then(() => {
                             message.success(successMessage)
                             this.props.refreshUsers()

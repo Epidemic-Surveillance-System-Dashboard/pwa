@@ -34,8 +34,6 @@ class User extends Component {
                 }
             })
             this.setState({ dataLoaded: true })
-            console.log(dataSource)
-
         })
 
 
@@ -154,7 +152,7 @@ class User extends Component {
                 {/* Data loaded  */}
                 {
                     this.state.currentView === "table" &&
-                    <div class="rowVMarginTopSm">
+                    <div className="rowVMarginTopSm">
 
                         <Row className="rowVMarginTopSm" gutter={16}>
                             <Col className="left" xs={{ span: 16, offset: 0 }} sm={{ span: 14, offset: 1 }} md={{ span: 10, offset: 3 }} lg={{ span: 8, offset: 4 }}>

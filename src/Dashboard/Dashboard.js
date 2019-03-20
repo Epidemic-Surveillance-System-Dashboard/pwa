@@ -221,8 +221,6 @@ class Dashboard extends Component {
                 visibility[i] = { open: true, showInFilter: true }
             }
 
-            console.log(arr)
-
             visibility["collapseOrExpandText"] = { text: "Collapse All" }
 
             this.setState({
@@ -278,7 +276,7 @@ class Dashboard extends Component {
 
             allData.forEach(function (metricData) {
                 if (metricData.parentId === parentId) {
-                    if (metricData.Id != item.Data.Id) {
+                    if (metricData.Id !== item.Data.Id) {
                         relatedFound.push(metricData)
                     }
                 }
@@ -323,8 +321,6 @@ class Dashboard extends Component {
 
     processFoundData = (relatedFound, item) => {
         let processedRelatedData = []
-        console.log(item)
-        console.log(relatedFound)
         relatedFound.forEach(function (data) {
             var temp = JSON.parse(JSON.stringify(item))
             temp.Title = data.Name
@@ -342,13 +338,11 @@ class Dashboard extends Component {
             temp.Dates.StartDate = item.Dates.StartDate
             temp.Dates.EndDate = item.Dates.EndDate
             temp.RawData = null
-            console.log("temp")
-            console.log(temp)
             processedRelatedData.push(temp)
         })
         this.setState({
             relatedGraphs: processedRelatedData
-        }, () => { console.log(this.state.relatedGraphs) })
+        })
     }
 
     deleteGraph = (item) => {

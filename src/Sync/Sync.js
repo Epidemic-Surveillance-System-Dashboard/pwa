@@ -123,10 +123,8 @@ class Sync extends Component {
                     DashboardJson: JSON.stringify(this.state.dashboardData)
                 })
             }
-            console.log(params.body)
             let callback = (info) => {
                 return new Promise(resolve => {
-                    console.log(info)
                     resolve(true)
                 })
             }

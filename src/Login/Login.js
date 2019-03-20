@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import {Row, Col, Input, Button} from 'antd'
-import db from '../Database/database'
 import UserService from '../Services/User';
 import { withRouter } from 'react-router-dom'
 

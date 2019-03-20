@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 import { BrowserRouter as Router, Route, Link } from "react-router-dom"
 
 //antd for ui components
-import { Drawer, Icon, Layout, Menu, Divider } from 'antd'
+import { Drawer, Icon, Layout, Menu } from 'antd'
 
 //Nav Bar
 import NavigationMenu from './NavigationMenu/NavigationMenu'
@@ -21,7 +21,6 @@ import DataQuality from './DataQuality/DataQuality'
 import userService from './Services/User'
 
 import './App.css';
-import Login from './Login/Login';
 
 const {
 	Header, Footer, Content,
