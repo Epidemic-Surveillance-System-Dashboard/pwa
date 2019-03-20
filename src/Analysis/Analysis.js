@@ -1,21 +1,18 @@
 import React, { Component } from 'react';
-import { Button, List, Card, Row, Col, Select, Divider, Avatar, Menu, Icon, Dropdown, message, DatePicker } from 'antd'
+import { Button, List, Card, Row, Col, Divider, Icon, message } from 'antd'
 
 import './Analysis.css';
-import LocationSelector from "../LocationSelector/LocationSelector"
 import LocationWrapper from "../Analysis/LocationWrapper"
 import MetricSelector from "../MetricSelector/MetricSelector"
 import Visualizer from '../Visualizer/Visualizer';
-import VisualizerManager from '../Visualizer/VisualizerManager'
 import db from '../Database/database';
-import moment from 'moment';
 import RangeSelector from '../RangeSelector/RangeSelector'
 
-var initialMetric = {
-    GroupValue: "1191|Facility Attendance|Group",
-    SetValue: "-3-1191|All Facility Attendance (Distribution)|Group",
-    MetricValue: ""
-};
+// var initialMetric = {
+//     GroupValue: "1191|Facility Attendance|Group",
+//     SetValue: "-3-1191|All Facility Attendance (Distribution)|Group",
+//     MetricValue: ""
+// };
 class Analysis extends Component {
 
     state = {
@@ -48,13 +45,13 @@ class Analysis extends Component {
         for (var key in this.state.locationData) {
             locationData.push(this.state.locationData[key]);
         }
-        if (this.state.metricData.Type == "Metric") {
+        if (this.state.metricData.Type === "Metric") {
             this.createMetricGraph(locationData);
 
-        } else if (this.state.metricData.Type == "Set") {
+        } else if (this.state.metricData.Type === "Set") {
             this.createSetGraph(locationData);
 
-        } else if (this.state.metricData.Type == "Group") {
+        } else if (this.state.metricData.Type === "Group") {
 
         }
 
@@ -233,20 +230,20 @@ class Analysis extends Component {
             tempData[location.Type + "-" + location.Id] = location;
             this.setState({ selectedLocation: location });
 
-            message.success('Location Saved');
+            message.success('Location Added');
             this.setState({ locationData: tempData });
         } else {
-            message.warning('Location Not Saved');
+            // message.warning('Location Not Saved');
         }
         this.setState({
             currentView: "table"
         })
     }
     addLocation = () => {
-        this.state.selectedLocation = null;
         this.setState({
             addingLocation: true,
-            currentView: "existing"
+            currentView: "existing",
+            selectedLocation: null
         })
     }
     deleteLocation = (location) => {
@@ -281,32 +278,22 @@ class Analysis extends Component {
         this.setState({Dates: dates});
     }
     render() {
-        const { initLoading, loading, list } = this.state;
-        const loadMore = !initLoading && !loading ? (
-            <div className="center" >
-                <Button onClick={this.addLocation}>Add Location</Button>
-            </div>
-        ) : null;
 
         return (
             <div>
                 {
                     this.state.currentView === "table" &&
                     <div className="center">
-                        <Row className={``} gutter={16}>
+                    
+                        <Row className="rowVMarginSm rowVMarginTopSm" gutter={16}>
                             <Col xs={{ span: 24, offset: 0 }} sm={{ span: 22, offset: 1 }} md={{ span: 18, offset: 3 }} lg={{ span: 16, offset: 4 }}>
-                                <Card className="left" size="medium" title="Select Metric">
+                                <Card className="left" size="medium" title="Analyze Data">
+                                    <h4>Select Data</h4>
                                     <MetricSelector parentHandler={this.updateData}
                                         initialData={this.state.metricData}
                                     ></MetricSelector>
-
-                                </Card>
-                            </Col>
-                        </Row>
-                        <Divider />
-                        <Row className={``} gutter={16}>
-                            <Col xs={{ span: 24, offset: 0 }} sm={{ span: 22, offset: 1 }} md={{ span: 18, offset: 3 }} lg={{ span: 16, offset: 4 }}>
-                                <Card className="left" size="medium" title="Select Date">
+                                    <Divider/>
+                                    <h4>Select Dates</h4>
                                     <RangeSelector
                                         parentHandler={this.updateDates}
                                         initialData={
@@ -314,16 +301,10 @@ class Analysis extends Component {
                                                 Dates: this.state.Dates
                                             }
                                         } />
-                                </Card>
-                            </Col>
-                        </Row>
-
-                        <Divider />
-                        <Row className={``} gutter={16}>
-                            <Col xs={{ span: 24, offset: 0 }} sm={{ span: 22, offset: 1 }} md={{ span: 18, offset: 3 }} lg={{ span: 16, offset: 4 }}>
-                                <Card className="left" size="medium" title="Select Location">
+                                    <Divider/>
+                                    <h4>Select Locations</h4>
                                     <div className="center" >
-                                        <Button type="primary" block onClick={this.addLocation}>Add Location</Button>
+                                        <Button block onClick={this.addLocation}>Add Location</Button>
                                     </div>
                                     {this.state.locationData &&
                                         <List
@@ -357,22 +338,11 @@ class Analysis extends Component {
                                             )}
                                         />
                                     }
+                                    <Divider/>
+                                    <Button type="primary" block onClick={this.generateGraph}>Generate Graph</Button>
                                 </Card>
                             </Col>
                         </Row>
-
-                        <Divider />
-                        <Row>
-                            <Col xs={{ span: 24, offset: 0 }} sm={{ span: 22, offset: 1 }} md={{ span: 18, offset: 3 }} lg={{ span: 16, offset: 4 }}>
-                                <div className="center" >
-                                    <Button type="primary" block onClick={this.generateGraph}>Generate Graph</Button>
-                                </div>
-                            </Col>
-
-                        </Row>
-                        <Divider />
-
-
                     </div>
                 }
 

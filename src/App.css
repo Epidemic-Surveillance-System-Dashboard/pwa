@@ -83,3 +83,13 @@
   /*60px for the nav bar; 24px padding on the footer*/
   min-height: calc(100vh - 84px);
 }
+
+Button.ant-btn.condensed{
+  padding-left: 7px;
+  padding-right: 7px;
+}
+
+.ant-list-vertical .ant-list-item-action > li {
+  padding-left: 5px;
+  padding-right: 5px;
+}

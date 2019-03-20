@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 import { BrowserRouter as Router, Route, Link } from "react-router-dom"
 
 //antd for ui components
-import { Drawer, Icon, Layout, Menu, Divider } from 'antd'
+import { Drawer, Icon, Layout, Menu } from 'antd'
 
 //Nav Bar
 import NavigationMenu from './NavigationMenu/NavigationMenu'
@@ -27,7 +27,7 @@ const {
 } = Layout;
 
 const pathNamesAndTitles = {
-	"/": "Home",
+	"/": "Dashboard",
 	"/account": "Account",
 	"/dashboard": "Dashboard",
 	"/analysis": "Analysis",
@@ -55,7 +55,7 @@ class App extends Component {
 		})
 	}
 
-	closerDrawer = () => {
+	closeDrawer = () => {
 		this.setState({
 			drawerOpen: false,
 		})
@@ -66,7 +66,6 @@ class App extends Component {
 			this.setState({
 				user: userObj
 			})
-			console.log(this.state.user);
 		});
 	}
 
@@ -98,19 +97,14 @@ class App extends Component {
 							title="Menu"
 							placement="left"
 							closable={true}
-							onClose={this.closerDrawer}
+							onClose={this.closeDrawer}
 							visible={this.state.drawerOpen}>
 							<Menu
-								onClick={this.closerDrawer}>
-								{/* <Menu.Item key="1">
-									<Link to="/">
-										<Icon type="home" />Home
-								</Link>
-								</Menu.Item> */}
+								onClick={this.closeDrawer}>
 								<Menu.Item key="2">
 									<Link to="/dashboard">
 										<Icon type="area-chart" />Dashboard
-								</Link>
+									</Link>
 								</Menu.Item>
 								<Menu.Item key="3">
 									<Link to="/analysis">
@@ -157,8 +151,8 @@ class App extends Component {
 							title={this.getTitle()}>
 						</NavigationMenu>
 					</Header>
-					<Content className="min-height-wrapper">
-						<Route exact path="/" render={(props) => <SampleHome {...props} updateDrawer={this.updateDrawer} />} />
+					<Content className="min-height-wrapper gutterOverflowMask">
+						<Route exact path="/" render={(props) => <SampleHome {...props} updateDrawer={this.updateDrawer} />}/>
 						<Route path="/dashboard" component={Dashboard} />
 						<Route path="/analysis" component={Analysis} />
 						<Route path="/account" component={Account} />
@@ -174,7 +168,7 @@ class App extends Component {
 							It is built with components by 
 							<a href = "https://ant.design/" target = "_blank" rel="noopener noreferrer"> Ant Financial </a>
 							and powered by 
-							<a href = "https://reactjs.org/" target = "_blank" rel="noopener noreferrer"> React </a>.
+							<a href = "https://reactjs.org/" target = "_blank" rel="noopener noreferrer"> React</a>.
 						</p>
 					</Footer>
 				</Layout>

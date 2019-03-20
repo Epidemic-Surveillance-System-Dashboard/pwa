@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import {Button, message} from 'antd'
 
 import db from '../Database/database'
-import user from '../Services/User'
 
 class SaveGraph extends Component{
 

@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 
-import { message, Icon, Table, Button, List, Card, Row, Col, Radio, Popconfirm } from 'antd'
+import { message, Button, List, Card, Row, Col, Popconfirm } from 'antd'
 
 import '../../node_modules/react-vis/dist/style.css'
 import './Dashboard.css'
@@ -10,159 +10,153 @@ import CreateGraph from '../Graph/CreateGraph'
 import db from '../Database/database';
 import Visualizer from '../Visualizer/Visualizer';
 
-let graphExamples = [
-    // {
-    //     Title: "Facility Attendance Female, 29d-11 months",
-    //     Location:{
-    //         Name: "za Bagega Primary Health Centre",
-    //         Id:  "1215",
-    //         Type: "Facility"
-    //     },
-    //     Data:{
-    //         Id: "11729",
-    //         Type: "Metric",
-    //     },
-    //     Dates:{
-    //         StartDate:new Date("2015-01-01T00:00:00.000Z"),
-    //         EndDate: new Date("2015-12-01T00:00:00.000Z"),
-    //     },
-    //     GraphId: 0
-    // },
-    // {
-    //     Title: "Facility Attendance Outpatient Value",
-    //     Location:{
-    //         Name: "za Bagega Primary Health Centre",
-    //         Id:  "1215",
-    //         Type: "Facility"
-    //     },
-    //     Data:{
-    //         Id: "11493",
-    //         Type: "Metric",
-    //     },
-    //     Dates:{
-    //         StartDate:new Date("2015-01-01T00:00:00.000Z"),
-    //         EndDate: new Date("2015-12-01T00:00:00.000Z"),
-    //     },
-    //     GraphId: 1
-    // },
-    // {
-    //     Title: "Facility Attendance Outpatient",
-    //     Location:{
-    //         Name: "za Bagega Ward",
-    //         Id:  "386",
-    //         Type: "Ward"
-    //     },
-    //     Data:{
-    //         Id: "2094",
-    //         Type: "Set",
-    //     },
-    //     Dates:{
-    //         StartDate:new Date("2015-01-01T00:00:00.000Z"),
-    //         EndDate: new Date("2015-12-01T00:00:00.000Z"),
-    //     },
-    //     GraphId: 2
-    // },
-    // {
-    //     Title: "Facility Attendance Male",
-    //     Location:{
-    //         Name: "za Bagega Ward",
-    //         Id:  "386",
-    //         Type: "Ward"
-    //     },
-    //     Data:{
-    //         Id: "2094",
-    //         Type: "Set",
-    //         TotalOrDistribution: "distribution"
-    //     },
-    //     Dates:{
-    //         StartDate:new Date("2015-01-01T00:00:00.000Z"),
-    //         EndDate: new Date("2015-12-01T00:00:00.000Z"),
-    //     },
-    //     GraphId: 3
-    // },
-    // {
-    //     Title: "Facility Attendance Male",
-    //     Location:{
-    //         Name: "za Bagega Primary Health Centre",
-    //         Id:  "1215",
-    //         Type: "Facility"
-    //     },
-    //     Data:{
-    //         Id: "2094",
-    //         Type: "Set",
-    //         TotalOrDistribution: "distribution"
-    //     },
-    //     Dates:{
-    //         StartDate:new Date("2015-01-01T00:00:00.000Z"),
-    //         EndDate: new Date("2015-12-01T00:00:00.000Z"),
-    //     },
-    //     GraphId: 4
-    // }
-]
+// let graphExamples = [
+//     {
+//         Title: "Facility Attendance Female, 29d-11 months",
+//         Location:{
+//             Name: "za Bagega Primary Health Centre",
+//             Id:  "1215",
+//             Type: "Facility"
+//         },
+//         Data:{
+//             Id: "11729",
+//             Type: "Metric",
+//         },
+//         Dates:{
+//             StartDate:new Date("2015-01-01T00:00:00.000Z"),
+//             EndDate: new Date("2015-12-01T00:00:00.000Z"),
+//         },
+//         GraphId: 0
+//     },
+//     {
+//         Title: "Facility Attendance Outpatient Value",
+//         Location:{
+//             Name: "za Bagega Primary Health Centre",
+//             Id:  "1215",
+//             Type: "Facility"
+//         },
+//         Data:{
+//             Id: "11493",
+//             Type: "Metric",
+//         },
+//         Dates:{
+//             StartDate:new Date("2015-01-01T00:00:00.000Z"),
+//             EndDate: new Date("2015-12-01T00:00:00.000Z"),
+//         },
+//         GraphId: 1
+//     },
+//     {
+//         Title: "Facility Attendance Outpatient",
+//         Location:{
+//             Name: "za Bagega Ward",
+//             Id:  "386",
+//             Type: "Ward"
+//         },
+//         Data:{
+//             Id: "2094",
+//             Type: "Set",
+//         },
+//         Dates:{
+//             StartDate:new Date("2015-01-01T00:00:00.000Z"),
+//             EndDate: new Date("2015-12-01T00:00:00.000Z"),
+//         },
+//         GraphId: 2
+//     },
+//     {
+//         Title: "Facility Attendance Male",
+//         Location:{
+//             Name: "za Bagega Ward",
+//             Id:  "386",
+//             Type: "Ward"
+//         },
+//         Data:{
+//             Id: "2094",
+//             Type: "Set",
+//             TotalOrDistribution: "distribution"
+//         },
+//         Dates:{
+//             StartDate:new Date("2015-01-01T00:00:00.000Z"),
+//             EndDate: new Date("2015-12-01T00:00:00.000Z"),
+//         },
+//         GraphId: 3
+//     },
+//     {
+//         Title: "Facility Attendance Male",
+//         Location:{
+//             Name: "za Bagega Primary Health Centre",
+//             Id:  "1215",
+//             Type: "Facility"
+//         },
+//         Data:{
+//             Id: "2094",
+//             Type: "Set",
+//             TotalOrDistribution: "distribution"
+//         },
+//         Dates:{
+//             StartDate:new Date("2015-01-01T00:00:00.000Z"),
+//             EndDate: new Date("2015-12-01T00:00:00.000Z"),
+//         },
+//         GraphId: 4
+//     }
+// ]
 
-const metricTableColumns = [
-    {
-        title: "Metric Tracked",
-        key: "metricTracked",
-        dataIndex: "metric",
-        defaultSortOrder: 'descend',
-        sorter: (a, b) => {
-            return b.metric.localeCompare(a.metric, "en")
-        },
-    },
-    {
-        title: "Change",
-        key: "change",
-        dataIndex: "change",
-        defaultSortOrder: 'descend',
-        sorter: (a, b) => {
-            return a.change - b.change
-        },
-        render: decimal => {
-            return `${Math.round(decimal * 100)}%`
-        }
-    },
+// const metricTableColumns = [
+//     {
+//         title: "Metric Tracked",
+//         key: "metricTracked",
+//         dataIndex: "metric",
+//         defaultSortOrder: 'descend',
+//         sorter: (a, b) => {
+//             return b.metric.localeCompare(a.metric, "en")
+//         },
+//     },
+//     {
+//         title: "Change",
+//         key: "change",
+//         dataIndex: "change",
+//         defaultSortOrder: 'descend',
+//         sorter: (a, b) => {
+//             return a.change - b.change
+//         },
+//         render: decimal => {
+//             return `${Math.round(decimal * 100)}%`
+//         }
+//     },
 
-]
+// ]
 
-const metricData = [
-    {
-        key: '1',
-        metric: "Malaria Vaccinations",
-        change: 0.15
-    },
-    {
-        key: '2',
-        metric: "Tetanus Vaccinations",
-        change: -.13
-    },
-    {
-        key: '3',
-        metric: "Measles Outbreaks",
-        change: 0
-    },
-]
+// const metricData = [
+//     {
+//         key: '1',
+//         metric: "Malaria Vaccinations",
+//         change: 0.15
+//     },
+//     {
+//         key: '2',
+//         metric: "Tetanus Vaccinations",
+//         change: -.13
+//     },
+//     {
+//         key: '3',
+//         metric: "Measles Outbreaks",
+//         change: 0
+//     },
+// ]
 
 class Dashboard extends Component {
 
     state = {
         fullSize: true,
-        reportCard: false,
-        showGraphs: true,
         graphOpenCloseState: null,
         graphDataLoaded: false,
         related: null,
-        relatedGraphs: []
+        relatedGraphs: [],
+        prevScollPos: 0,
+        currentView: "dashboard" // "dashboard" || "viewRelated" || "createGraph"
     }
 
     fullSizeOrListChanged = (e) => {
         this.setState({ fullSize: e.target.value === "0" ? false : true })
-    }
-
-    reportCardOrGraphsChanged = (e) => {
-        this.setState({ reportCard: e.target.value === "0" ? false : true }, () => {
-            window.dispatchEvent(new Event('resize'));
-        })
     }
 
     toggleGraph = (key) => {
@@ -202,7 +196,7 @@ class Dashboard extends Component {
 
     createCollapseExpandButton = (key) => {
         return (
-            <Button key={0} onClick={() => { this.toggleGraph(key) }}>{this.state.graphOpenCloseState[key].open ? "Collapse" : "Expand"}</Button>
+            <Button key={0} className="condensed" onClick={() => { this.toggleGraph(key) }}>{this.state.graphOpenCloseState[key].open ? "Collapse" : "Expand"}</Button>
         )
     }
 
@@ -220,8 +214,6 @@ class Dashboard extends Component {
             for (let i = 0; i < arr.length; i++) {
                 visibility[i] = { open: true, showInFilter: true }
             }
-
-            console.log(arr)
 
             visibility["collapseOrExpandText"] = { text: "Collapse All" }
 
@@ -278,7 +270,7 @@ class Dashboard extends Component {
 
             allData.forEach(function (metricData) {
                 if (metricData.parentId === parentId) {
-                    if (metricData.Id != item.Data.Id) {
+                    if (metricData.Id !== item.Data.Id) {
                         relatedFound.push(metricData)
                     }
                 }
@@ -288,43 +280,45 @@ class Dashboard extends Component {
     }
 
     toggleViewRelated = async (item) => {
+
         if (this.state.currentView === "related") {
             this.setState({
-                currentView: ""
+                currentView: "dashboard"
+            }, () => {
+                window.scrollTo(0, this.state.prevScollPos)
+                window.dispatchEvent(new Event('resize'))
             })
         } else {
             this.setState({
-                currentView: "related"
+                currentView: "related",
+                prevScollPos: window.pageYOffset
+            }, () => {
+                window.scrollTo(0, 0)
             })
-
             var relatedFound = await this.findRelatedGraphs(item);
-
             this.processFoundData(relatedFound, item)
-
         }
     }
 
     createViewRelatedButton = (item) => {
         return (
-            <Button type = "primary" onClick={() => { this.toggleViewRelated(item) }}>View Related</Button>
+            <Button type="primary" className="condensed" onClick={() => { this.toggleViewRelated(item) }}>View Related</Button>
         )
     }
 
-    createDeleteButton = (item) =>{
-        return(
-            <Popconfirm placement="topRight" title = "Are you sure want to delete this graph?" okText="Delete" cancelText="Cancel"
-            onConfirm = {() => { this.deleteGraph(item) }}>
-                <Button type = "danger" icon = "delete">Delete</Button>
+    createDeleteButton = (item) => {
+        return (
+            <Popconfirm placement="top" title="Are you sure want to delete this graph?" okText="Delete" cancelText="Cancel"
+                onConfirm={() => { this.deleteGraph(item) }}>
+                <Button className="condensed" type="danger" icon="delete">Delete</Button>
             </Popconfirm>
-            
+
         )
 
     }
 
     processFoundData = (relatedFound, item) => {
         let processedRelatedData = []
-        console.log(item)
-        console.log(relatedFound)
         relatedFound.forEach(function (data) {
             var temp = JSON.parse(JSON.stringify(item))
             temp.Title = data.Name
@@ -342,13 +336,11 @@ class Dashboard extends Component {
             temp.Dates.StartDate = item.Dates.StartDate
             temp.Dates.EndDate = item.Dates.EndDate
             temp.RawData = null
-            console.log("temp")
-            console.log(temp)
             processedRelatedData.push(temp)
         })
         this.setState({
             relatedGraphs: processedRelatedData
-        }, () => { console.log(this.state.relatedGraphs) })
+        })
     }
 
     deleteGraph = (item) => {
@@ -375,7 +367,7 @@ class Dashboard extends Component {
                         <VisualizerManager
                             {...item1} //LocationId, Location, etc...
                             Location={this.getFirstLocation(item1.Locations)}
-                            show = {true}
+                            show={true}
                         />
                     </List.Item>
                 )}>
@@ -387,6 +379,17 @@ class Dashboard extends Component {
         return Object.keys(item).includes("Compare")
     }
 
+    showWhenCurrentViewIs = (viewType, classNames) => {
+        //Hide this class when the current view matches the view type
+        if (this.state.currentView === viewType) return classNames
+        return `${classNames} displayNone`
+    }
+
+    showWhenCurrentViewIsNot = (viewType, classNames) => {
+        //Hide this class when the current view doesn't match the view type
+        if (this.state.currentView !== viewType) return classNames
+        return `${classNames} displayNone`
+    }
 
     renderGraphs = () => {
         if (this.state.graphDataLoaded !== true) return null
@@ -395,19 +398,19 @@ class Dashboard extends Component {
                 itemLayout="vertical"
                 dataSource={this.state.graphData}
                 renderItem={(item, key) => (
-                    <List.Item 
-                    
-                    actions = {[
-                        this.createCollapseExpandButton(key),
-                        this.createViewRelatedButton(item),
-                        this.createDeleteButton(item)
-                    ]}>
+                    <List.Item
+
+                        actions={[
+                            this.createCollapseExpandButton(key),
+                            this.createViewRelatedButton(item),
+                            this.createDeleteButton(item)
+                        ]}>
                         {!this.itemHasCompare(item) ? (
                             <div>
                                 <List.Item.Meta
                                     title={item.Title}
                                     description={this.getFirstLocation(item.Locations).Name} />
- 
+
                                 <VisualizerManager
                                     {...item} //LocationId, Location, etc...
                                     Location={this.getFirstLocation(item.Locations)}
@@ -424,7 +427,7 @@ class Dashboard extends Component {
                                         show={true}
                                         data={item.Data}>
                                     </Visualizer>
-                                   
+
                                 </div>)}
                     </List.Item>
                 )}>
@@ -433,82 +436,71 @@ class Dashboard extends Component {
 
     }
 
-    showHideCreateGraphUI = () => {
+
+    setView = (viewName) => {
         this.setState({
-            showGraphs: !this.state.showGraphs
+            currentView: viewName,
         }, () => {
-            window.dispatchEvent(new Event('resize'));
+            window.dispatchEvent(new Event('resize'))
         })
     }
 
     render() {
         return (
             <div>
-                {
-                    this.state.currentView === "related" &&
-                    <div>
-                        <Row className="rowVMarginTopSm" gutter={-1}>
-                            <Col className="left" xs={{ span: 16, offset: 0 }} sm={{ span: 14, offset: 1 }} md={{ span: 10, offset: 3 }} lg={{ span: 8, offset: 4 }}>
-                                <h3>Related Graphs</h3>
-                            </Col>
-                            <Col className="right" span={8}>
-                                <Button onClick={() => { this.toggleViewRelated() }}>Back</Button>
-                            </Col>
-                        </Row>
-                        <div className={this.state.showGraphs ? "" : "displayNone"}>
+                {/* UI For Related Graphs */}
+                <div className={this.showWhenCurrentViewIs("related", "center")}>
+                    <Row className="rowVMarginSm rowVMarginTopSm left">
+                        <Button icon="caret-left" onClick={() => { this.toggleViewRelated() }}>Back</Button>
+                    </Row>
+
+                    <Row className={`rowVMarginSm rowVMarginTopSm`} gutter={16}>
+                        <Col xs={{ span: 24, offset: 0 }} sm={{ span: 22, offset: 1 }} md={{ span: 18, offset: 3 }} lg={{ span: 16, offset: 4 }}>
+                            <Card className="left" size="medium" title="Related Graphs">
+                                {this.renderRelated()}
+                            </Card>
+                        </Col>
+                    </Row>
+                </div>
+
+                <div className={this.showWhenCurrentViewIsNot("related", "center")}>
+                    {/* UI For Viewing Graphs */}
+                    {
+                        this.state.graphDataLoaded &&
+                        <div className={this.showWhenCurrentViewIs("dashboard", "")}>
+                            <Row className="rowVMarginSm rowVMarginTopSm">
+                                <Col className="left" xs={{ span: 12, offset: 0 }} sm={{ span: 11, offset: 1 }} md={{ span: 9, offset: 3 }} lg={{ span: 8, offset: 4 }}>
+                                    <Button onClick={this.toggleAllGraphs}>{this.state.graphOpenCloseState["collapseOrExpandText"].text}</Button>
+                                </Col>
+                                <Col className="right" xs={{ span: 12, offset: 0 }} sm={{ span: 11, offset: 0 }} md={{ span: 9, offset: 0 }} lg={{ span: 8, offset: 0 }}>
+                                    <Button icon="plus" type="primary" onClick={() => { this.setView("createGraph") }}>Add Graph</Button>
+                                </Col>
+                            </Row>
                             <Row className={`rowVMarginSm`} gutter={16}>
                                 <Col xs={{ span: 24, offset: 0 }} sm={{ span: 22, offset: 1 }} md={{ span: 18, offset: 3 }} lg={{ span: 16, offset: 4 }}>
                                     <Card className="left" size="small">
-                                        {this.renderRelated()}
+                                        {this.renderGraphs()}
                                     </Card>
                                 </Col>
                             </Row>
                         </div>
+                    }
+
+                    {/* UI For Creating Graphs */}
+                    <div className={this.showWhenCurrentViewIs("createGraph", "")}>
+                        <Row className="rowVMarginSm rowVMarginTopSm">
+                            <Col className="left"><Button icon="caret-left" onClick={() => { this.setView("dashboard") }}>Back</Button></Col>
+                        </Row>
+                        <Row className="rowVMarginSm">
+                            <CreateGraph
+                                ParentHandler={this.loadGraphsFromDB}
+                            />
+                        </Row>
+
                     </div>
 
-                }
-                {
-                    this.state.currentView !== "related" &&
-                    <div className="center gutterOverflowMask">
-                           
-                            {/* UI For Viewing Graphs */}
-                            {
-                                this.state.graphDataLoaded &&
-                                <div className={this.state.showGraphs ? "" : "displayNone"}>
-                                    <Row className={`rowVMarginSm rowVMarginTopSm`}>
-                                        <Col className="left" xs={{ span: 12, offset: 0 }} sm={{ span: 11, offset: 1 }} md={{ span: 9, offset: 3 }} lg={{ span: 8, offset: 4 }}>
-                                            <Button onClick={this.toggleAllGraphs}>{this.state.graphOpenCloseState["collapseOrExpandText"].text}</Button>
-                                        </Col>
-                                        <Col className="right" xs={{ span: 12, offset: 0 }} sm={{ span: 11, offset: 0 }} md={{ span: 9, offset: 0 }} lg={{ span: 8, offset: 0 }}>
-                                            <Button icon="plus" type="primary" onClick={this.showHideCreateGraphUI}>Add Graph</Button>
-                                        </Col>
-                                    </Row>
-                                    <Row className={`rowVMarginSm`} gutter={16}>
-                                        <Col xs={{ span: 24, offset: 0 }} sm={{ span: 22, offset: 1 }} md={{ span: 18, offset: 3 }} lg={{ span: 16, offset: 4 }}>
-                                            <Card className="left" size="small">
-                                                {this.renderGraphs()}
-                                            </Card>
-                                        </Col>
-                                    </Row>
-                                </div>
-                            }
+                </div>
 
-                            {/* UI For Creating Graphs */}
-                            <div className={this.state.showGraphs ? "displayNone" : ""}>
-                                <Row className="rowVMarginSm">
-                                    <Col><Button icon="caret-left" onClick={this.showHideCreateGraphUI}>Back</Button></Col>
-
-                                </Row>
-                                <Row className="rowVMarginSm">
-                                    <CreateGraph
-                                        ParentHandler={this.loadGraphsFromDB}
-                                    />
-                                </Row>
-
-                            </div>
-    
-                    </div>
-                }
             </div>
         );
     }

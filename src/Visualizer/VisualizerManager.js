@@ -51,9 +51,6 @@ class VisualizerManager extends Component {
     }
 
     checkInputs = () => {
-
-        
-        console.log(this.state)
         let valid = true
         let validInputs = {
             "LocationId": value => {return value !== undefined && value !== null},
@@ -66,14 +63,11 @@ class VisualizerManager extends Component {
 
         for (var key in validInputs){
             if (validInputs[key](this.state[key]) === false){
-                console.log(key)
-                console.log(this.state[key])
                 valid = false
                 break
             }
         }
-        console.log(valid)
-
+    
         return valid
     }
 
@@ -100,9 +94,6 @@ class VisualizerManager extends Component {
      * dataType === "Metric"
      */
     getSimpleData = () =>{
-        console.log("**************");
-        console.log(this.state.Data);
-        console.log("**************");
         db.Data.where(
             ["FacilityId", "MetricId", 'Time']
         ).between(
@@ -267,10 +258,8 @@ class VisualizerManager extends Component {
     run = () => {
         if (this.checkInputs()){
             if (this.isSimpleData()){
-                console.log('simple data')
                 this.getSimpleData()
             }else{
-                console.log('complex data')
                 this.getComplexData()
             }
         }

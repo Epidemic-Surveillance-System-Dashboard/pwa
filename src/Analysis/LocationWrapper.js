@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import { Select, Button, Divider } from 'antd'
+import {  Button, Divider, Row, Col } from 'antd'
 import LocationSelector from "../LocationSelector/LocationSelector"
 
 
@@ -47,9 +47,12 @@ class LocationWrapper extends Component {
                 }//this.state.location}>
                 ></LocationSelector>
                 <Divider />
-
-                <Button onClick={this.saveLocation}>Save</Button>
-                <Button onClick={this.cancelLocation}>Cancel</Button>
+                <Row>
+                    <Col span = {12}> <Button type = "primary" onClick={this.saveLocation}>Add</Button></Col>
+                    <Col className = "right" span = {12}> <Button onClick={this.cancelLocation}>Cancel</Button></Col>
+                </Row>
+               
+                
 
             </div>
         )
