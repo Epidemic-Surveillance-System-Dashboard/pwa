@@ -193,7 +193,6 @@ class Sync extends Component {
         return (
             <div className="center">
                 <Card className="rowVMarginTopSm" >
-
                     <Row className="rowVMarginTopSm">
                         <Col xs={24} sm={{ span: 22, offset: 1 }} md={{ span: 18, offset: 2 }} lg={{ span: 16, offset: 4 }} xl={{ span: 16, offset: 4 }}>
                             <p>

@@ -489,12 +489,17 @@ class Dashboard extends Component {
                     {/* UI For Creating Graphs */}
                     <div className={this.showWhenCurrentViewIs("createGraph", "")}>
                         <Row className="rowVMarginSm rowVMarginTopSm">
-                            <Col className="left"><Button icon="caret-left" onClick={() => { this.setView("dashboard") }}>Back</Button></Col>
+                            <Col xs={{ span: 24, offset: 0 }} sm={{ span: 22, offset: 1 }} md={{ span: 18, offset: 3 }} lg={{ span: 16, offset: 4 }}
+                                className="left">
+                                <Button icon="caret-left" onClick={() => { this.setView("dashboard") }}>Back</Button>
+                            </Col>
                         </Row>
                         <Row className="rowVMarginSm">
-                            <CreateGraph
-                                ParentHandler={this.loadGraphsFromDB}
-                            />
+                            <Col xs={{ span: 24, offset: 0 }} sm={{ span: 22, offset: 1 }} md={{ span: 18, offset: 3 }} lg={{ span: 16, offset: 4 }}>
+                                <CreateGraph
+                                    ParentHandler={this.loadGraphsFromDB}
+                                />
+                            </Col>
                         </Row>
 
                     </div>
