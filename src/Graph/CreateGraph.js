@@ -49,80 +49,69 @@ class CreateGraph extends Component {
     }
     render() {
         return (
-            <div>
+            <Card className="left" size="medium" title="Create a Graph">
                 <Row className={``} gutter={16}>
-                    <Col xs={{ span: 24, offset: 0 }} sm={{ span: 22, offset: 1 }} md={{ span: 18, offset: 3 }} lg={{ span: 16, offset: 4 }}>
-                        <Card className="left" size="medium" title="Create a Graph">
-                            <Row className={``} gutter={16}>
-                                <h4>Select Location</h4>
-                                <LocationSelector
-                                    parentHandler={this.updateLocation}
-                                    initialLocation={
-                                        {
-                                            Id: "1215",
-                                            Type: "Facility"
-                                        }
-                                    }
-                                />
-                            </Row>
-                            <Divider/>
-                            <Row className={``} gutter={16}>
-
-                                <h4>Select Data</h4>
-                                <MetricSelector
-                                    parentHandler={this.updateData}
-                                    initialData={{
-                                        GroupValue: "1191|Facility Attendance|Group",
-                                        SetValue: "-3-1191|All Facility Attendance (Distribution)|Group",
-                                        MetricValue: ""
-                                    }}
-                                />
-                            </Row>
-                            <Divider/>
-                            <Row className={``} gutter={16}>
-                            <h4>Select Date Range</h4>
-
-                                <RangeSelector
-                                    parentHandler={this.updateDates}
-                                    initialData={
-                                        {
-                                            Dates: this.state.Dates
-                                        }
-                                    }
-                                />
-                            </Row>
-
-
-                        </Card>
+                    <Col>
+                        <h4>Select Location</h4>
+                        <LocationSelector
+                            parentHandler={this.updateLocation}
+                            initialLocation={{
+                                Id: "1215",
+                                Type: "Facility"
+                            }}
+                        />
                     </Col>
                 </Row>
                 <Divider />
                 <Row className={``} gutter={16}>
-                    <Col xs={{ span: 24, offset: 0 }} sm={{ span: 22, offset: 1 }} md={{ span: 18, offset: 3 }} lg={{ span: 16, offset: 4 }}>
-                        <Card className="left" size="medium" title="Your Graph">
-                            <div>
-                                <VisualizerManager
-                                    Title={this.state.Data !== undefined && this.state.Data.Name !== undefined ? this.state.Data.Name.split("(")[0] : ""}
-                                    Location={this.state.Location} //{Name, Id, Type}
-                                    Data={this.state.Data} // {Id, Type, TotalOrDistribution="total|none|distribution"}
-                                    Dates={this.state.Dates}
-                                    ParentHandler={this.updateRawData}
-                                />
-
-                                <SaveGraph
-                                    Data={this.state.Data}
-                                    Dates={this.state.Dates}
-                                    Locations={this.createLocationObject()}
-                                    Title={this.getTitle()}
-                                    RawData={this.state.RawData}
-                                    ParentHandler={this.props.ParentHandler}
-                                />
-                            </div>
-
-                        </Card>
+                    <Col>
+                        <h4>Select Data</h4>
+                        <MetricSelector
+                            parentHandler={this.updateData}
+                            initialData={{
+                                GroupValue: "1191|Facility Attendance|Group",
+                                SetValue: "-3-1191|All Facility Attendance (Distribution)|Group",
+                                MetricValue: ""
+                            }}
+                        />
                     </Col>
                 </Row>
-            </div>
+                <Divider />
+                <Row className={``} gutter={16}>
+                    <Col>
+                        <h4>Select Date Range</h4>
+
+                        <RangeSelector
+                            parentHandler={this.updateDates}
+                            initialData={{
+                                Dates: this.state.Dates
+                            }}
+                        />
+                    </Col>
+                </Row>
+                <Divider />
+                <Row>
+                    <Col>
+                        <h4>Generated Graph</h4>
+                        <VisualizerManager
+                            Title={this.state.Data !== undefined && this.state.Data.Name !== undefined ? this.state.Data.Name.split("(")[0] : ""}
+                            Location={this.state.Location} //{Name, Id, Type}
+                            Data={this.state.Data} // {Id, Type, TotalOrDistribution="total|none|distribution"}
+                            Dates={this.state.Dates}
+                            ParentHandler={this.updateRawData}
+                        />
+
+                        <SaveGraph
+                            Data={this.state.Data}
+                            Dates={this.state.Dates}
+                            Locations={this.createLocationObject()}
+                            Title={this.getTitle()}
+                            RawData={this.state.RawData}
+                            ParentHandler={this.props.ParentHandler}
+                        />
+                    </Col>
+                </Row>
+            </Card>
         )
     }
 }

@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Button, Input, Row, Col, Divider, Popconfirm, message, Select } from 'antd'
+import { Button, Input, Row, Col, Divider, Popconfirm, message, Select, Card } from 'antd'
 
 import LocationSelector from "../LocationSelector/LocationSelector"
 
@@ -23,14 +23,14 @@ class CreateModifyDeleteUser extends Component {
     componentDidMount() {
         if (this.props.mode === "new")
             this.enableEditing()
-        
-            user.user().then((result) => {
-                this.setState({
-                    ready: true,
-                    loggedInUser: result
-                })
+
+        user.user().then((result) => {
+            this.setState({
+                ready: true,
+                loggedInUser: result
             })
-        
+        })
+
     }
 
     componentWillMount() {
@@ -39,7 +39,7 @@ class CreateModifyDeleteUser extends Component {
             passedUser: this.props.user
         })
     }
-    
+
 
     componentDidUpdate(oldProps) {
         const newProps = this.props
@@ -116,6 +116,7 @@ class CreateModifyDeleteUser extends Component {
         //Only show delete this is a secondary view (ie showTable_f exists)
         if (this.props.user != null && this.props.showTable_f !== null) return (
             <div>
+                <Divider/>
                 <Col className="right">
                     <Popconfirm placement="topRight" title="Are you sure you want to delete this user? This action cannot be reverted." onConfirm={this.confirmDelete} okText="Delete" cancelText="Cancel">
                         <Button type="danger">Delete User</Button>
@@ -149,7 +150,6 @@ class CreateModifyDeleteUser extends Component {
             "Last Name",
             "Phone",
             "Email"
-            
         ]
 
         let array = []
@@ -194,7 +194,7 @@ class CreateModifyDeleteUser extends Component {
                 break;
         }
 
-        if(this.state.mode === "new"){
+        if (this.state.mode === "new") {
             switch (this.state.loggedInUser.UserType) {
                 case "superadmin":
                     allUserTypeOptions = [
@@ -208,24 +208,24 @@ class CreateModifyDeleteUser extends Component {
                     ];
                     break;
                 default:
-                allUserTypeOptions = [
-                    <Select.Option key={3} value="user">User</Select.Option>
-                ];
-                break;
+                    allUserTypeOptions = [
+                        <Select.Option key={3} value="user">User</Select.Option>
+                    ];
+                    break;
             }
         }
-        
+
 
         return (
             <div>{this.state.ready && <Col>
                 <Divider />
                 <p>Basic Information</p>
                 {array}
-                <Select 
-                    style={{ width: "100%" }} 
-                    defaultValue={this.state.userInfo.UserType != null? this.state.userInfo.UserType : "user"} 
-                    placeholder="User Type" 
-                    onChange={(e)=>{this.handleUserTypeSelect(e)}} 
+                <Select
+                    style={{ width: "100%" }}
+                    defaultValue={this.state.userInfo.UserType != null ? this.state.userInfo.UserType : "user"}
+                    placeholder="User Type"
+                    onChange={(e) => { this.handleUserTypeSelect(e) }}
                     disabled={this.state.loggedInUser.Id === this.state.userInfo.Id ? true : this.state.disabled}>
                     {allUserTypeOptions}
                 </Select>
@@ -237,7 +237,7 @@ class CreateModifyDeleteUser extends Component {
                     showLocation={true}
                     initialLocation={{ Id: this.state.userInfo.LocationId, Type: this.state.userInfo.LocationType }}
                     disabled={this.state.loggedInUser.Id === this.state.userInfo.Id ? true : this.state.disabled}
-                    maxScope={{Type: this.state.loggedInUser.LocationType, Id: this.state.loggedInUser.LocationId}}/>
+                    maxScope={{ Type: this.state.loggedInUser.LocationType, Id: this.state.loggedInUser.LocationId }} />
             </Col>
             }
             </div>
@@ -261,10 +261,11 @@ class CreateModifyDeleteUser extends Component {
             </div>
         );
         else return (
-            <div>
-                <Button hidden={this.state.mode === "new"} onClick={this.cancelEditing}>Cancel</Button>
-                <Button disabled={!this.state.userChanged} onClick={this.save}>Save</Button>
-            </div>
+            
+            <Row>
+                <Col span = {12}><Button hidden={this.state.mode === "new"} onClick={this.cancelEditing}>Cancel</Button></Col>
+                <Col className = "right" span = {12}><Button type = "primary" disabled={!this.state.userChanged} onClick={this.save}>Save</Button></Col>
+            </Row>
         )
     }
 
@@ -316,7 +317,7 @@ class CreateModifyDeleteUser extends Component {
         let successHandler = () => { }
         let userObject = this.state.userInfo
 
-        if(userObject.UserType == null) 
+        if (userObject.UserType == null)
             userObject.UserType = "user"
 
         if (this.state.mode === "new") {
@@ -352,7 +353,7 @@ class CreateModifyDeleteUser extends Component {
             method = "PUT"
             successHandler = (result) => {
                 if (result.result === "Update successful") {
-                    if(this.state.loggedInUser.Id === userObject.Id){
+                    if (this.state.loggedInUser.Id === userObject.Id) {
                         db.LocalUser.put(userObject).then(() => {
                             message.success(successMessage)
                             this.props.refreshUsers()
@@ -364,7 +365,7 @@ class CreateModifyDeleteUser extends Component {
                             })
                         })
                     }
-                    else{
+                    else {
                         db.User.put(userObject).then(() => {
                             message.success(successMessage)
                             this.props.refreshUsers()
@@ -377,7 +378,7 @@ class CreateModifyDeleteUser extends Component {
                             this.passedUser = userObject;
                         })
                     }
-                    
+
                 }
             }
         }
@@ -424,17 +425,14 @@ class CreateModifyDeleteUser extends Component {
                             </Row>
                         }
                         <Row className="rowVMarginSm">
-                            <h3>User Details</h3>
-                            {this.modifyControls()}
-                            {this.basicFeatures()}
-                            <Divider />
-                            {this.adminFeatures()}
+                            <Card size = "medium" title = "User Details">
+                                {this.modifyControls()}
+                                {this.basicFeatures()}
+                                {this.adminFeatures()}
+                            </Card>
                         </Row>
-
                     </div>
                 }
-
-
             </div>
         )
     }

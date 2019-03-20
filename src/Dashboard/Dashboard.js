@@ -147,8 +147,6 @@ class Dashboard extends Component {
 
     state = {
         fullSize: true,
-        reportCard: false,
-        showDashboard: true,
         graphOpenCloseState: null,
         graphDataLoaded: false,
         related: null,
@@ -159,12 +157,6 @@ class Dashboard extends Component {
 
     fullSizeOrListChanged = (e) => {
         this.setState({ fullSize: e.target.value === "0" ? false : true })
-    }
-
-    reportCardOrGraphsChanged = (e) => {
-        this.setState({ reportCard: e.target.value === "0" ? false : true }, () => {
-            window.dispatchEvent(new Event('resize'));
-        })
     }
 
     toggleGraph = (key) => {
@@ -204,7 +196,7 @@ class Dashboard extends Component {
 
     createCollapseExpandButton = (key) => {
         return (
-            <Button key={0} className = "condensed" onClick={() => { this.toggleGraph(key) }}>{this.state.graphOpenCloseState[key].open ? "Collapse" : "Expand"}</Button>
+            <Button key={0} className="condensed" onClick={() => { this.toggleGraph(key) }}>{this.state.graphOpenCloseState[key].open ? "Collapse" : "Expand"}</Button>
         )
     }
 
@@ -292,7 +284,7 @@ class Dashboard extends Component {
         if (this.state.currentView === "related") {
             this.setState({
                 currentView: "dashboard"
-            }, () =>{
+            }, () => {
                 window.scrollTo(0, this.state.prevScollPos)
                 window.dispatchEvent(new Event('resize'))
             })
@@ -300,8 +292,8 @@ class Dashboard extends Component {
             this.setState({
                 currentView: "related",
                 prevScollPos: window.pageYOffset
-            }, () =>{
-                window.scrollTo(0,0)
+            }, () => {
+                window.scrollTo(0, 0)
             })
             var relatedFound = await this.findRelatedGraphs(item);
             this.processFoundData(relatedFound, item)
@@ -310,17 +302,17 @@ class Dashboard extends Component {
 
     createViewRelatedButton = (item) => {
         return (
-            <Button type = "primary" className = "condensed" onClick={() => { this.toggleViewRelated(item) }}>View Related</Button>
+            <Button type="primary" className="condensed" onClick={() => { this.toggleViewRelated(item) }}>View Related</Button>
         )
     }
 
-    createDeleteButton = (item) =>{
-        return(
-            <Popconfirm placement="top" title = "Are you sure want to delete this graph?" okText="Delete" cancelText="Cancel"
-            onConfirm = {() => { this.deleteGraph(item) }}>
-                <Button className="condensed" type = "danger" icon = "delete">Delete</Button>
+    createDeleteButton = (item) => {
+        return (
+            <Popconfirm placement="top" title="Are you sure want to delete this graph?" okText="Delete" cancelText="Cancel"
+                onConfirm={() => { this.deleteGraph(item) }}>
+                <Button className="condensed" type="danger" icon="delete">Delete</Button>
             </Popconfirm>
-            
+
         )
 
     }
@@ -375,7 +367,7 @@ class Dashboard extends Component {
                         <VisualizerManager
                             {...item1} //LocationId, Location, etc...
                             Location={this.getFirstLocation(item1.Locations)}
-                            show = {true}
+                            show={true}
                         />
                     </List.Item>
                 )}>
@@ -406,19 +398,19 @@ class Dashboard extends Component {
                 itemLayout="vertical"
                 dataSource={this.state.graphData}
                 renderItem={(item, key) => (
-                    <List.Item 
-                    
-                    actions = {[
-                        this.createCollapseExpandButton(key),
-                        this.createViewRelatedButton(item),
-                        this.createDeleteButton(item)
-                    ]}>
+                    <List.Item
+
+                        actions={[
+                            this.createCollapseExpandButton(key),
+                            this.createViewRelatedButton(item),
+                            this.createDeleteButton(item)
+                        ]}>
                         {!this.itemHasCompare(item) ? (
                             <div>
                                 <List.Item.Meta
                                     title={item.Title}
                                     description={this.getFirstLocation(item.Locations).Name} />
- 
+
                                 <VisualizerManager
                                     {...item} //LocationId, Location, etc...
                                     Location={this.getFirstLocation(item.Locations)}
@@ -435,7 +427,7 @@ class Dashboard extends Component {
                                         show={true}
                                         data={item.Data}>
                                     </Visualizer>
-                                   
+
                                 </div>)}
                     </List.Item>
                 )}>
@@ -445,10 +437,10 @@ class Dashboard extends Component {
     }
 
 
-    setView  = (viewName) => {
+    setView = (viewName) => {
         this.setState({
             currentView: viewName,
-        }, () =>{
+        }, () => {
             window.dispatchEvent(new Event('resize'))
         })
     }
@@ -456,62 +448,56 @@ class Dashboard extends Component {
     render() {
         return (
             <div>
-                <div className = {this.showWhenCurrentViewIs("related", "center")}>
-                    {/* UI For Related Graphs */}
+                {/* UI For Related Graphs */}
+                <div className={this.showWhenCurrentViewIs("related", "center")}>
                     <Row className="rowVMarginSm rowVMarginTopSm left">
                         <Button icon="caret-left" onClick={() => { this.toggleViewRelated() }}>Back</Button>
                     </Row>
-                    <Row className="rowVMarginTopSm">
-                        <Col className="left" xs={{ span: 24, offset: 0 }} sm={{ span: 22, offset: 1 }} md={{ span: 18, offset: 3 }} lg={{ span: 16, offset: 4 }}>
-                            <Card className="left" size="small">
-                                <h3>Related Graphs</h3>
-                            </Card>
-                        </Col>
-                    </Row>
-                    <Row className={`rowVMarginSm`} gutter={16}>
+
+                    <Row className={`rowVMarginSm rowVMarginTopSm`} gutter={16}>
                         <Col xs={{ span: 24, offset: 0 }} sm={{ span: 22, offset: 1 }} md={{ span: 18, offset: 3 }} lg={{ span: 16, offset: 4 }}>
-                            <Card className="left" size="small">
+                            <Card className="left" size="medium" title="Related Graphs">
                                 {this.renderRelated()}
                             </Card>
                         </Col>
                     </Row>
                 </div>
 
-                <div className= {this.showWhenCurrentViewIsNot("related", "center")}>
-                        {/* UI For Viewing Graphs */}
-                        {
-                            this.state.graphDataLoaded &&
-                            <div className = {this.showWhenCurrentViewIs("dashboard", "")}>
-                                <Row className="rowVMarginSm rowVMarginTopSm">
-                                    <Col className="left" xs={{ span: 12, offset: 0 }} sm={{ span: 11, offset: 1 }} md={{ span: 9, offset: 3 }} lg={{ span: 8, offset: 4 }}>
-                                        <Button onClick={this.toggleAllGraphs}>{this.state.graphOpenCloseState["collapseOrExpandText"].text}</Button>
-                                    </Col>
-                                    <Col className="right" xs={{ span: 12, offset: 0 }} sm={{ span: 11, offset: 0 }} md={{ span: 9, offset: 0 }} lg={{ span: 8, offset: 0 }}>
-                                        <Button icon="plus" type="primary" onClick={() => {this.setView("createGraph")}}>Add Graph</Button>
-                                    </Col>
-                                </Row>
-                                <Row className={`rowVMarginSm`} gutter={16}>
-                                    <Col xs={{ span: 24, offset: 0 }} sm={{ span: 22, offset: 1 }} md={{ span: 18, offset: 3 }} lg={{ span: 16, offset: 4 }}>
-                                        <Card className="left" size="small">
-                                            {this.renderGraphs()}
-                                        </Card>
-                                    </Col>
-                                </Row>
-                            </div>
-                        }
-
-                        {/* UI For Creating Graphs */}
-                        <div className={this.showWhenCurrentViewIs("createGraph", "")}>
+                <div className={this.showWhenCurrentViewIsNot("related", "center")}>
+                    {/* UI For Viewing Graphs */}
+                    {
+                        this.state.graphDataLoaded &&
+                        <div className={this.showWhenCurrentViewIs("dashboard", "")}>
                             <Row className="rowVMarginSm rowVMarginTopSm">
-                                <Col className = "left"><Button icon="caret-left" onClick={() => {this.setView("dashboard")}}>Back</Button></Col>
+                                <Col className="left" xs={{ span: 12, offset: 0 }} sm={{ span: 11, offset: 1 }} md={{ span: 9, offset: 3 }} lg={{ span: 8, offset: 4 }}>
+                                    <Button onClick={this.toggleAllGraphs}>{this.state.graphOpenCloseState["collapseOrExpandText"].text}</Button>
+                                </Col>
+                                <Col className="right" xs={{ span: 12, offset: 0 }} sm={{ span: 11, offset: 0 }} md={{ span: 9, offset: 0 }} lg={{ span: 8, offset: 0 }}>
+                                    <Button icon="plus" type="primary" onClick={() => { this.setView("createGraph") }}>Add Graph</Button>
+                                </Col>
                             </Row>
-                            <Row className="rowVMarginSm">
-                                <CreateGraph
-                                    ParentHandler={this.loadGraphsFromDB}
-                                />
+                            <Row className={`rowVMarginSm`} gutter={16}>
+                                <Col xs={{ span: 24, offset: 0 }} sm={{ span: 22, offset: 1 }} md={{ span: 18, offset: 3 }} lg={{ span: 16, offset: 4 }}>
+                                    <Card className="left" size="small">
+                                        {this.renderGraphs()}
+                                    </Card>
+                                </Col>
                             </Row>
-
                         </div>
+                    }
+
+                    {/* UI For Creating Graphs */}
+                    <div className={this.showWhenCurrentViewIs("createGraph", "")}>
+                        <Row className="rowVMarginSm rowVMarginTopSm">
+                            <Col className="left"><Button icon="caret-left" onClick={() => { this.setView("dashboard") }}>Back</Button></Col>
+                        </Row>
+                        <Row className="rowVMarginSm">
+                            <CreateGraph
+                                ParentHandler={this.loadGraphsFromDB}
+                            />
+                        </Row>
+
+                    </div>
 
                 </div>
 

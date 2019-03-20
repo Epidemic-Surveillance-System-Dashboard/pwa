@@ -123,15 +123,26 @@ class MetricSelector extends Component {
             this.notifyParent()
         }else{
             this.setState({
-                Group:  this.props.initialData.GroupValue.length > 0    ? this.props.initialData.GroupValue     : undefined,
-                Set:    this.props.initialData.SetValue.length > 0      ? this.props.initialData.SetValue       : undefined,
-                Metric: this.props.initialData.MetricValue.length > 0   ? this.props.initialData.MetricValue    : undefined,
+                Group:  this.getValueForInitialDataProperty("GroupValue"),
+                Set:    this.getValueForInitialDataProperty("SetValue"),
+                Metric: this.getValueForInitialDataProperty("MetricValue"),
             }, () =>{
                 this.notifyParent()
                 this.updateList("Group", 0, null)
                 this.updateList("Set", 0, null)
                 this.updateList("Metric", 0, null)
             })
+        }
+    }
+
+    getValueForInitialDataProperty = (propName) => {
+        let p = this.props.initialData[propName]    
+        if (p === undefined) {
+            return undefined            
+        }
+        if (typeof p === "string"){
+            if (p.length === 0) return undefined
+            return p
         }
     }
 
@@ -323,40 +334,34 @@ class MetricSelector extends Component {
         return (
            <div>
                 <Select
-                    // showSearch
                     style={style}
                     placeholder="Group"
                     optionFilterProp="children"
                     value = {this.state.Group}
                     onChange={(value) => {this.handleChange("Group", value)}}
                     disabled = {this.state.enabledDisabledLists.Group}
-                    // filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                 >
                     {this.state.GroupList}
                 </Select>
                 <br/>
                 <Select
-                    // showSearch
                     style={style}
                     placeholder="Set"
                     optionFilterProp="children"
                     value = {this.state.Set}
                     onChange={(value) => {this.handleChange("Set", value)}}
                     disabled = {this.state.enabledDisabledLists.Set}
-                    // filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                 >
                     {this.state.SetList}
                 </Select>
                 <br/>
                 <Select
-                    // showSearch
                     style={style}
                     placeholder="Metric"
                     optionFilterProp="children"
                     value = {this.state.Metric}
                     onChange={(value) => {this.handleChange("Metric", value)}}
                     disabled = {this.state.enabledDisabledLists.Metric}
-                    // filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                 >
                     {this.state.MetricList}
                 </Select>

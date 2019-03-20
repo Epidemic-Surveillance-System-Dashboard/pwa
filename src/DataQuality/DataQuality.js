@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Row, Col, Table, Card, Alert,Divider } from 'antd'
+import { Row, Col, Table, Card, Alert } from 'antd'
 import LocationSelector from '../LocationSelector/LocationSelector';
 import db from '../Database/database'
 
@@ -56,24 +56,22 @@ class DataQuality extends Component {
 
                 <Row className="rowVMarginTopSm" gutter={16}>
                     <Col xs={{ span: 24, offset: 0 }} sm={{ span: 22, offset: 1 }} md={{ span: 18, offset: 3 }} lg={{ span: 16, offset: 4 }}>
-                        <Card className="rowVMarginTopSm" >
-                            <p>Select Ward</p>
-                        <Divider/>
-                        <LocationSelector
-                            parentHandler={this.setLocation}
-                            initialLocation={{
-                                Type: "Ward",
-                                Id: "386"
-                            }}
-                        />
+                        <Card  size="medium" title="Select Ward">
+                            <LocationSelector
+                                parentHandler={this.setLocation}
+                                initialLocation={{
+                                    Type: "Ward",
+                                    Id: "386"
+                                }}
+                            />
                         </Card>
                     </Col>
                 </Row>
                 <Row className="rowVMarginTopSm" gutter={16}>
-                <Col xs={{ span: 24, offset: 0 }} sm={{ span: 22, offset: 1 }} md={{ span: 18, offset: 3 }} lg={{ span: 16, offset: 4 }}>
+                    <Col xs={{ span: 24, offset: 0 }} sm={{ span: 22, offset: 1 }} md={{ span: 18, offset: 3 }} lg={{ span: 16, offset: 4 }}>
                         {this.state.ready &&
-                                <Table dataSource={this.state.data} columns={columns}></Table>
-}
+                            <Table dataSource={this.state.data} columns={columns}></Table>
+                        }
                     </Col>
                 </Row>
             </div>
