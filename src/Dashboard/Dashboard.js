@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 
-import { message, Icon, Table, Button, List, Card, Row, Col, Radio, Popconfirm } from 'antd'
+import { message, Button, List, Card, Row, Col, Popconfirm } from 'antd'
 
 import '../../node_modules/react-vis/dist/style.css'
 import './Dashboard.css'
@@ -10,138 +10,138 @@ import CreateGraph from '../Graph/CreateGraph'
 import db from '../Database/database';
 import Visualizer from '../Visualizer/Visualizer';
 
-let graphExamples = [
-    // {
-    //     Title: "Facility Attendance Female, 29d-11 months",
-    //     Location:{
-    //         Name: "za Bagega Primary Health Centre",
-    //         Id:  "1215",
-    //         Type: "Facility"
-    //     },
-    //     Data:{
-    //         Id: "11729",
-    //         Type: "Metric",
-    //     },
-    //     Dates:{
-    //         StartDate:new Date("2015-01-01T00:00:00.000Z"),
-    //         EndDate: new Date("2015-12-01T00:00:00.000Z"),
-    //     },
-    //     GraphId: 0
-    // },
-    // {
-    //     Title: "Facility Attendance Outpatient Value",
-    //     Location:{
-    //         Name: "za Bagega Primary Health Centre",
-    //         Id:  "1215",
-    //         Type: "Facility"
-    //     },
-    //     Data:{
-    //         Id: "11493",
-    //         Type: "Metric",
-    //     },
-    //     Dates:{
-    //         StartDate:new Date("2015-01-01T00:00:00.000Z"),
-    //         EndDate: new Date("2015-12-01T00:00:00.000Z"),
-    //     },
-    //     GraphId: 1
-    // },
-    // {
-    //     Title: "Facility Attendance Outpatient",
-    //     Location:{
-    //         Name: "za Bagega Ward",
-    //         Id:  "386",
-    //         Type: "Ward"
-    //     },
-    //     Data:{
-    //         Id: "2094",
-    //         Type: "Set",
-    //     },
-    //     Dates:{
-    //         StartDate:new Date("2015-01-01T00:00:00.000Z"),
-    //         EndDate: new Date("2015-12-01T00:00:00.000Z"),
-    //     },
-    //     GraphId: 2
-    // },
-    // {
-    //     Title: "Facility Attendance Male",
-    //     Location:{
-    //         Name: "za Bagega Ward",
-    //         Id:  "386",
-    //         Type: "Ward"
-    //     },
-    //     Data:{
-    //         Id: "2094",
-    //         Type: "Set",
-    //         TotalOrDistribution: "distribution"
-    //     },
-    //     Dates:{
-    //         StartDate:new Date("2015-01-01T00:00:00.000Z"),
-    //         EndDate: new Date("2015-12-01T00:00:00.000Z"),
-    //     },
-    //     GraphId: 3
-    // },
-    // {
-    //     Title: "Facility Attendance Male",
-    //     Location:{
-    //         Name: "za Bagega Primary Health Centre",
-    //         Id:  "1215",
-    //         Type: "Facility"
-    //     },
-    //     Data:{
-    //         Id: "2094",
-    //         Type: "Set",
-    //         TotalOrDistribution: "distribution"
-    //     },
-    //     Dates:{
-    //         StartDate:new Date("2015-01-01T00:00:00.000Z"),
-    //         EndDate: new Date("2015-12-01T00:00:00.000Z"),
-    //     },
-    //     GraphId: 4
-    // }
-]
+// let graphExamples = [
+//     {
+//         Title: "Facility Attendance Female, 29d-11 months",
+//         Location:{
+//             Name: "za Bagega Primary Health Centre",
+//             Id:  "1215",
+//             Type: "Facility"
+//         },
+//         Data:{
+//             Id: "11729",
+//             Type: "Metric",
+//         },
+//         Dates:{
+//             StartDate:new Date("2015-01-01T00:00:00.000Z"),
+//             EndDate: new Date("2015-12-01T00:00:00.000Z"),
+//         },
+//         GraphId: 0
+//     },
+//     {
+//         Title: "Facility Attendance Outpatient Value",
+//         Location:{
+//             Name: "za Bagega Primary Health Centre",
+//             Id:  "1215",
+//             Type: "Facility"
+//         },
+//         Data:{
+//             Id: "11493",
+//             Type: "Metric",
+//         },
+//         Dates:{
+//             StartDate:new Date("2015-01-01T00:00:00.000Z"),
+//             EndDate: new Date("2015-12-01T00:00:00.000Z"),
+//         },
+//         GraphId: 1
+//     },
+//     {
+//         Title: "Facility Attendance Outpatient",
+//         Location:{
+//             Name: "za Bagega Ward",
+//             Id:  "386",
+//             Type: "Ward"
+//         },
+//         Data:{
+//             Id: "2094",
+//             Type: "Set",
+//         },
+//         Dates:{
+//             StartDate:new Date("2015-01-01T00:00:00.000Z"),
+//             EndDate: new Date("2015-12-01T00:00:00.000Z"),
+//         },
+//         GraphId: 2
+//     },
+//     {
+//         Title: "Facility Attendance Male",
+//         Location:{
+//             Name: "za Bagega Ward",
+//             Id:  "386",
+//             Type: "Ward"
+//         },
+//         Data:{
+//             Id: "2094",
+//             Type: "Set",
+//             TotalOrDistribution: "distribution"
+//         },
+//         Dates:{
+//             StartDate:new Date("2015-01-01T00:00:00.000Z"),
+//             EndDate: new Date("2015-12-01T00:00:00.000Z"),
+//         },
+//         GraphId: 3
+//     },
+//     {
+//         Title: "Facility Attendance Male",
+//         Location:{
+//             Name: "za Bagega Primary Health Centre",
+//             Id:  "1215",
+//             Type: "Facility"
+//         },
+//         Data:{
+//             Id: "2094",
+//             Type: "Set",
+//             TotalOrDistribution: "distribution"
+//         },
+//         Dates:{
+//             StartDate:new Date("2015-01-01T00:00:00.000Z"),
+//             EndDate: new Date("2015-12-01T00:00:00.000Z"),
+//         },
+//         GraphId: 4
+//     }
+// ]
 
-const metricTableColumns = [
-    {
-        title: "Metric Tracked",
-        key: "metricTracked",
-        dataIndex: "metric",
-        defaultSortOrder: 'descend',
-        sorter: (a, b) => {
-            return b.metric.localeCompare(a.metric, "en")
-        },
-    },
-    {
-        title: "Change",
-        key: "change",
-        dataIndex: "change",
-        defaultSortOrder: 'descend',
-        sorter: (a, b) => {
-            return a.change - b.change
-        },
-        render: decimal => {
-            return `${Math.round(decimal * 100)}%`
-        }
-    },
+// const metricTableColumns = [
+//     {
+//         title: "Metric Tracked",
+//         key: "metricTracked",
+//         dataIndex: "metric",
+//         defaultSortOrder: 'descend',
+//         sorter: (a, b) => {
+//             return b.metric.localeCompare(a.metric, "en")
+//         },
+//     },
+//     {
+//         title: "Change",
+//         key: "change",
+//         dataIndex: "change",
+//         defaultSortOrder: 'descend',
+//         sorter: (a, b) => {
+//             return a.change - b.change
+//         },
+//         render: decimal => {
+//             return `${Math.round(decimal * 100)}%`
+//         }
+//     },
 
-]
+// ]
 
-const metricData = [
-    {
-        key: '1',
-        metric: "Malaria Vaccinations",
-        change: 0.15
-    },
-    {
-        key: '2',
-        metric: "Tetanus Vaccinations",
-        change: -.13
-    },
-    {
-        key: '3',
-        metric: "Measles Outbreaks",
-        change: 0
-    },
-]
+// const metricData = [
+//     {
+//         key: '1',
+//         metric: "Malaria Vaccinations",
+//         change: 0.15
+//     },
+//     {
+//         key: '2',
+//         metric: "Tetanus Vaccinations",
+//         change: -.13
+//     },
+//     {
+//         key: '3',
+//         metric: "Measles Outbreaks",
+//         change: 0
+//     },
+// ]
 
 class Dashboard extends Component {
 

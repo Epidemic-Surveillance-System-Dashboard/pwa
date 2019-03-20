@@ -188,9 +188,14 @@ class CreateModifyDeleteUser extends Component {
                     <Select.Option key={3} value="user">User</Select.Option>
                 ];
                 break;
+            default:
+                allUserTypeOptions = [
+                    <Select.Option key={3} value="user">User</Select.Option>
+                ];
+                break;
         }
 
-        if(this.state.mode == "new"){
+        if(this.state.mode === "new"){
             switch (this.state.loggedInUser.UserType) {
                 case "superadmin":
                     allUserTypeOptions = [
@@ -203,6 +208,11 @@ class CreateModifyDeleteUser extends Component {
                         <Select.Option key={3} value="user">User</Select.Option>
                     ];
                     break;
+                default:
+                allUserTypeOptions = [
+                    <Select.Option key={3} value="user">User</Select.Option>
+                ];
+                break;
             }
         }
         

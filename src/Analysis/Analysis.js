@@ -1,14 +1,11 @@
 import React, { Component } from 'react';
-import { Button, List, Card, Row, Col, Select, Divider, Avatar, Menu, Icon, Dropdown, message, DatePicker } from 'antd'
+import { Button, List, Card, Row, Col, Divider, Icon, message } from 'antd'
 
 import './Analysis.css';
-import LocationSelector from "../LocationSelector/LocationSelector"
 import LocationWrapper from "../Analysis/LocationWrapper"
 import MetricSelector from "../MetricSelector/MetricSelector"
 import Visualizer from '../Visualizer/Visualizer';
-import VisualizerManager from '../Visualizer/VisualizerManager'
 import db from '../Database/database';
-import moment from 'moment';
 import RangeSelector from '../RangeSelector/RangeSelector'
 
 var initialMetric = {

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import { Select, Button, Divider } from 'antd'
+import {  Button, Divider } from 'antd'
 import LocationSelector from "../LocationSelector/LocationSelector"
 
 
