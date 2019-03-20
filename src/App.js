@@ -85,9 +85,6 @@ class App extends Component {
 	}
 
 	render() {
-
-		const { classes } = this.props;
-		const { value } = this.state;
 		
 		return (
 			<Router>
@@ -177,4 +174,4 @@ class App extends Component {
 	}
 }
 
-export default withStyles(styles)(App);
+export default App;
