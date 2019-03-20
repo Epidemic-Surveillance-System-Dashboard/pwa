@@ -57,20 +57,18 @@ class DataQuality extends Component {
                 <Row className="rowVMarginTopSm" gutter={16}>
                     <Col xs={{ span: 24, offset: 0 }} sm={{ span: 22, offset: 1 }} md={{ span: 18, offset: 3 }} lg={{ span: 16, offset: 4 }}>
                         <Card className="rowVMarginTopSm" >
-                            <h3>
-                                Select Location
-                        </h3>
+                            <p>Select Ward</p>
                         <Divider/>
-                            <LocationSelector
-                                parentHandler={this.setLocation}
-                                initialLocation={{
-                                    Type: "Ward",
-                                    Id: "386"
-                                }}
-                            />
-
-                        </Card></Col></Row>
-
+                        <LocationSelector
+                            parentHandler={this.setLocation}
+                            initialLocation={{
+                                Type: "Ward",
+                                Id: "386"
+                            }}
+                        />
+                        </Card>
+                    </Col>
+                </Row>
                 <Row className="rowVMarginTopSm" gutter={16}>
                 <Col xs={{ span: 24, offset: 0 }} sm={{ span: 22, offset: 1 }} md={{ span: 18, offset: 3 }} lg={{ span: 16, offset: 4 }}>
                         {this.state.ready &&

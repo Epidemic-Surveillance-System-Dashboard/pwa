@@ -219,14 +219,19 @@ class CreateModifyDeleteUser extends Component {
         return (
             <div>{this.state.ready && <Col>
                 <Divider />
+                <p>Basic Information</p>
                 {array}
-                <Select style={{ width: "100%" }} defaultValue={this.state.userInfo.UserType != null? this.state.userInfo.UserType : "user"} placeholder="User Type" onChange={(e)=>{this.handleUserTypeSelect(e)}} disabled={this.state.loggedInUser.Id === this.state.userInfo.Id ? true : this.state.disabled}>
+                <Select 
+                    style={{ width: "100%" }} 
+                    defaultValue={this.state.userInfo.UserType != null? this.state.userInfo.UserType : "user"} 
+                    placeholder="User Type" 
+                    onChange={(e)=>{this.handleUserTypeSelect(e)}} 
+                    disabled={this.state.loggedInUser.Id === this.state.userInfo.Id ? true : this.state.disabled}>
                     {allUserTypeOptions}
                 </Select>
                 <Divider />
                 {/* Location */}
                 <p>Location</p>
-                {/* Todo: add max scope depending on admin rights*/}
                 <LocationSelector
                     parentHandler={this.updateLocation}
                     showLocation={true}

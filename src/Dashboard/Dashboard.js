@@ -456,7 +456,7 @@ class Dashboard extends Component {
     render() {
         return (
             <div>
-                <div className = {this.showWhenCurrentViewIs("related", "center gutterOverflowMask")}>
+                <div className = {this.showWhenCurrentViewIs("related", "center")}>
                     {/* UI For Related Graphs */}
                     <Row className="rowVMarginSm rowVMarginTopSm left">
                         <Button icon="caret-left" onClick={() => { this.toggleViewRelated() }}>Back</Button>
@@ -477,7 +477,7 @@ class Dashboard extends Component {
                     </Row>
                 </div>
 
-                <div className= {this.showWhenCurrentViewIsNot("related", "center gutterOverflowMask")}>
+                <div className= {this.showWhenCurrentViewIsNot("related", "center")}>
                         {/* UI For Viewing Graphs */}
                         {
                             this.state.graphDataLoaded &&

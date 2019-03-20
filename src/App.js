@@ -147,7 +147,7 @@ class App extends Component {
 							title={this.getTitle()}>
 						</NavigationMenu>
 					</Header>
-					<Content className="min-height-wrapper">
+					<Content className="min-height-wrapper gutterOverflowMask">
 						<Route exact path="/" render={(props) => <SampleHome {...props} updateDrawer={this.updateDrawer} />}/>
 						<Route path="/dashboard" component={Dashboard} />
 						<Route path="/analysis" component={Analysis} />
