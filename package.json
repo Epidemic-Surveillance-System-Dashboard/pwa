@@ -6,6 +6,7 @@
   "dependencies": {
     "antd": "^3.12.4",
     "babel-plugin-import": "^1.11.0",
+    "chai": "^4.2.0",
     "customize-cra": "^0.2.11",
     "dexie": "^2.0.4",
     "gh-pages": "^2.0.1",
